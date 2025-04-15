@@ -1,8 +1,47 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Globe, DollarSign, Building2, Star } from "lucide-react";
+import { useState } from "react";
 
 const seoTools = [
+  {
+    name: "Try Profound",
+    url: "https://tryprofound.com",
+    description: "AI-driven SEO insights for enterprise brands",
+    logo: "/logos/profound_logo.png",
+    details: {
+      summary: "Enterprise platform for AI search visibility optimization that helps brands understand and improve how they appear in AI search results like ChatGPT and Claude.",
+      features: ["Answer Engine Insights", "Conversation Explorer", "Agent Analytics", "Citation tracking", "Real-time brand visibility monitoring", "Competitive benchmarking"],
+      pricing: "$3,000-$4,000+ per month per brand (annual contract)",
+      bestFor: "Enterprise-level brands needing scale and comprehensive AI search optimization",
+      highlighted: true
+    }
+  },
+  {
+    name: "Surfer SEO",
+    url: "https://surferseo.com",
+    description: "Complete SEO content optimization platform",
+    logo: "/logos/surfer_logo.png",
+    details: {
+      summary: "Surfer offers a content optimization workflow that boosts organic traffic, improves search rankings, and helps grow your business through data-driven content creation.",
+      features: ["Content Editor with real-time optimization", "SERP Analyzer", "Content Planner", "AI content generation", "Keyword research", "Internal linking automation"],
+      pricing: "Essential: $89/month, Advanced: $179/month, Max: $299/month",
+      bestFor: "Content creators, SEO professionals, and marketing teams of all sizes",
+      highlighted: true
+    }
+  },
+  {
+    name: "Clearscope",
+    url: "https://clearscope.io",
+    description: "Content-first SEO optimization platform",
+    logo: "/logos/clearscope_logo.png",
+    details: {
+      summary: "Clearscope is the #1 content-first SEO platform that makes it ridiculously easy to get more out of your content through AI-powered optimization.",
+      features: ["Content optimization", "Keyword research", "Content inventory", "Competitive analysis", "Content briefs", "Performance tracking"],
+      pricing: "Essentials: $170/month, Professional: $350/month, Enterprise: Custom pricing",
+      bestFor: "Content marketing teams, agencies, and enterprise brands focused on content quality",
+      highlighted: true
+    }
+  },
   {
     name: "AI Rank",
     url: "https://dejan.ai",
@@ -136,17 +175,6 @@ const seoTools = [
     }
   },
   {
-    name: "Try Profound",
-    url: "https://tryprofound.com",
-    description: "AI-driven SEO insights",
-    details: {
-      summary: "Enterprise platform for AI search visibility optimization",
-      features: ["Answer Engine Insights", "Conversation Explorer", "Agent Analytics", "Citation tracking"],
-      pricing: "$3,000-$4,000+ per month per brand (annual)",
-      bestFor: "Enterprise-level brands needing scale"
-    }
-  },
-  {
     name: "Waikay",
     url: "https://waikay.io",
     description: "AI SEO optimization tools",
@@ -171,6 +199,12 @@ const seoTools = [
 ];
 
 const SeoTools = () => {
+  const [filter, setFilter] = useState("all");
+  
+  const filteredTools = filter === "highlighted" 
+    ? seoTools.filter(tool => tool.details?.highlighted) 
+    : seoTools;
+
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="text-center mb-12">
@@ -180,14 +214,37 @@ const SeoTools = () => {
         <p className="mt-4 text-lg text-gray-600">
           Discover AI-powered tools to enhance your organic visibility and SEO performance
         </p>
+        
+        <div className="mt-6 flex justify-center gap-4">
+          <button 
+            onClick={() => setFilter("all")}
+            className={`px-4 py-2 rounded-md ${filter === "all" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+          >
+            All Tools
+          </button>
+          <button 
+            onClick={() => setFilter("highlighted")}
+            className={`px-4 py-2 rounded-md ${filter === "highlighted" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+          >
+            Featured Tools
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8">
-        {seoTools.map((tool) => (
-          <Card key={tool.name} className="flex flex-col h-full hover:shadow-lg transition-shadow">
+        {filteredTools.map((tool) => (
+          <Card key={tool.name} className={`flex flex-col h-full hover:shadow-lg transition-shadow ${tool.details?.highlighted ? 'border-purple-300 bg-purple-50/30' : ''}`}>
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Search className="w-6 h-6 text-purple-600" />
+                {tool.logo ? (
+                  <img 
+                    src={tool.logo} 
+                    alt={`${tool.name} logo`} 
+                    className="w-6 h-6 object-contain"
+                  />
+                ) : (
+                  <Search className="w-6 h-6 text-purple-600" />
+                )}
               </div>
               <div>
                 <CardTitle className="text-xl">
@@ -202,6 +259,11 @@ const SeoTools = () => {
                 </CardTitle>
                 <CardDescription className="text-sm mt-1">{tool.description}</CardDescription>
               </div>
+              {tool.details?.highlighted && (
+                <div className="ml-auto">
+                  <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">Featured</span>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="flex-1">
               {tool.details && (
@@ -244,4 +306,3 @@ const SeoTools = () => {
 };
 
 export default SeoTools;
-
