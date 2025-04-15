@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Home, Search } from "lucide-react";
 import {
@@ -21,7 +20,7 @@ const menuItems = [
   {
     title: "Explore",
     icon: Search,
-    path: "/seo-tools",
+    path: "/explore",
   },
 ];
 
