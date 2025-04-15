@@ -1,3 +1,4 @@
+
 import { 
   LineChart, 
   Paintbrush, 
@@ -53,7 +54,7 @@ const features = [
   },
   {
     title: "Influencer & Partnership Marketing",
-    description: "Optimize influencer campaigns and partnerships with AI",
+    description: "Optimize influencer campaigns and partnerships, including UGC video ads AI.",
     icon: Handshake,
   },
 ];
