@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Globe, DollarSign, Building2, Star } from "lucide-react";
 
@@ -24,19 +25,149 @@ const seoTools = [
       bestFor: "Early-stage companies interested in AI brand monitoring"
     }
   },
-  { name: "Athena HQ", url: "https://athenahq.ai", description: "AI SEO intelligence platform" },
-  { name: "Bluefish AI", url: "https://bluefishai.com", description: "AI-powered SEO automation" },
-  { name: "Brandlight", url: "https://brandlight.ai", description: "AI brand and SEO optimization" },
-  { name: "Evertune", url: "https://evertune.ai", description: "AI SEO performance tuning" },
-  { name: "Model Monitor", url: "https://modelmonitor.ai", description: "AI SEO monitoring solution" },
-  { name: "Otterly", url: "https://otterly.ai", description: "AI-enhanced SEO tools" },
-  { name: "Peec", url: "https://peec.ai", description: "AI SEO optimization platform" },
-  { name: "Quno", url: "https://quno.ai", description: "AI-powered SEO automation" },
-  { name: "RankScale", url: "https://rankscale.ai", description: "AI ranking optimization" },
-  { name: "Share of Model", url: "https://shareofmodel.ai", description: "AI SEO market share analysis" },
-  { name: "Try Profound", url: "https://tryprofound.com", description: "AI-driven SEO insights" },
-  { name: "Waikay", url: "https://waikay.io", description: "AI SEO optimization tools" },
-  { name: "X Funnel", url: "https://xfunnel.ai", description: "AI funnel optimization for SEO" }
+  {
+    name: "Athena HQ",
+    url: "https://athenahq.ai",
+    description: "AI SEO intelligence platform",
+    details: {
+      summary: "AI-powered platform with prompt generator and comprehensive tracking capabilities",
+      features: ["Prompt generator", "Source analytics", "Prompt brainstormer", "Brand monitoring", "Competitor analysis"],
+      pricing: "Starts from $300/month (Lite plan) to $900/month (Growth plan)",
+      bestFor: "Marketing teams needing comprehensive AI tracking solutions"
+    }
+  },
+  {
+    name: "Bluefish AI",
+    url: "https://bluefishai.com",
+    description: "AI-powered SEO automation",
+    details: {
+      summary: "Enterprise AI Marketing Suite focused on brand safety and LLM data usage",
+      features: ["Brand safety monitoring", "LLM influence", "Sentiment analysis", "Data syndication", "Chatbot platform"],
+      pricing: "Enterprise pricing starting at $4,000",
+      bestFor: "Large enterprises requiring comprehensive brand protection"
+    }
+  },
+  {
+    name: "Brandlight",
+    url: "https://brandlight.ai",
+    description: "AI brand and SEO optimization",
+    details: {
+      summary: "Comprehensive brand monitoring and optimization across AI platforms",
+      features: ["AI platform monitoring", "Sentiment tracking", "Real-time alerts", "Content optimization", "Reputation management"],
+      pricing: "$4,000 to $15,000 monthly",
+      bestFor: "Enterprise brands requiring active AI narrative management"
+    }
+  },
+  {
+    name: "Evertune",
+    url: "https://evertune.ai",
+    description: "AI SEO performance tuning",
+    details: {
+      summary: "Specialized marketing and brand analytics platform for AI systems",
+      features: ["AI Brand Index", "Feature analysis", "Content gap identification", "Progress tracking", "Model integration"],
+      pricing: "Starting at $5,000 monthly (annual contract)",
+      bestFor: "Enterprise brands in competitive markets"
+    }
+  },
+  {
+    name: "Model Monitor",
+    url: "https://modelmonitor.ai",
+    description: "AI SEO monitoring solution",
+    details: {
+      summary: "Real-time analysis across 50+ AI models with comprehensive tracking",
+      features: ["Prompt Radar", "Prompt Vault", "Competitor Analysis", "Sentiment Analysis", "Custom tracking"],
+      pricing: "Pro Plan: $49/month (annual) or $99/month (monthly)",
+      bestFor: "SMBs wanting cost-effective AI monitoring"
+    }
+  },
+  {
+    name: "Otterly",
+    url: "https://otterly.ai",
+    description: "AI-enhanced SEO tools",
+    details: {
+      summary: "AI search monitoring platform with multi-country support",
+      features: ["Brand monitoring", "Search prompt performance", "Link citation analysis", "Weekly reports", "AI prompt generator"],
+      pricing: "Lite: $29/month, Standard: $189/month, Pro: $989/month",
+      bestFor: "Small brands tracking limited keywords"
+    }
+  },
+  {
+    name: "Peec",
+    url: "https://peec.ai",
+    description: "AI SEO optimization platform",
+    details: {
+      summary: "AI search analytics for marketing teams with strong UI/UX",
+      features: ["Brand visibility tracking", "Competitor benchmarking", "Source identification", "Trend monitoring"],
+      pricing: "Starting at €120/month for in-house teams",
+      bestFor: "Marketing teams needing intuitive AI tracking"
+    }
+  },
+  {
+    name: "Quno",
+    url: "https://quno.ai",
+    description: "AI-powered SEO automation",
+    details: {
+      summary: "Brand intelligence platform with synthetic persona capabilities",
+      features: ["AI Visibility Monitoring", "Custom metrics", "Longitudinal studies", "Buyer journey simulation"],
+      pricing: "Enterprise pricing (contact sales)",
+      bestFor: "Enterprise brands needing deep AI insights"
+    }
+  },
+  {
+    name: "RankScale",
+    url: "https://rankscale.ai",
+    description: "AI ranking optimization",
+    details: {
+      summary: "Generative Engine Optimization (GEO) platform in beta",
+      features: ["Website audits", "Performance tracking", "Competitor benchmarking", "Content recommendations"],
+      pricing: "Beta pricing - contact for details",
+      bestFor: "Early adopters interested in GEO optimization"
+    }
+  },
+  {
+    name: "Share of Model",
+    url: "https://shareofmodel.ai",
+    description: "AI SEO market share analysis",
+    details: {
+      summary: "Unified brand perception tracking across AI models by Jellyfish",
+      features: ["Cross-model tracking", "Perception analysis", "Sentiment analysis", "Strategy optimization"],
+      pricing: "Enterprise pricing (contact sales)",
+      bestFor: "Large brands requiring comprehensive AI tracking"
+    }
+  },
+  {
+    name: "Try Profound",
+    url: "https://tryprofound.com",
+    description: "AI-driven SEO insights",
+    details: {
+      summary: "Enterprise platform for AI search visibility optimization",
+      features: ["Answer Engine Insights", "Conversation Explorer", "Agent Analytics", "Citation tracking"],
+      pricing: "$3,000-$4,000+ per month per brand (annual)",
+      bestFor: "Enterprise-level brands needing scale"
+    }
+  },
+  {
+    name: "Waikay",
+    url: "https://waikay.io",
+    description: "AI SEO optimization tools",
+    details: {
+      summary: "Brand monitoring tool with unique fact-checking capabilities",
+      features: ["AI Brand Score", "Fact checking", "Knowledge graph", "Multi-language support"],
+      pricing: "Starting at $19.95/month for single brand",
+      bestFor: "Companies concerned about AI factual accuracy"
+    }
+  },
+  {
+    name: "X Funnel",
+    url: "https://xfunnel.ai",
+    description: "AI funnel optimization for SEO",
+    details: {
+      summary: "AI search engine monitoring with focus on user journeys",
+      features: ["ICP analysis", "Market segmentation", "Competitive tracking", "Journey optimization"],
+      pricing: "Pro: $199/month (unlimited queries)",
+      bestFor: "Brands focused on customer journey optimization"
+    }
+  }
 ];
 
 const SeoTools = () => {
@@ -51,7 +182,7 @@ const SeoTools = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         {seoTools.map((tool) => (
           <Card key={tool.name} className="flex flex-col h-full hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center gap-4">
@@ -113,3 +244,4 @@ const SeoTools = () => {
 };
 
 export default SeoTools;
+
