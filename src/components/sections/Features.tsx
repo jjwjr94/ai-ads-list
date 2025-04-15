@@ -1,4 +1,3 @@
-
 import { 
   LineChart, 
   Paintbrush, 
@@ -19,7 +18,7 @@ const features = [
   },
   {
     title: "Creative & Content",
-    description: "Generate compelling content and creative assets with AI",
+    description: "Generate compelling content and creative assets with AI ad generators and ad creative AI",
     icon: Paintbrush,
   },
   {
@@ -85,4 +84,3 @@ export const Features = () => {
     </section>
   );
 };
-
