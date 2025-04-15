@@ -1,8 +1,15 @@
 
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleExploreClick = () => {
+    navigate("/explore");
+  };
+
   return (
     <section className="relative px-6 py-24 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[#F1F0FB]/50" />
@@ -22,7 +29,10 @@ export const Hero = () => {
             Explore cutting-edge solutions for AI ads and AI marketing to supercharge your team's efficiency, output and performance.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <GradientButton className="w-full sm:w-auto">
+            <GradientButton 
+              onClick={handleExploreClick} 
+              className="w-full sm:w-auto"
+            >
               Explore AI Tools
               <ArrowRight className="w-4 h-4 ml-2" />
             </GradientButton>
@@ -32,3 +42,4 @@ export const Hero = () => {
     </section>
   );
 };
+
