@@ -1,36 +1,61 @@
 
-import { BarChart3, Target, Zap, TrendingUp, Users, Brain } from "lucide-react";
+import { 
+  LineChart, 
+  Paintbrush, 
+  Target, 
+  Search, 
+  BarChart3, 
+  Code2, 
+  Users, 
+  Share2, 
+  Handshake 
+} from "lucide-react";
 
 const features = [
   {
-    title: "Smart Ad Creation",
-    description: "Generate high-converting ad copy and visuals in seconds with AI",
-    icon: Brain,
+    title: "Strategy & Planning",
+    description: "AI-powered strategic planning and campaign optimization tools",
+    icon: LineChart,
   },
   {
-    title: "Performance Analytics",
-    description: "Track and optimize your campaigns with AI-driven insights",
-    icon: BarChart3,
+    title: "Creative & Content",
+    description: "Generate compelling content and creative assets with AI",
+    icon: Paintbrush,
   },
   {
-    title: "Audience Targeting",
-    description: "Reach the right audience with AI-powered targeting",
+    title: "Performance & Media Buying",
+    description: "Optimize media spend and campaign performance with AI",
     icon: Target,
   },
   {
-    title: "Quick Implementation",
-    description: "Easy-to-use tools that integrate with your existing workflow",
-    icon: Zap,
+    title: "SEO & Organic Growth",
+    description: "Enhance organic visibility with AI-powered SEO tools",
+    icon: Search,
   },
   {
-    title: "ROI Optimization",
-    description: "Maximize your marketing budget with AI optimization",
-    icon: TrendingUp,
+    title: "Data & Analytics",
+    description: "Advanced analytics and insights powered by AI",
+    icon: BarChart3,
   },
   {
-    title: "Customer Insights",
-    description: "Understand your audience better with AI analytics",
+    title: "Web & App Development",
+    description: "AI tools for efficient web and app development",
+    icon: Code2,
+  },
+  {
+    title: "Account Management & Client Services",
+    description: "Streamline client relationships with AI assistance",
     icon: Users,
+  },
+  {
+    title: "Social Media & Community Management",
+    description: "AI-powered social media and community engagement tools",
+    icon: Share2,
+  },
+  {
+    title: "Influencer & Partnership Marketing",
+    description: "Optimize influencer campaigns and partnerships with AI",
+    icon: Handshake,
   },
 ];
 
@@ -40,13 +65,16 @@ export const Features = () => {
       <div className="max-w-6xl px-6 mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-[#1A1F2C] sm:text-4xl">
-            Everything You Need for
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]"> AI-Powered Marketing</span>
+            Explore AI Tools by
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]"> Category</span>
           </h2>
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
-            <div key={feature.title} className="p-6 transition-all bg-white border rounded-xl hover:shadow-lg">
+            <div 
+              key={feature.title} 
+              className="p-6 transition-all bg-white border rounded-xl hover:shadow-lg hover:border-purple-200"
+            >
               <feature.icon className="w-10 h-10 p-2 text-purple-600 bg-purple-100 rounded-lg" />
               <h3 className="mt-4 text-xl font-semibold text-[#1A1F2C]">{feature.title}</h3>
               <p className="mt-2 text-gray-600">{feature.description}</p>
@@ -57,3 +85,4 @@ export const Features = () => {
     </section>
   );
 };
+
