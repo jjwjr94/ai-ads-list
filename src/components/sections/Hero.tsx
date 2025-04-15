@@ -19,7 +19,7 @@ export const Hero = () => {
             </span>
           </h1>
           <p className="max-w-2xl mx-auto mb-8 text-lg text-gray-600 sm:text-xl">
-            Explore cutting-edge AI solutions for ad creative, UGC video ads, AI ad generators, and AI marketing strategies to boost your campaign performance.
+            Explore cutting-edge solutions for AI ads and AI marketing to supercharge your team's efficiency, output and performance.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <GradientButton className="w-full sm:w-auto">
