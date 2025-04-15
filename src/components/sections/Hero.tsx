@@ -13,13 +13,13 @@ export const Hero = () => {
             <span className="text-sm font-medium text-purple-600">AI-Powered Marketing Tools</span>
           </div>
           <h1 className="mb-6 text-4xl font-bold tracking-tight text-[#1A1F2C] sm:text-5xl md:text-6xl">
-            Find the Best AI Tools for Your
+            Discover the Best 
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
-              Ads and Marketing
+              AI Ads & Marketing Tools
             </span>
           </h1>
           <p className="max-w-2xl mx-auto mb-8 text-lg text-gray-600 sm:text-xl">
-            Discover and compare the most powerful AI tools to enhance your marketing strategy, boost engagement, and drive better results.
+            Explore cutting-edge AI solutions for ad creative, UGC video ads, AI ad generators, and AI marketing strategies to boost your campaign performance.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <GradientButton className="w-full sm:w-auto">
