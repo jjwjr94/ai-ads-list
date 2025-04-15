@@ -1,4 +1,3 @@
-
 import { 
   LineChart, 
   Paintbrush, 
@@ -31,6 +30,7 @@ const features = [
     title: "SEO & Organic Growth",
     description: "Enhance organic visibility with AI-powered SEO tools",
     icon: Search,
+    link: "/seo-tools"
   },
   {
     title: "Data & Analytics",
@@ -73,7 +73,8 @@ export const Features = () => {
           {features.map((feature) => (
             <div 
               key={feature.title} 
-              className="p-6 transition-all bg-white border rounded-xl hover:shadow-lg hover:border-purple-200"
+              className="p-6 transition-all bg-white border rounded-xl hover:shadow-lg hover:border-purple-200 cursor-pointer"
+              onClick={() => feature.link && window.location.href = feature.link}
             >
               <feature.icon className="w-10 h-10 p-2 text-purple-600 bg-purple-100 rounded-lg" />
               <h3 className="mt-4 text-xl font-semibold text-[#1A1F2C]">{feature.title}</h3>
