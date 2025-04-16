@@ -23,7 +23,7 @@ import {
   InfluencerMarketingPage,
   BrandManagementPage,
   AdFraudPage,
-  AdNativePage,
+  AiNativePage,
   CopywritingPage,
   AnalyticsPage,
   SeoPage
@@ -61,7 +61,7 @@ const App = () => (
                   <Route path="/influencer-marketing" element={<InfluencerMarketingPage />} />
                   <Route path="/brand-management" element={<BrandManagementPage />} />
                   <Route path="/ad-fraud" element={<AdFraudPage />} />
-                  <Route path="/ai-native" element={<AdNativePage />} />
+                  <Route path="/ai-native" element={<AiNativePage />} />
                   <Route path="/copywriting" element={<CopywritingPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
                   <Route path="/seo" element={<SeoPage />} />
