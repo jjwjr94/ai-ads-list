@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Company, Category } from '@/types/database';
@@ -175,28 +174,37 @@ const AdminDashboard = () => {
   const handleRefreshData = async () => {
     try {
       setIsRefreshing(true);
+      
       await refreshCompanies();
+      
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        if (img.src) {
+          if (!img.src.startsWith('data:')) {
+            const url = new URL(img.src);
+            url.searchParams.set('t', Date.now().toString());
+            
+            img.src = 'about:blank';
+            setTimeout(() => {
+              img.src = url.toString();
+            }, 10);
+          }
+        }
+      });
+
+      localStorage.clear();
       
       toast({
         title: "Data Refreshed",
-        description: "Company data has been refreshed from the database.",
+        description: "Company data and browser cache have been updated.",
+        action: <ToastAction altText="OK">OK</ToastAction>,
       });
-      
-      // Clear browser cache for images by forcing reload
-      const images = document.querySelectorAll('img');
-      images.forEach(img => {
-        const src = img.src;
-        if (src.includes('company-logos')) {
-          img.src = `${src.split('?')[0]}?t=${Date.now()}`;
-        }
-      });
-      
     } catch (error) {
       console.error('Error refreshing data:', error);
       toast({
         title: "Refresh Failed",
-        description: "Failed to refresh company data. Please try again.",
-        variant: "destructive"
+        description: "Failed to refresh data. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsRefreshing(false);
