@@ -35,9 +35,10 @@ const mapCompanyToDbRecord = (company: Company): Record<string, any> => {
     series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
   };
 
-  // Handle details object by serializing it to a JSON string and parsing it back
-  // This ensures we're storing a plain object rather than a complex type
+  // Handle details object by converting it to a simple object format
+  // that Supabase can store as JSON
   if (company.details) {
+    // Convert details object to a plain object using JSON.stringify and parse
     record.details = JSON.parse(JSON.stringify(company.details));
   }
   
@@ -64,7 +65,7 @@ const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> =
   if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
   if (updates.lastUpdated !== undefined) dbUpdates.last_updated = updates.lastUpdated;
   
-  // Handle details object by ensuring it's properly serialized
+  // Handle details object by ensuring it's properly serialized for JSON storage
   if (updates.details !== undefined) {
     dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
   }
@@ -115,7 +116,7 @@ export const companiesAPI = {
     // Create a properly formatted database record
     const dbRecord = mapCompanyToDbRecord(company);
 
-    // Ensure we have a well-formed record for Supabase
+    // Fix: Ensure we pass an array to insert
     const { data, error } = await supabase
       .from('companies')
       .insert([dbRecord]) // Pass as array to fix type issue

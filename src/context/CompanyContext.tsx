@@ -53,7 +53,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     searchCompanies
   } = useCompanyQueries();
   
-  // Fix: Pass the updateCompany function directly
+  // Fix: Pass the updateCompany function directly to useCompanyLogo
   const {
     uploadLogo
   } = useCompanyLogo(updateCompany);

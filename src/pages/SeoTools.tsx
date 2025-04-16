@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
@@ -115,7 +116,7 @@ const SeoTools = () => {
             <Card key={company.id} className={`flex flex-col h-full hover:shadow-lg transition-shadow ${company.details?.highlighted ? 'border-purple-300 bg-purple-50/30' : ''}`}>
               <CardHeader className="flex flex-row items-center gap-4">
                 <Logo 
-                  src={company.logo} 
+                  src={company.logo || company.logoUrl || ''} 
                   alt={`${company.name} logo`}
                   size="md"
                   className="bg-white"
@@ -123,7 +124,7 @@ const SeoTools = () => {
                 <div>
                   <CardTitle className="text-xl">
                     <a
-                      href={company.url}
+                      href={company.url || company.website}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-purple-600 transition-colors"
@@ -146,7 +147,7 @@ const SeoTools = () => {
                 {company.details && (
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-2">{company.details.summary}</p>
+                      <p className="text-sm text-gray-600 mb-2">{company.details.summary || ''}</p>
                     </div>
                     
                     <div className="space-y-1">
@@ -155,7 +156,8 @@ const SeoTools = () => {
                         Key Features:
                       </div>
                       <ul className="pl-6 text-sm text-gray-600 list-disc">
-                        {company.details.features.map((feature, idx) => (
+                        {/* Add null check for features or use empty array as fallback */}
+                        {(company.details.features || company.features || []).map((feature, idx) => (
                           <li key={idx}>{feature}</li>
                         ))}
                       </ul>
@@ -164,26 +166,39 @@ const SeoTools = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <DollarSign className="w-4 h-4 text-purple-600" />
                       <span className="font-medium">Pricing:</span>
-                      <span className="text-gray-600">{company.details.pricing}</span>
+                      <span className="text-gray-600">{company.details.pricing || company.pricing || 'Contact for pricing'}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building2 className="w-4 h-4 text-purple-600" />
-                      <span className="font-medium">Best For:</span>
-                      <span className="text-gray-600">{company.details.bestFor}</span>
-                    </div>
+                    {company.details.bestFor && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Building2 className="w-4 h-4 text-purple-600" />
+                        <span className="font-medium">Best For:</span>
+                        <span className="text-gray-600">{company.details.bestFor}</span>
+                      </div>
+                    )}
                     
-                    {company.linkedinUrl && (
+                    {(company.linkedinUrl || company.website || company.url) && (
                       <div className="flex items-center gap-2 text-sm">
                         <Globe className="w-4 h-4 text-purple-600" />
-                        <a 
-                          href={company.linkedinUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-600 hover:underline"
-                        >
-                          LinkedIn Profile
-                        </a>
+                        {company.linkedinUrl ? (
+                          <a 
+                            href={company.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-purple-600 hover:underline"
+                          >
+                            LinkedIn Profile
+                          </a>
+                        ) : (
+                          <a 
+                            href={company.website || company.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-purple-600 hover:underline"
+                          >
+                            Website
+                          </a>
+                        )}
                       </div>
                     )}
                   </div>
