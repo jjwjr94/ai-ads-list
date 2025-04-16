@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -104,13 +105,16 @@ export const companiesAPI = {
     
     // Handle details separately to avoid type instantiation issues
     if (updates.details) {
-      dbUpdates.details = {
-        summary: updates.details.summary ?? '',
-        features: updates.details.features ?? [],
-        highlighted: updates.details.highlighted ?? false,
-        pricing: updates.details.pricing ?? '',
-        bestFor: updates.details.bestFor ?? ''
-      };
+      // Create a simple object to avoid deep type instantiation
+      const detailsObj: CompanyDetails = {};
+      
+      if (updates.details.summary !== undefined) detailsObj.summary = updates.details.summary;
+      if (updates.details.features !== undefined) detailsObj.features = updates.details.features;
+      if (updates.details.highlighted !== undefined) detailsObj.highlighted = updates.details.highlighted;
+      if (updates.details.pricing !== undefined) detailsObj.pricing = updates.details.pricing;
+      if (updates.details.bestFor !== undefined) detailsObj.bestFor = updates.details.bestFor;
+      
+      dbUpdates.details = detailsObj;
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
