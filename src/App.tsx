@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,32 +9,66 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SeoTools from "./pages/SeoTools";
 import Explore from "./pages/Explore";
+import Admin from "./pages/Admin";
+import { CompanyProvider } from "./context/CompanyContext";
+import {
+  StrategyPlanningPage,
+  CreativeContentPage,
+  PerformanceMediaPage,
+  SeoOrganicPage,
+  DataAnalyticsPage,
+  WebAppDevelopmentPage,
+  AccountManagementPage,
+  SocialMediaPage,
+  InfluencerMarketingPage,
+  BrandManagementPage,
+  AdFraudPage,
+  AdNativePage
+} from "./pages/CategoryPages";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SidebarProvider defaultOpen={false}>
-          <div className="min-h-screen flex w-full">
-            <AppSidebar />
-            <main className="flex-1">
-              <SidebarTrigger className="m-4" />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/explore" element={<Explore />} />
-                <Route path="/seo-tools" element={<SeoTools />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <CompanyProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <SidebarProvider defaultOpen={false}>
+            <div className="min-h-screen flex w-full">
+              <AppSidebar />
+              <main className="flex-1">
+                <SidebarTrigger className="m-4" />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/explore" element={<Explore />} />
+                  <Route path="/seo-tools" element={<SeoTools />} />
+                  <Route path="/admin" element={<Admin />} />
+                  
+                  {/* Category Pages */}
+                  <Route path="/strategy-planning" element={<StrategyPlanningPage />} />
+                  <Route path="/creative-content" element={<CreativeContentPage />} />
+                  <Route path="/performance-media" element={<PerformanceMediaPage />} />
+                  <Route path="/seo-organic" element={<SeoOrganicPage />} />
+                  <Route path="/data-analytics" element={<DataAnalyticsPage />} />
+                  <Route path="/web-app-development" element={<WebAppDevelopmentPage />} />
+                  <Route path="/account-management" element={<AccountManagementPage />} />
+                  <Route path="/social-media" element={<SocialMediaPage />} />
+                  <Route path="/influencer-marketing" element={<InfluencerMarketingPage />} />
+                  <Route path="/brand-management" element={<BrandManagementPage />} />
+                  <Route path="/ad-fraud" element={<AdFraudPage />} />
+                  <Route path="/ad-native" element={<AdNativePage />} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+            </div>
+          </SidebarProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </CompanyProvider>
   </QueryClientProvider>
 );
 
