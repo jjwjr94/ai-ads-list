@@ -96,8 +96,14 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Convert to string and parse back to avoid reference issues
-      dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
+      const detailsObj = {
+        summary: updates.details.summary || '',
+        features: updates.details.features || [],
+        highlighted: updates.details.highlighted || false,
+        pricing: updates.details.pricing || '',
+        bestFor: updates.details.bestFor || ''
+      };
+      dbUpdates.details = detailsObj;
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {

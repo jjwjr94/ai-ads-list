@@ -13,7 +13,6 @@ import {
   CarouselNext
 } from "@/components/ui/carousel";
 import CompanyCard from "@/components/ui/company-card";
-import useEmblaCarousel from "embla-carousel-react";
 
 export const Hero = () => {
   const navigate = useNavigate();
@@ -29,12 +28,15 @@ export const Hero = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
+        console.log("Fetching companies for hero carousel");
         // First try to get highlighted companies
         const highlighted = await getHighlightedCompanies();
         
         if (highlighted && highlighted.length >= 3) {
+          console.log(`Found ${highlighted.length} highlighted companies for carousel`);
           setDisplayCompanies(highlighted);
         } else if (companies.length > 0) {
+          console.log("Not enough highlighted companies, selecting random ones");
           // If not enough highlighted, select random companies
           const shuffled = [...companies].sort(() => 0.5 - Math.random());
           setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)));
@@ -58,6 +60,7 @@ export const Hero = () => {
   useEffect(() => {
     if (!carouselApi) return;
     
+    console.log("Setting up carousel auto-rotation");
     const autoPlayInterval = setInterval(() => {
       if (carouselApi.canScrollNext()) {
         carouselApi.scrollNext();
@@ -117,8 +120,8 @@ export const Hero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <CarouselPrevious className="hidden sm:flex" />
+                <CarouselNext className="hidden sm:flex" />
               </Carousel>
             </div>
           )}
