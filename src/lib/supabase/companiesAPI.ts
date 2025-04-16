@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -105,7 +104,6 @@ export const companiesAPI = {
     
     // Handle details separately to avoid type instantiation issues
     if (updates.details) {
-final-typescript-fixes
       // Create a completely separate object with explicit typing
       // This breaks any potential circular references
       const detailsObj: DbCompanyDetails = {
@@ -118,31 +116,6 @@ final-typescript-fixes
       
       // Assign the explicitly typed object to dbUpdates
       dbUpdates.details = detailsObj;
-
- simplified-fix
-      // Simplified approach: create a plain object without type references
-      // This completely avoids the circular reference issue
-      dbUpdates.details = {
-        // Use optional chaining and nullish coalescing for safe property access
-        summary: updates.details?.summary || '',
-        features: updates.details?.features || [],
-        highlighted: updates.details?.highlighted || false,
-        pricing: updates.details?.pricing || '',
-        bestFor: updates.details?.bestFor || ''
-      };
-
-      // Create a simple object to avoid deep type instantiation
-      const detailsObj: CompanyDetails = {};
-      
-      if (updates.details.summary !== undefined) detailsObj.summary = updates.details.summary;
-      if (updates.details.features !== undefined) detailsObj.features = updates.details.features;
-      if (updates.details.highlighted !== undefined) detailsObj.highlighted = updates.details.highlighted;
-      if (updates.details.pricing !== undefined) detailsObj.pricing = updates.details.pricing;
-      if (updates.details.bestFor !== undefined) detailsObj.bestFor = updates.details.bestFor;
-      
-      dbUpdates.details = detailsObj;
-main
-main
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
