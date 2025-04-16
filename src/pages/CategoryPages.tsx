@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category, Company } from '@/types/database';
@@ -39,9 +40,10 @@ const CompanyCardSkeleton = () => {
 
 interface CategoryPageProps {
   category: Category;
+  additionalCategories?: Category[];
 }
 
-const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
+const CategoryPage: React.FC<CategoryPageProps> = ({ category, additionalCategories = [] }) => {
   const { getCompaniesByCategory, isLoading, error, refreshCompanies } = useCompanyDatabase();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [showFeatured, setShowFeatured] = useState(false);
@@ -52,9 +54,31 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     try {
       setLoading(true);
       console.log(`Fetching companies for category: ${category}`);
-      const categoryCompanies = await getCompaniesByCategory(category);
-      console.log(`Fetched ${categoryCompanies.length} companies for ${category}`);
-      setCompanies(categoryCompanies);
+      let allCompanies: Company[] = [];
+      
+      // Fetch primary category
+      const primaryCompanies = await getCompaniesByCategory(category);
+      console.log(`Fetched ${primaryCompanies.length} companies for ${category}`);
+      allCompanies = [...primaryCompanies];
+      
+      // Fetch additional categories if specified
+      if (additionalCategories.length > 0) {
+        for (const additionalCategory of additionalCategories) {
+          console.log(`Fetching additional companies for: ${additionalCategory}`);
+          const additionalCompanies = await getCompaniesByCategory(additionalCategory);
+          console.log(`Fetched ${additionalCompanies.length} companies for ${additionalCategory}`);
+          
+          // Add companies without duplicates
+          additionalCompanies.forEach(company => {
+            if (!allCompanies.some(c => c.id === company.id)) {
+              allCompanies.push(company);
+            }
+          });
+        }
+      }
+      
+      console.log(`Total combined unique companies: ${allCompanies.length}`);
+      setCompanies(allCompanies);
     } catch (err) {
       console.error('Error fetching companies:', err);
     } finally {
@@ -74,7 +98,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [category]);
+  }, [category, additionalCategories]);
 
   const filteredCompanies = companies.filter(company => {
     const featuredCheck = showFeatured ? company.details?.highlighted : true;
@@ -178,15 +202,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
 export const StrategyPlanningPage = () => <CategoryPage category={Category.STRATEGY_PLANNING} />;
 export const CreativeContentPage = () => <CategoryPage category={Category.CREATIVE_CONTENT} />;
 export const PerformanceMediaPage = () => <CategoryPage category={Category.PERFORMANCE_MEDIA} />;
-export const SeoOrganicPage = () => <CategoryPage category={Category.SEO_ORGANIC} />;
-export const DataAnalyticsPage = () => <CategoryPage category={Category.DATA_ANALYTICS} />;
+export const SeoOrganicPage = () => <CategoryPage category={Category.SEO_ORGANIC} additionalCategories={[Category.SEO]} />;
+export const DataAnalyticsPage = () => <CategoryPage category={Category.DATA_ANALYTICS} additionalCategories={[Category.ANALYTICS]} />;
 export const WebAppDevelopmentPage = () => <CategoryPage category={Category.WEB_APP_DEVELOPMENT} />;
 export const AccountManagementPage = () => <CategoryPage category={Category.ACCOUNT_MANAGEMENT} />;
 export const SocialMediaPage = () => <CategoryPage category={Category.SOCIAL_MEDIA} />;
 export const InfluencerMarketingPage = () => <CategoryPage category={Category.INFLUENCER_MARKETING} />;
 export const BrandManagementPage = () => <CategoryPage category={Category.BRAND_MANAGEMENT} />;
 export const AdFraudPage = () => <CategoryPage category={Category.AD_FRAUD} />;
-export const AdNativePage = () => <CategoryPage category={Category.AI_NATIVE} />;
+export const AiNativePage = () => <CategoryPage category={Category.AI_NATIVE} />;
 export const CopywritingPage = () => <CategoryPage category={Category.COPYWRITING} />;
-export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} />;
-export const SeoPage = () => <CategoryPage category={Category.SEO} />;
+export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} additionalCategories={[Category.DATA_ANALYTICS]} />;
+export const SeoPage = () => <CategoryPage category={Category.SEO} additionalCategories={[Category.SEO_ORGANIC]} />;
