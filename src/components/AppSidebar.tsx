@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Home, Search } from "lucide-react";
+import { Home, Search, DatabaseIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +22,11 @@ const menuItems = [
     title: "Explore",
     icon: Search,
     path: "/explore",
+  },
+  {
+    title: "Admin",
+    icon: DatabaseIcon,
+    path: "/admin",
   },
 ];
 
