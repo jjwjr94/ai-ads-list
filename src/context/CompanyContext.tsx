@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -176,7 +177,18 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
 
   const uploadLogo = async (id: string, file: File, altText: string) => {
     try {
+      console.log(`Uploading logo for company ID: ${id}`);
       const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
+      console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
+      
+      // Update company with new logo URL
+      const updatedCompany = await updateCompany(id, {
+        logo: logoUrl,
+        logoUrl: logoUrl
+      });
+      
+      console.log('Company updated with new logo URL');
+      
       // Refresh companies to get updated logo paths
       await refreshCompanies();
       return logoUrl;

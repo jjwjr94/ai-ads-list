@@ -198,9 +198,15 @@ const AdminDashboard = () => {
     
     try {
       setIsUploading(true);
+      console.log(`Preparing to upload logo for company ID: ${companyId}`);
+      
       const companyName = form.getValues('name') || 'company';
       const altText = `${companyName} logo`;
+      
+      console.log(`Uploading logo for ${companyName} with alt text: ${altText}`);
       const logoPath = await uploadLogo(companyId, logoFile, altText);
+      
+      console.log(`Logo upload completed, received path: ${logoPath}`);
       
       toast({
         title: "Logo Uploaded",
@@ -240,17 +246,23 @@ const AdminDashboard = () => {
         const updatedCompanyData = { ...companyData };
         
         if (logoFile) {
+          console.log("Logo file present, will upload");
           const logoPath = await handleLogoUpload(editingCompany.id);
           if (logoPath) {
+            console.log(`Logo path received: ${logoPath}, updating company data`);
             updatedCompanyData.logoUrl = logoPath;
             updatedCompanyData.logo = logoPath;
           }
         } else {
+          console.log("No new logo file, keeping existing logo");
           updatedCompanyData.logoUrl = editingCompany.logoUrl;
           updatedCompanyData.logo = editingCompany.logo;
         }
         
+        console.log("Updating company with data:", updatedCompanyData);
         await updateCompany(editingCompany.id, updatedCompanyData);
+        await refreshCompanies();
+        
         toast({
           title: "Company Updated",
           description: `${companyData.name} has been successfully updated.`,
@@ -264,15 +276,19 @@ const AdminDashboard = () => {
           lastUpdated: new Date()
         };
         
+        console.log("Adding new company:", newCompany);
         const addedCompany = await addCompany(newCompany);
         
         if (logoFile) {
+          console.log(`New company created with ID: ${addedCompany.id}, uploading logo`);
           const logoPath = await handleLogoUpload(addedCompany.id);
           if (logoPath) {
+            console.log(`Logo uploaded for new company, path: ${logoPath}`);
             await updateCompany(addedCompany.id, { 
               logoUrl: logoPath,
               logo: logoPath
             });
+            await refreshCompanies();
           }
         }
         

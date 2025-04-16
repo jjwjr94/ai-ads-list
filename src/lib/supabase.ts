@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 
@@ -84,7 +85,7 @@ export const createSupabaseClient = () => {
       }),
       storage: {
         from: () => ({
-          upload: () => ({ data: null, error: null }),
+          upload: () => ({ data: { path: "mock-path" }, error: null }),
           getPublicUrl: () => ({ data: { publicUrl: '' } }),
         }),
       },
@@ -319,38 +320,53 @@ export const supabaseAPI = {
     async uploadLogo(id: string, file: File, altText: string): Promise<string> {
       if (!supabaseUrl || !supabaseKey) {
         console.warn('Using mock data: Missing Supabase credentials');
-        return URL.createObjectURL(file); // Return a temporary local URL for the file
+        console.log('Creating mock URL for file in mock mode');
+        // In mock mode, create a data URL from the file
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const dataUrl = reader.result as string;
+            console.log('Created mock data URL for logo');
+            resolve(dataUrl);
+          };
+          reader.readAsDataURL(file);
+        });
       }
       
+      console.log(`Uploading logo file for company ${id}: ${file.name}`);
       const fileExt = file.name.split('.').pop();
       const fileName = `${id}.${fileExt}`;
       const filePath = `logos/${fileName}`;
       
-      const { error } = await supabase
-        .storage
-        .from('company-logos')
-        .upload(filePath, file, {
-          upsert: true
-        });
-      
-      if (error) {
-        console.error(`Error uploading logo for company ${id}:`, error);
+      try {
+        console.log(`Attempting to upload to path: ${filePath}`);
+        const { data, error } = await supabase
+          .storage
+          .from('company-logos')
+          .upload(filePath, file, {
+            upsert: true
+          });
+        
+        if (error) {
+          console.error(`Error uploading logo for company ${id}:`, error);
+          throw error;
+        }
+        
+        console.log('Upload successful, data:', data);
+        
+        // Get public URL for the uploaded file
+        const { data: urlData } = supabase
+          .storage
+          .from('company-logos')
+          .getPublicUrl(filePath);
+          
+        console.log(`Generated public URL: ${urlData.publicUrl}`);
+          
+        return urlData.publicUrl;
+      } catch (error) {
+        console.error('Storage upload error:', error);
         throw error;
       }
-      
-      // Get public URL for the uploaded file
-      const { data } = supabase
-        .storage
-        .from('company-logos')
-        .getPublicUrl(filePath);
-        
-      // Update the company with the logo URL
-      await supabaseAPI.companies.update(id, { 
-        logo: data.publicUrl,
-        logoUrl: data.publicUrl 
-      });
-      
-      return data.publicUrl;
     },
     
     getPublicUrl(path: string): string {
