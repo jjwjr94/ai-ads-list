@@ -1,17 +1,16 @@
-
 import { supabase } from '../../integrations/supabase/client';
-import { Company, Category } from '../../types/database';
+import { Company, Category, CompanyDetails } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
-// Define a simple interface for database operations to avoid type recursion
-interface DbCompanyDetails {
+// Define a completely separate type for database operations to avoid any circular references
+type DbCompanyDetails = {
   summary: string | null;
   features: string[];
   highlighted: boolean;
   pricing: string | null;
   bestFor: string | null;
-}
+};
 
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
@@ -103,16 +102,18 @@ export const companiesAPI = {
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
     
-    // Handle details separately using a simple object literal to avoid type recursion
+    // Handle details separately with explicit typing to avoid circular references
     if (updates.details) {
+      // Create a simple object literal without referencing the Company type
       const detailsObj: DbCompanyDetails = {
-        summary: updates.details.summary || null,
+        summary: updates.details.summary ?? null,
         features: Array.isArray(updates.details.features) ? [...updates.details.features] : [],
-        highlighted: Boolean(updates.details.highlighted),
-        pricing: updates.details.pricing || null,
-        bestFor: updates.details.bestFor || null
+        highlighted: Boolean(updates.details.highlighted ?? false),
+        pricing: updates.details.pricing ?? null,
+        bestFor: updates.details.bestFor ?? null
       };
       
+      // Assign the explicitly typed object to dbUpdates
       dbUpdates.details = detailsObj;
     }
     
