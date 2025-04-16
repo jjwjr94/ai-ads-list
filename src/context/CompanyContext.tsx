@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { supabaseAPI } from '@/lib/supabase';
@@ -52,9 +53,10 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     searchCompanies
   } = useCompanyQueries();
   
+  // Fix: Pass the updateCompany function directly
   const {
     uploadLogo
-  } = useCompanyLogo(updateCompany); // Use updateCompany instead of refreshCompanies
+  } = useCompanyLogo(updateCompany);
 
   // Load companies on mount, but only once
   useEffect(() => {
