@@ -2,40 +2,89 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
 
+// Define types for database records
+interface DbRecord {
+  id: string;
+  name: string;
+  website: string;
+  category: string;
+  description: string;
+  features: string[];
+  pricing: string;
+  target_audience?: string;
+  logo_url?: string;
+  details?: any;
+  linkedin_url?: string;
+  founded_year?: number;
+  headquarters?: string;
+  employee_count?: string;
+  funding_stage?: string;
+  last_updated?: Date | string;
+  has_dot_ai_domain?: boolean;
+  founded_after_2020?: boolean | null;
+  series_a_or_earlier?: boolean | null;
+  [key: string]: any;
+}
+
 // Utility function to map database record to Company object
-const mapDbRecordToCompany = (record: any): Company => ({
-  ...record,
+const mapDbRecordToCompany = (record: DbRecord): Company => ({
+  id: record.id,
+  name: record.name,
+  website: record.website,
+  category: record.category as Category,
+  description: record.description,
+  features: record.features || [],
+  pricing: record.pricing || '',
   logoUrl: record.logo_url || '',
   targetAudience: record.target_audience || '',
-  details: record.details || {}
-}) as Company;
-
-// Utility function to map Company object to database record
-const mapCompanyToDbRecord = (company: Company): Record<string, any> => ({
-  id: company.id,
-  name: company.name,
-  website: company.website,
-  category: company.category,
-  description: company.description,
-  features: company.features,
-  pricing: company.pricing,
-  target_audience: company.targetAudience,
-  logo_url: company.logoUrl || company.logo,
-  details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
-  linkedin_url: company.linkedinUrl,
-  founded_year: company.foundedYear,
-  headquarters: company.headquarters,
-  employee_count: company.employeeCount,
-  funding_stage: company.fundingStage,
-  last_updated: company.lastUpdated || new Date(),
-  has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
-  founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
-  series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
+  details: record.details || {},
+  linkedinUrl: record.linkedin_url,
+  foundedYear: record.founded_year,
+  headquarters: record.headquarters,
+  employeeCount: record.employee_count,
+  fundingStage: record.funding_stage,
+  lastUpdated: record.last_updated ? new Date(record.last_updated) : undefined,
+  aiNativeCriteria: {
+    hasDotAiDomain: record.has_dot_ai_domain,
+    foundedAfter2020: record.founded_after_2020,
+    seriesAOrEarlier: record.series_a_or_earlier
+  }
 });
 
+// Utility function to map Company object to database record
+const mapCompanyToDbRecord = (company: Company): DbRecord => {
+  const dbRecord: DbRecord = {
+    id: company.id,
+    name: company.name,
+    website: company.website,
+    category: company.category,
+    description: company.description,
+    features: company.features,
+    pricing: company.pricing,
+    target_audience: company.targetAudience,
+    logo_url: company.logoUrl || company.logo,
+    details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
+    linkedin_url: company.linkedinUrl,
+    founded_year: company.foundedYear,
+    headquarters: company.headquarters,
+    employee_count: company.employeeCount,
+    funding_stage: company.fundingStage,
+    last_updated: company.lastUpdated || new Date()
+  };
+  
+  // Add AI native criteria fields if they exist
+  if (company.aiNativeCriteria) {
+    dbRecord.has_dot_ai_domain = company.aiNativeCriteria.hasDotAiDomain;
+    dbRecord.founded_after_2020 = company.aiNativeCriteria.foundedAfter2020;
+    dbRecord.series_a_or_earlier = company.aiNativeCriteria.seriesAOrEarlier;
+  }
+  
+  return dbRecord;
+};
+
 // Utility function to create partial database record for updates
-const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> => {
-  const dbUpdates: Record<string, any> = {};
+const createPartialDbRecord = (updates: Partial<Company>): Partial<DbRecord> => {
+  const dbUpdates: Partial<DbRecord> = {};
   
   if (updates.name !== undefined) dbUpdates.name = updates.name;
   if (updates.website !== undefined) dbUpdates.website = updates.website;
@@ -45,7 +94,6 @@ const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> =
   if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
   if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
   if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
-  if (updates.logo !== undefined) dbUpdates.logo_url = updates.logo;
   if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl;
   if (updates.foundedYear !== undefined) dbUpdates.founded_year = updates.foundedYear;
   if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
@@ -58,6 +106,7 @@ const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> =
     dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
   }
   
+  // Handle AI native criteria fields if they exist
   if (updates.aiNativeCriteria) {
     if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
       dbUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
@@ -105,7 +154,7 @@ export const companiesAPI = {
 
     const { data, error } = await supabase
       .from('companies')
-      .insert(dbRecord)
+      .insert([dbRecord]) // Use array to satisfy TypeScript
       .select()
       .single();
 
