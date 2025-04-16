@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -96,13 +97,14 @@ export const companiesAPI = {
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
       // Explicitly create a plain object for details
+      // Use type assertion to avoid deep type instantiation
       dbUpdates.details = {
         summary: updates.details.summary ?? '',
         features: updates.details.features ?? [],
         highlighted: updates.details.highlighted ?? false,
         pricing: updates.details.pricing ?? '',
         bestFor: updates.details.bestFor ?? ''
-      };
+      } as Record<string, unknown>;
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
