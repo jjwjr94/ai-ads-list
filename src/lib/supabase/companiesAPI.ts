@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import type { Company } from './types';
+import type { Company } from '../../types/database';
+import { categoryMapping } from './categoryMapping';
 
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
@@ -68,10 +69,38 @@ export const companiesAPI = {
     return true;
   },
 
+  async getByCategory(category: string): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('category', category);
+
+    if (error) {
+      console.error(`Error fetching companies in category ${category}:`, error);
+      return [];
+    }
+
+    return data ?? [];
+  },
+
+  async search(query: string): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+
+    if (error) {
+      console.error('Error searching companies:', error);
+      return [];
+    }
+
+    return data ?? [];
+  },
+
   async getHighlighted(): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
-      .select('*') // Using full select to avoid deep type issues
+      .select('*')
       .eq('details->>highlighted', 'true')
       .setHeader('cache-control', 'no-cache');
 
