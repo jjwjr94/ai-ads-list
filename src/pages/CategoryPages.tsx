@@ -15,7 +15,6 @@ import { Loader2, Star } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import CompanyCard from '@/components/ui/company-card';
 
-// Loading skeleton for company cards
 const CompanyCardSkeleton = () => {
   return (
     <Card className="overflow-hidden">
@@ -69,6 +68,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     };
 
     fetchCompanies();
+    
+    window.addEventListener('focus', fetchCompanies);
+    
+    return () => {
+      window.removeEventListener('focus', fetchCompanies);
+    };
   }, [category, getCompaniesByCategory]);
 
   const filteredCompanies = showFeatured
@@ -133,7 +138,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   );
 };
 
-// Create a component for each category
 export const StrategyPlanningPage = () => <CategoryPage category={Category.STRATEGY_PLANNING} />;
 export const CreativeContentPage = () => <CategoryPage category={Category.CREATIVE_CONTENT} />;
 export const PerformanceMediaPage = () => <CategoryPage category={Category.PERFORMANCE_MEDIA} />;

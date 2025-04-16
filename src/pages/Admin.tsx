@@ -236,14 +236,14 @@ const AdminDashboard = () => {
       } as Company;
 
       if (editingCompany) {
-        let updatedCompanyData = { ...companyData };
+        const updatedCompanyData = { ...companyData };
         
         if (logoFile) {
           const logoPath = await handleLogoUpload(editingCompany.id);
           if (logoPath) {
             updatedCompanyData.logo = logoPath;
           }
-        } else if (logoPreview) {
+        } else {
           updatedCompanyData.logo = editingCompany.logo;
         }
         
