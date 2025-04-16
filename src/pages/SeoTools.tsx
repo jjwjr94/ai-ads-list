@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
+import { Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Logo from '@/components/ui/logo';
 
@@ -17,21 +16,11 @@ const SeoTools = () => {
     const fetchCompanies = async () => {
       try {
         setLoading(true);
-        // Updated to use both SEO_ORGANIC and SEO categories to ensure we show all SEO companies
+        // Updated to use only SEO_ORGANIC category
         const seoOrganic = await getCompaniesByCategory(Category.SEO_ORGANIC);
-        const seo = await getCompaniesByCategory(Category.SEO);
         
-        // Combine both categories, avoiding duplicates by ID
-        const combinedCompanies = [...seoOrganic];
-        seo.forEach(company => {
-          if (!combinedCompanies.some(c => c.id === company.id)) {
-            combinedCompanies.push(company);
-          }
-        });
-        
-        console.log(`Found ${seoOrganic.length} SEO_ORGANIC companies and ${seo.length} SEO companies`);
-        console.log(`Total unique companies: ${combinedCompanies.length}`);
-        setCompanies(combinedCompanies);
+        console.log(`Found ${seoOrganic.length} SEO_ORGANIC companies`);
+        setCompanies(seoOrganic);
       } catch (err) {
         console.error('Error fetching SEO companies:', err);
       } finally {
