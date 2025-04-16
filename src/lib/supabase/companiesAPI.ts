@@ -15,8 +15,13 @@ export const companiesAPI = {
       return [];
     }
 
-    // Type assertion to ensure we're returning the correct type
-    return (data || []) as Company[];
+    // Explicitly cast data to Company[] and provide default values
+    return (data || []).map(company => ({
+      ...company,
+      logoUrl: company.logo_url || '',
+      targetAudience: company.target_audience || '',
+      details: company.details || {}
+    })) as Company[];
   },
 
   async getById(id: string): Promise<Company | null> {
@@ -31,14 +36,19 @@ export const companiesAPI = {
       return null;
     }
 
-    // Type assertion to ensure we're returning the correct type
-    return data as Company;
+    // Explicitly cast data to Company and provide default values
+    return data ? {
+      ...data,
+      logoUrl: data.logo_url || '',
+      targetAudience: data.target_audience || '',
+      details: data.details || {}
+    } as Company : null;
   },
 
   async create(company: Company): Promise<Company> {
     const { data, error } = await supabase
       .from('companies')
-      .insert(company as any)
+      .insert(company)
       .select()
       .single();
 
@@ -47,14 +57,19 @@ export const companiesAPI = {
       throw new Error(`Failed to create company: ${error.message}`);
     }
 
-    // Return the newly created company
-    return data as Company;
+    // Explicitly cast data to Company and provide default values
+    return {
+      ...data,
+      logoUrl: data.logo_url || '',
+      targetAudience: data.target_audience || '',
+      details: data.details || {}
+    } as Company;
   },
 
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
     const { error } = await supabase
       .from('companies')
-      .update(updates as any)
+      .update(updates)
       .eq('id', id);
 
     if (error) {
@@ -90,8 +105,13 @@ export const companiesAPI = {
       return [];
     }
 
-    // Type assertion to ensure we're returning the correct type
-    return (data || []) as Company[];
+    // Explicitly cast data to Company[] and provide default values
+    return (data || []).map(company => ({
+      ...company,
+      logoUrl: company.logo_url || '',
+      targetAudience: company.target_audience || '',
+      details: company.details || {}
+    })) as Company[];
   },
 
   async search(query: string): Promise<Company[]> {
@@ -105,8 +125,13 @@ export const companiesAPI = {
       return [];
     }
 
-    // Type assertion to ensure we're returning the correct type
-    return (data || []) as Company[];
+    // Explicitly cast data to Company[] and provide default values
+    return (data || []).map(company => ({
+      ...company,
+      logoUrl: company.logo_url || '',
+      targetAudience: company.target_audience || '',
+      details: company.details || {}
+    })) as Company[];
   },
 
   async getHighlighted(): Promise<Company[]> {
@@ -121,7 +146,12 @@ export const companiesAPI = {
       return [];
     }
 
-    // Type assertion to ensure we're returning the correct type
-    return (data || []) as Company[];
+    // Explicitly cast data to Company[] and provide default values
+    return (data || []).map(company => ({
+      ...company,
+      logoUrl: company.logo_url || '',
+      targetAudience: company.target_audience || '',
+      details: company.details || {}
+    })) as Company[];
   }
 };
