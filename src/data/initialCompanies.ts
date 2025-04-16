@@ -1,4 +1,3 @@
-
 // Initial companies data for AI Ads Zen Garden
 // This file contains validated AI-native companies across different marketing categories
 
@@ -23,6 +22,7 @@ export const copywritingCompanies: Company[] = [
     ],
     targetAudience: "Marketing teams, content creators, and businesses of all sizes",
     pricing: "Starting at $49/month for individuals, with team plans available",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -45,6 +45,7 @@ export const copywritingCompanies: Company[] = [
     ],
     targetAudience: "Marketers, entrepreneurs, and small to medium-sized businesses",
     pricing: "Free plan available, Pro plan starts at $36/month",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -67,6 +68,7 @@ export const copywritingCompanies: Company[] = [
     ],
     targetAudience: "E-commerce businesses, online retailers, and digital marketers",
     pricing: "Starting at $29/month for the Starter plan",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -89,6 +91,7 @@ export const copywritingCompanies: Company[] = [
     ],
     targetAudience: "E-commerce businesses, enterprise marketing teams, and agencies",
     pricing: "Starting at $19/month for individuals, with team and enterprise plans available",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -111,6 +114,7 @@ export const copywritingCompanies: Company[] = [
     ],
     targetAudience: "Content marketers, social media managers, and small to medium businesses",
     pricing: "Starting at $25/month for the Solo plan",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -137,6 +141,7 @@ export const seoCompanies: Company[] = [
     ],
     targetAudience: "SEO professionals, content marketers, and website owners",
     pricing: "Starting at $29/month for the Basic plan",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: null,
@@ -159,6 +164,7 @@ export const seoCompanies: Company[] = [
     ],
     targetAudience: "Digital marketers, SEO agencies, and businesses looking to improve their online visibility",
     pricing: "Starting at $99/month for small businesses",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -185,6 +191,7 @@ export const socialMediaCompanies: Company[] = [
     ],
     targetAudience: "Social media managers, small businesses, and content creators",
     pricing: "Starting at $19/month for individuals",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -207,6 +214,7 @@ export const socialMediaCompanies: Company[] = [
     ],
     targetAudience: "Marketing teams, enterprises, and agencies",
     pricing: "Starting at $49/month for individuals, with team and enterprise plans available",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -233,6 +241,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "E-commerce brands, DTC companies, and marketing teams",
     pricing: "Custom pricing based on ad spend",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -255,6 +264,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Enterprise companies, data-driven organizations, and privacy-conscious businesses",
     pricing: "Enterprise pricing, contact for details",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: null,
@@ -277,6 +287,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Business analysts, marketing teams, and data-driven organizations",
     pricing: "Custom pricing based on data volume and use case",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -299,6 +310,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "B2C companies, marketing teams, and customer experience professionals",
     pricing: "Custom pricing based on data volume and use cases",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -321,6 +333,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "B2C companies, e-commerce businesses, and subscription services",
     pricing: "Custom pricing based on business size and needs",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -343,6 +356,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "E-commerce brands, DTC companies, and marketing teams",
     pricing: "Custom pricing based on business size and data volume",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -365,6 +379,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Growth marketers, user acquisition teams, and subscription businesses",
     pricing: "Custom pricing based on ad spend and business size",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: true,
@@ -387,6 +402,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Product managers, marketing teams, and business analysts",
     pricing: "Starting at $1,000/month for growing businesses",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: false,
@@ -409,6 +425,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Brand managers, market researchers, and marketing strategists",
     pricing: "Custom pricing based on research needs",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: false,
       foundedAfter2020: null,
@@ -431,6 +448,7 @@ export const analyticsCompanies: Company[] = [
     ],
     targetAudience: "Marketing strategists, business development teams, and product managers",
     pricing: "Starting at $499/month for small businesses",
+    details: {},
     aiNativeCriteria: {
       hasDotAiDomain: true,
       foundedAfter2020: null,

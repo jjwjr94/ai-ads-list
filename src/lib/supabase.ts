@@ -1,22 +1,53 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 
-// Initialize Supabase client
+// Initialize Supabase client with proper fallbacks
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase URL or API key. Check your environment variables.');
-}
+// Create client with fallback to dummy client if credentials are missing
+export const createSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase URL or API key. Check your environment variables.');
+    
+    // Return a mock implementation that doesn't access Supabase
+    return {
+      from: () => ({
+        select: () => ({ data: [], error: null }),
+        insert: () => ({ data: null, error: null }),
+        update: () => ({ data: null, error: null }),
+        delete: () => ({ data: null, error: null }),
+        eq: () => ({ data: [], error: null }),
+        single: () => ({ data: null, error: null }),
+        or: () => ({ data: [], error: null }),
+      }),
+      storage: {
+        from: () => ({
+          upload: () => ({ data: null, error: null }),
+          getPublicUrl: () => ({ data: { publicUrl: '' } }),
+        }),
+      },
+    };
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+};
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Create the supabase client
+export const supabase = createSupabaseClient();
 
 // Helper functions for Supabase operations
 export const supabaseAPI = {
   // Company operations
   companies: {
     async getAll(): Promise<Company[]> {
+      if (!supabaseUrl || !supabaseKey) {
+        console.warn('Using mock data: Missing Supabase credentials');
+        // Import and return initial companies data if no Supabase connection
+        const { initialCompanies } = await import('../data/initialCompanies');
+        return initialCompanies;
+      }
+      
       const { data, error } = await supabase
         .from('companies')
         .select('*');
@@ -34,6 +65,13 @@ export const supabaseAPI = {
     },
     
     async getByCategory(category: Category): Promise<Company[]> {
+      if (!supabaseUrl || !supabaseKey) {
+        console.warn('Using mock data: Missing Supabase credentials');
+        // Import and filter initial companies by category
+        const { initialCompanies } = await import('../data/initialCompanies');
+        return initialCompanies.filter(company => company.category === category);
+      }
+      
       const { data, error } = await supabase
         .from('companies')
         .select('*')
@@ -51,6 +89,13 @@ export const supabaseAPI = {
     },
     
     async getById(id: string): Promise<Company | null> {
+      if (!supabaseUrl || !supabaseKey) {
+        console.warn('Using mock data: Missing Supabase credentials');
+        // Import and find company by ID
+        const { initialCompanies } = await import('../data/initialCompanies');
+        return initialCompanies.find(company => company.id === id) || null;
+      }
+      
       const { data, error } = await supabase
         .from('companies')
         .select('*')
