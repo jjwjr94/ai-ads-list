@@ -6,7 +6,7 @@ import { categoryMapping } from './categoryMapping';
 // Define a completely separate type for database operations to avoid any circular references
 type DbCompanyDetails = {
   summary: string | null;
-  features: string[];
+  detailFeatures: string[];  // Renamed from 'features' to match CompanyDetails
   highlighted: boolean;
   pricing: string | null;
   bestFor: string | null;
@@ -107,7 +107,7 @@ export const companiesAPI = {
       // Create a simple object literal without referencing the Company type
       const detailsObj: DbCompanyDetails = {
         summary: updates.details.summary ?? null,
-        features: Array.isArray(updates.details.features) ? [...updates.details.features] : [],
+        detailFeatures: Array.isArray(updates.details.detailFeatures) ? [...updates.details.detailFeatures] : [],
         highlighted: Boolean(updates.details.highlighted ?? false),
         pricing: updates.details.pricing ?? null,
         bestFor: updates.details.bestFor ?? null
