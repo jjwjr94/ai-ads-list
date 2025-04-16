@@ -1,4 +1,6 @@
+
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { initialCompanies } from '@/data/initialCompanies';
 
@@ -31,24 +33,24 @@ const Home = () => {
           <p className="text-gray-700 mb-4">
             Explore our comprehensive directory of AI marketing tools across 12 different categories, from creative content generation to data analytics and everything in between.
           </p>
-          <a 
-            href="/explore" 
+          <Link 
+            to="/explore" 
             className="inline-block px-6 py-3 bg-[#9b87f5] text-white font-medium rounded-md hover:bg-[#7E69AB] transition-colors"
           >
             Explore Categories
-          </a>
+          </Link>
         </div>
         <div className="bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef] p-8 rounded-lg shadow-sm">
           <h2 className="text-2xl font-bold mb-4">Featured Tools</h2>
           <p className="text-gray-700 mb-4">
             Discover our hand-picked selection of the most innovative AI marketing tools that are transforming how brands connect with their audiences.
           </p>
-          <a 
-            href="/seo-organic" 
+          <Link 
+            to="/seo-organic" 
             className="inline-block px-6 py-3 bg-[#9b87f5] text-white font-medium rounded-md hover:bg-[#7E69AB] transition-colors"
           >
             View Featured Tools
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -81,12 +83,12 @@ const Home = () => {
         <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
           Explore our comprehensive directory of AI marketing tools and find the perfect solutions to enhance your marketing strategy.
         </p>
-        <a 
-          href="/explore" 
+        <Link 
+          to="/explore" 
           className="inline-block px-8 py-4 bg-[#9b87f5] text-white font-medium rounded-md hover:bg-[#7E69AB] transition-colors"
         >
           Get Started
-        </a>
+        </Link>
       </div>
     </div>
   );

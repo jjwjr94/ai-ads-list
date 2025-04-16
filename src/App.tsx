@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
+import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import SeoTools from "./pages/SeoTools";
 import Explore from "./pages/Explore";
@@ -45,7 +46,8 @@ const App = () => (
               <main className="flex-1">
                 <SidebarTrigger className="m-4" />
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/index" element={<Index />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/seo-tools" element={<SeoTools />} />
                   <Route path="/admin" element={<Admin />} />
