@@ -1,4 +1,5 @@
-import { Company, Category } from '../../types/database';
+
+import { Company, Category, CompanyDetails } from '../../types/database';
 import type { Database } from '../../integrations/supabase/types';
 import { categoryMapping } from './categoryMapping';
 
@@ -7,6 +8,15 @@ export const mapDbRecordToCompany = (record: any): Company => {
   // Get the logo URL, which may be base64 encoded
   const logoUrl = record.logo_url || '';
   
+  // Convert details to a proper CompanyDetails object, handling null/undefined
+  const details: CompanyDetails = {
+    summary: record.details?.summary ?? null,
+    detailFeatures: record.features || record.details?.detailFeatures || [],
+    highlighted: record.details?.highlighted ?? false,
+    pricing: record.pricing || record.details?.pricing ?? null,
+    bestFor: record.target_audience || record.details?.bestFor ?? null
+  };
+
   return {
     id: record.id,
     name: record.name,
@@ -18,13 +28,7 @@ export const mapDbRecordToCompany = (record: any): Company => {
     features: record.features || [],
     pricing: record.pricing || record.details?.pricing || '',
     targetAudience: record.target_audience || record.details?.bestFor || '',
-    details: {
-      summary: record.details?.summary || '',
-      features: record.features || record.details?.features || [],
-      highlighted: record.details?.highlighted || false,
-      pricing: record.pricing || record.details?.pricing || '',
-      bestFor: record.target_audience || record.details?.bestFor || ''
-    },
+    details: details,
     linkedinUrl: record.linkedin_url || '',
     foundedYear: record.founded_year || undefined,
     headquarters: record.headquarters || '',
@@ -47,7 +51,7 @@ export const mapCompanyToDbRecord = (company: Company): Database['public']['Tabl
     logo_url: logoUrl,
     category: categoryMapping[company.category],
     description: company.description || '',
-    features: company.features || [],
+    features: company.features || company.details?.detailFeatures || [],
     pricing: company.pricing || company.details?.pricing || '',
     target_audience: company.targetAudience || company.details?.bestFor || '',
     details: company.details || {},

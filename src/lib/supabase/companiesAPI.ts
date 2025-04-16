@@ -3,7 +3,7 @@ import { Company, Category, CompanyDetails } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
-// Define a completely separate type for database operations to avoid any circular references
+// Define a type for database operations to avoid circular references
 type DbCompanyDetails = {
   summary: string | null;
   detailFeatures: string[];  // Renamed from 'features' to match CompanyDetails
@@ -93,21 +93,17 @@ export const companiesAPI = {
     if (updates.website !== undefined) dbUpdates.website = updates.website;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
-    if (updates.features !== undefined) dbUpdates.features = updates.features;
-    if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
-    if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
-    if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl;
-    if (updates.foundedYear !== undefined) dbUpdates.founded_year = updates.foundedYear;
-    if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
-    if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
-    if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
     
-    // Handle details separately with explicit typing to avoid circular references
+    // Handle features carefully
+    if (updates.features !== undefined) dbUpdates.features = updates.features;
+    
     if (updates.details) {
       // Create a simple object literal without referencing the Company type
       const detailsObj: DbCompanyDetails = {
         summary: updates.details.summary ?? null,
-        detailFeatures: Array.isArray(updates.details.detailFeatures) ? [...updates.details.detailFeatures] : [],
+        detailFeatures: Array.isArray(updates.details.detailFeatures) 
+          ? [...updates.details.detailFeatures] 
+          : [],
         highlighted: Boolean(updates.details.highlighted ?? false),
         pricing: updates.details.pricing ?? null,
         bestFor: updates.details.bestFor ?? null
