@@ -4,15 +4,15 @@
 export interface Company {
   id: string;               // Unique identifier
   name: string;             // Company name
-  url: string;              // Company website URL
-  description: string;      // Short description
+  website: string;          // Company website URL
+  logoUrl: string;          // Path to logo image
   category: Category;       // Category enum
-  logo: string;             // Path to logo image
-  details: {
-    summary: string;        // Detailed summary
-    features: string[];     // Key features list
-    pricing: string;        // Pricing information
-    bestFor: string;        // Target audience
+  description: string;      // Short description
+  features: string[];       // Key features list
+  pricing: string;          // Pricing information
+  targetAudience: string;   // Target audience
+  details?: {
+    summary?: string;       // Detailed summary
     highlighted?: boolean;  // Whether to highlight this company
   };
   linkedinUrl?: string;     // LinkedIn URL
@@ -20,7 +20,12 @@ export interface Company {
   headquarters?: string;    // Company headquarters location
   employeeCount?: string;   // Approximate employee count range
   fundingStage?: string;    // Funding information if available
-  lastUpdated: Date;        // When this entry was last updated
+  lastUpdated?: Date;       // When this entry was last updated
+  aiNativeCriteria?: {
+    hasDotAiDomain?: boolean;
+    foundedAfter2020?: boolean | null;
+    seriesAOrEarlier?: boolean | null;
+  };
 }
 
 // Categories enum
@@ -36,7 +41,10 @@ export enum Category {
   INFLUENCER_MARKETING = "Influencer & Partnership Marketing",
   BRAND_MANAGEMENT = "Brand Management",
   AD_FRAUD = "Ad Fraud Detection & Prevention",
-  AD_NATIVE = "Ad-Native Agencies"
+  AD_NATIVE = "Ad-Native Agencies",
+  COPYWRITING = "Copywriting",
+  ANALYTICS = "Analytics",
+  SEO = "SEO"
 }
 
 // Sample database structure

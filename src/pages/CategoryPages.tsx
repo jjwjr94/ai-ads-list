@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category, Company } from '@/types/database';
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Star, Filter } from 'lucide-react';
@@ -193,4 +193,3 @@ export const AdNativePage = () => <CategoryPage category={Category.AD_NATIVE} />
 export const CopywritingPage = () => <CategoryPage category={Category.COPYWRITING} />;
 export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} />;
 export const SeoPage = () => <CategoryPage category={Category.SEO} />;
-

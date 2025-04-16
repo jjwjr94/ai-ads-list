@@ -1,13 +1,17 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { companyDatabase } from '../lib/database';
 import { 
+  initialCompanies,
   strategyPlanningCompanies,
   creativeContentCompanies,
   performanceMediaCompanies,
   seoOrganicCompanies,
-  dataAnalyticsCompanies
+  dataAnalyticsCompanies,
+  copywritingCompanies,
+  seoCompanies,
+  socialMediaCompanies,
+  analyticsCompanies
 } from '../data/initialCompanies';
 
 // Create context for the database
@@ -44,14 +48,6 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       
       // If no companies exist, initialize with sample data
       if (allCompanies.length === 0) {
-        const initialCompanies = [
-          ...strategyPlanningCompanies,
-          ...creativeContentCompanies,
-          ...performanceMediaCompanies,
-          ...seoOrganicCompanies,
-          ...dataAnalyticsCompanies
-        ];
-        
         // Add each company to the database
         for (const company of initialCompanies) {
           await companyDatabase.addCompany(company);

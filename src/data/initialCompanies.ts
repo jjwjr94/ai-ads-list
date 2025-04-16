@@ -1,11 +1,12 @@
+
 // Initial companies data for AI Ads Zen Garden
 // This file contains validated AI-native companies across different marketing categories
 
 import { Company, Category } from '../types/database';
 import { v4 as uuidv4 } from 'uuid';
 
-export const initialCompanies: Company[] = [
-  // Copywriting Platforms
+// Copywriting companies
+export const copywritingCompanies: Company[] = [
   {
     id: uuidv4(),
     name: "Jasper.ai",
@@ -115,9 +116,11 @@ export const initialCompanies: Company[] = [
       foundedAfter2020: false,
       seriesAOrEarlier: true
     }
-  },
+  }
+];
 
-  // SEO Tools
+// SEO Tools
+export const seoCompanies: Company[] = [
   {
     id: uuidv4(),
     name: "Reword.ai",
@@ -136,8 +139,8 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $29/month for the Basic plan",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: null, // Unable to verify
-      seriesAOrEarlier: null  // Unable to verify
+      foundedAfter2020: null,
+      seriesAOrEarlier: null
     }
   },
   {
@@ -158,12 +161,14 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $99/month for small businesses",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2017
-      seriesAOrEarlier: null   // To be verified
+      foundedAfter2020: false,
+      seriesAOrEarlier: null
     }
-  },
+  }
+];
 
-  // Social Media Management Platforms
+// Social Media Management Platforms
+export const socialMediaCompanies: Company[] = [
   {
     id: uuidv4(),
     name: "Predis.ai",
@@ -182,8 +187,8 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $19/month for individuals",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: true, // Launched in April 2021
-      seriesAOrEarlier: true  // Seed funding in 2022
+      foundedAfter2020: true,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -204,12 +209,14 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $49/month for individuals, with team and enterprise plans available",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2014
-      seriesAOrEarlier: true   // Seed funding in 2023
+      foundedAfter2020: false,
+      seriesAOrEarlier: true
     }
-  },
+  }
+];
 
-  // Analytics and Marketing Platforms
+// Analytics and Marketing Platforms
+export const analyticsCompanies: Company[] = [
   {
     id: uuidv4(),
     name: "Prescient.ai",
@@ -228,8 +235,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on ad spend",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: true, // Founded in February 2023
-      seriesAOrEarlier: true  // Series A funding in March 2024
+      foundedAfter2020: true,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -250,8 +257,8 @@ export const initialCompanies: Company[] = [
     pricing: "Enterprise pricing, contact for details",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: null, // Likely recent but unverified
-      seriesAOrEarlier: true  // Series A in April 2025
+      foundedAfter2020: null,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -272,8 +279,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on data volume and use case",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2016/2018
-      seriesAOrEarlier: false  // Series C funding
+      foundedAfter2020: false,
+      seriesAOrEarlier: false
     }
   },
   {
@@ -294,8 +301,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on data volume and use cases",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2012
-      seriesAOrEarlier: false  // Past Series A
+      foundedAfter2020: false,
+      seriesAOrEarlier: false
     }
   },
   {
@@ -316,8 +323,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on business size and needs",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: true, // Founded in July 2021
-      seriesAOrEarlier: true  // Seed funding of $3.5M in December 2021
+      foundedAfter2020: true,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -338,8 +345,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on business size and data volume",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2017
-      seriesAOrEarlier: true   // Series A funding in July 2021
+      foundedAfter2020: false,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -360,8 +367,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on ad spend and business size",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: true,  // Founded in July 2020
-      seriesAOrEarlier: false  // Series B funding in February 2025
+      foundedAfter2020: true,
+      seriesAOrEarlier: false
     }
   },
   {
@@ -382,8 +389,8 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $1,000/month for growing businesses",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: false, // Founded in 2018
-      seriesAOrEarlier: true   // Series A funding in March 2022
+      foundedAfter2020: false,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -404,8 +411,8 @@ export const initialCompanies: Company[] = [
     pricing: "Custom pricing based on research needs",
     aiNativeCriteria: {
       hasDotAiDomain: false,
-      foundedAfter2020: null, // To be verified
-      seriesAOrEarlier: true  // Series A in March 2025
+      foundedAfter2020: null,
+      seriesAOrEarlier: true
     }
   },
   {
@@ -426,8 +433,36 @@ export const initialCompanies: Company[] = [
     pricing: "Starting at $499/month for small businesses",
     aiNativeCriteria: {
       hasDotAiDomain: true,
-      foundedAfter2020: null, // To be verified
-      seriesAOrEarlier: true  // Series A in February 2025
+      foundedAfter2020: null,
+      seriesAOrEarlier: true
     }
   }
+];
+
+// Strategy & Planning Companies
+export const strategyPlanningCompanies: Company[] = [];
+
+// Creative & Content Companies
+export const creativeContentCompanies: Company[] = [];
+
+// Performance & Media Companies
+export const performanceMediaCompanies: Company[] = [];
+
+// SEO & Organic Growth Companies
+export const seoOrganicCompanies: Company[] = [];
+
+// Data & Analytics Companies
+export const dataAnalyticsCompanies: Company[] = [];
+
+// Export all companies together
+export const initialCompanies: Company[] = [
+  ...copywritingCompanies,
+  ...seoCompanies,
+  ...socialMediaCompanies,
+  ...analyticsCompanies,
+  ...strategyPlanningCompanies,
+  ...creativeContentCompanies,
+  ...performanceMediaCompanies,
+  ...seoOrganicCompanies,
+  ...dataAnalyticsCompanies
 ];

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Company } from '@/types/database';
 import { findCompanyLogo } from '@/lib/logoFinder';
