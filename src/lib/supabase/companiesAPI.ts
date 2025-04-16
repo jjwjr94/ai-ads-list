@@ -104,6 +104,7 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
+ comprehensive-fix
       // Combine both approaches for maximum type safety and compatibility
       // Use the separate CompanyDetails type to break the circular reference
       const detailsUpdate: CompanyDetails = {};
@@ -117,6 +118,16 @@ export const companiesAPI = {
       
       // Assign the explicitly typed object to dbUpdates
       dbUpdates.details = detailsUpdate;
+      // Explicitly create a plain object for details
+      // Use type assertion to avoid deep type instantiation
+      dbUpdates.details = {
+        summary: updates.details.summary ?? '',
+        features: updates.details.features ?? [],
+        highlighted: updates.details.highlighted ?? false,
+        pricing: updates.details.pricing ?? '',
+        bestFor: updates.details.bestFor ?? ''
+      } as Record<string, unknown>;
+ main
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
