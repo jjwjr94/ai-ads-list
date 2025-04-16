@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,7 +24,10 @@ import {
   InfluencerMarketingPage,
   BrandManagementPage,
   AdFraudPage,
-  AdNativePage
+  AdNativePage,
+  CopywritingPage,
+  AnalyticsPage,
+  SeoPage
 } from "./pages/CategoryPages";
 
 const queryClient = new QueryClient();
@@ -59,6 +63,9 @@ const App = () => (
                   <Route path="/brand-management" element={<BrandManagementPage />} />
                   <Route path="/ad-fraud" element={<AdFraudPage />} />
                   <Route path="/ad-native" element={<AdNativePage />} />
+                  <Route path="/copywriting" element={<CopywritingPage />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/seo" element={<SeoPage />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { companyDatabase } from '../lib/database';
@@ -22,6 +23,7 @@ interface CompanyContextType {
   uploadLogo: (id: string, file: File, altText: string) => Promise<string>;
   isLoading: boolean;
   error: string | null;
+  refreshCompanies: () => Promise<void>;
 }
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
@@ -32,45 +34,62 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load companies on initial render
-  useEffect(() => {
-    const loadCompanies = async () => {
-      try {
-        setIsLoading(true);
+  // Function to load companies
+  const loadCompanies = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Get all companies from the database
+      let allCompanies = await companyDatabase.getAllCompanies();
+      
+      // If no companies exist, initialize with sample data
+      if (allCompanies.length === 0) {
+        const initialCompanies = [
+          ...strategyPlanningCompanies,
+          ...creativeContentCompanies,
+          ...performanceMediaCompanies,
+          ...seoOrganicCompanies,
+          ...dataAnalyticsCompanies
+        ];
         
-        // Get all companies from the database
-        let allCompanies = await companyDatabase.getAllCompanies();
-        
-        // If no companies exist, initialize with sample data
-        if (allCompanies.length === 0) {
-          const initialCompanies = [
-            ...strategyPlanningCompanies,
-            ...creativeContentCompanies,
-            ...performanceMediaCompanies,
-            ...seoOrganicCompanies,
-            ...dataAnalyticsCompanies
-          ];
-          
-          // Add each company to the database
-          for (const company of initialCompanies) {
-            await companyDatabase.addCompany(company);
-          }
-          
-          // Get the updated list
-          allCompanies = await companyDatabase.getAllCompanies();
+        // Add each company to the database
+        for (const company of initialCompanies) {
+          await companyDatabase.addCompany(company);
         }
         
-        setCompanies(allCompanies);
-        setError(null);
-      } catch (err) {
-        console.error('Error loading companies:', err);
-        setError('Failed to load companies. Please try again later.');
-      } finally {
-        setIsLoading(false);
+        // Get the updated list
+        allCompanies = await companyDatabase.getAllCompanies();
       }
+      
+      setCompanies(allCompanies);
+      setError(null);
+    } catch (err) {
+      console.error('Error loading companies:', err);
+      setError('Failed to load companies. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to refresh companies
+  const refreshCompanies = async () => {
+    await loadCompanies();
+  };
+  
+  // Load companies on initial render
+  useEffect(() => {
+    loadCompanies();
+    
+    // Add event listener for window focus to refresh companies
+    const handleFocus = () => {
+      loadCompanies();
     };
     
-    loadCompanies();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   // Database operations wrapped with state updates
@@ -98,7 +117,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const addCompany = async (company: Company) => {
     try {
       const newCompany = await companyDatabase.addCompany(company);
-      setCompanies(await companyDatabase.getAllCompanies());
+      await refreshCompanies();
       return newCompany;
     } catch (err) {
       console.error('Error adding company:', err);
@@ -111,7 +130,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     try {
       const updatedCompany = await companyDatabase.updateCompany(id, updates);
       if (updatedCompany) {
-        setCompanies(await companyDatabase.getAllCompanies());
+        await refreshCompanies();
       }
       return updatedCompany;
     } catch (err) {
@@ -125,7 +144,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     try {
       const success = await companyDatabase.deleteCompany(id);
       if (success) {
-        setCompanies(await companyDatabase.getAllCompanies());
+        await refreshCompanies();
       }
       return success;
     } catch (err) {
@@ -159,7 +178,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     try {
       const logoStorage = await companyDatabase.uploadLogo(id, file, altText);
       // Refresh companies to get updated logo paths
-      setCompanies(await companyDatabase.getAllCompanies());
+      await refreshCompanies();
       return logoStorage.path;
     } catch (err) {
       console.error('Error uploading logo:', err);
@@ -179,7 +198,8 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     searchCompanies,
     uploadLogo,
     isLoading,
-    error
+    error,
+    refreshCompanies
   };
 
   return (

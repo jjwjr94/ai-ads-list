@@ -1,14 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category, Company } from '@/types/database';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Star, Filter } from 'lucide-react';
@@ -49,33 +43,38 @@ interface CategoryPageProps {
 }
 
 const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
-  const { getCompaniesByCategory, isLoading, error } = useCompanyDatabase();
+  const { getCompaniesByCategory, isLoading, error, refreshCompanies } = useCompanyDatabase();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [showFeatured, setShowFeatured] = useState(false);
   const [showAiNativeOnly, setShowAiNativeOnly] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        setLoading(true);
-        const categoryCompanies = await getCompaniesByCategory(category);
-        setCompanies(categoryCompanies);
-      } catch (err) {
-        console.error('Error fetching companies:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCompanies = async () => {
+    try {
+      setLoading(true);
+      const categoryCompanies = await getCompaniesByCategory(category);
+      setCompanies(categoryCompanies);
+    } catch (err) {
+      console.error('Error fetching companies:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchCompanies();
     
-    window.addEventListener('focus', fetchCompanies);
+    // Add event listeners for page focus to ensure data is fresh
+    const handleFocus = () => {
+      fetchCompanies();
+    };
+    
+    window.addEventListener('focus', handleFocus);
     
     return () => {
-      window.removeEventListener('focus', fetchCompanies);
+      window.removeEventListener('focus', handleFocus);
     };
-  }, [category, getCompaniesByCategory]);
+  }, [category]);
 
   // Filter companies based on selected filters
   const filteredCompanies = companies.filter(company => {
@@ -104,42 +103,53 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
         </p>
       </div>
 
-      <div className="flex justify-end mb-6 gap-3">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">AI-Native Only:</span>
-          <Button 
-            variant={showAiNativeOnly ? "default" : "outline"} 
-            size="sm"
-            onClick={() => setShowAiNativeOnly(!showAiNativeOnly)}
-            disabled={loading}
-            className={showAiNativeOnly ? "bg-green-600 hover:bg-green-700" : ""}
-          >
-            {showAiNativeOnly ? (
-              <>
-                <Filter className="h-4 w-4 mr-1" /> AI-Native
-              </>
-            ) : (
-              "All Companies"
-            )}
-          </Button>
-        </div>
+      <div className="flex justify-between mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refreshCompanies().then(fetchCompanies)}
+          className="mr-2"
+        >
+          Refresh Data
+        </Button>
         
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Featured Only:</span>
-          <Button 
-            variant={showFeatured ? "default" : "outline"} 
-            size="sm"
-            onClick={() => setShowFeatured(!showFeatured)}
-            disabled={loading}
-          >
-            {showFeatured ? (
-              <>
-                <Star className="h-4 w-4 mr-1 text-yellow-400" /> Featured
-              </>
-            ) : (
-              "All Companies"
-            )}
-          </Button>
+        <div className="flex gap-3">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">AI-Native Only:</span>
+            <Button 
+              variant={showAiNativeOnly ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowAiNativeOnly(!showAiNativeOnly)}
+              disabled={loading}
+              className={showAiNativeOnly ? "bg-green-600 hover:bg-green-700" : ""}
+            >
+              {showAiNativeOnly ? (
+                <>
+                  <Filter className="h-4 w-4 mr-1" /> AI-Native
+                </>
+              ) : (
+                "All Companies"
+              )}
+            </Button>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Featured Only:</span>
+            <Button 
+              variant={showFeatured ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowFeatured(!showFeatured)}
+              disabled={loading}
+            >
+              {showFeatured ? (
+                <>
+                  <Star className="h-4 w-4 mr-1 text-yellow-400" /> Featured
+                </>
+              ) : (
+                "All Companies"
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -183,3 +193,4 @@ export const AdNativePage = () => <CategoryPage category={Category.AD_NATIVE} />
 export const CopywritingPage = () => <CategoryPage category={Category.COPYWRITING} />;
 export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} />;
 export const SeoPage = () => <CategoryPage category={Category.SEO} />;
+
