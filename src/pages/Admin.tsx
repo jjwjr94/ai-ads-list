@@ -73,7 +73,8 @@ const AdminDashboard = () => {
     getCompaniesByCategory,
     uploadLogo,
     isLoading,
-    error: dbError
+    error: dbError,
+    refreshCompanies
   } = useCompanyDatabase();
   
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
