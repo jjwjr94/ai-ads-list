@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Company, Category } from '@/types/database';
@@ -112,7 +111,6 @@ const AdminDashboard = () => {
     }
   });
 
-  // Reset form when editingCompany changes
   useEffect(() => {
     if (editingCompany) {
       form.reset({
@@ -134,11 +132,9 @@ const AdminDashboard = () => {
       });
       setFeatures(editingCompany.details.features || []);
       
-      // Reset logo preview if editing
       setLogoPreview(editingCompany.logo || null);
       setLogoFile(null);
       
-      // Switch to add/edit tab programmatically
       setActiveTab('add');
     } else {
       form.reset({
@@ -165,7 +161,6 @@ const AdminDashboard = () => {
     }
   }, [editingCompany, form]);
 
-  // Show error toast if database error occurs
   useEffect(() => {
     if (dbError) {
       toast({
@@ -192,7 +187,6 @@ const AdminDashboard = () => {
     if (file) {
       setLogoFile(file);
       
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
@@ -242,32 +236,32 @@ const AdminDashboard = () => {
       } as Company;
 
       if (editingCompany) {
-        // Handle logo upload if there's a new file
+        let updatedCompanyData = { ...companyData };
+        
         if (logoFile) {
           const logoPath = await handleLogoUpload(editingCompany.id);
           if (logoPath) {
-            companyData.logo = logoPath;
+            updatedCompanyData.logo = logoPath;
           }
+        } else if (logoPreview) {
+          updatedCompanyData.logo = editingCompany.logo;
         }
         
-        // Update existing company
-        await updateCompany(editingCompany.id, companyData);
+        await updateCompany(editingCompany.id, updatedCompanyData);
         toast({
           title: "Company Updated",
           description: `${companyData.name} has been successfully updated.`,
         });
       } else {
-        // Add new company
         const newCompany: Company = {
           ...companyData,
           id: uuidv4(),
-          logo: '', // Will be updated when logo is uploaded
+          logo: '',
           lastUpdated: new Date()
         };
         
         const addedCompany = await addCompany(newCompany);
         
-        // Handle logo upload if there's a file
         if (logoFile) {
           const logoPath = await handleLogoUpload(addedCompany.id);
           if (logoPath) {
@@ -281,14 +275,12 @@ const AdminDashboard = () => {
         });
       }
 
-      // Reset form and state
       setEditingCompany(null);
       form.reset();
       setFeatures([]);
       setLogoFile(null);
       setLogoPreview(null);
       
-      // Switch to companies tab
       setActiveTab('companies');
       
     } catch (error) {
@@ -331,7 +323,6 @@ const AdminDashboard = () => {
 
   const handleEdit = (company: Company) => {
     setEditingCompany(company);
-    // Switch to add/edit tab
     setActiveTab('add');
   };
 
@@ -343,7 +334,6 @@ const AdminDashboard = () => {
     setLogoPreview(null);
   };
 
-  // Filter companies based on selected category and search term
   const filteredCompanies = companies
     .filter(company => 
       selectedCategory === 'all' || company.category === selectedCategory
@@ -500,7 +490,6 @@ const AdminDashboard = () => {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Logo Upload Section */}
                   <div className="mb-6">
                     <FormLabel>Company Logo</FormLabel>
                     <div className="flex items-center gap-4 mt-2">
