@@ -1,3 +1,4 @@
+
 /**
  * Companies API
  * 
@@ -6,9 +7,19 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import type { Company, Category } from '../../types/database';
-import { categoryMapping } from './categoryMapping';
+import { 
+  Company, 
+  Category, 
+  CompanyCreate,
+  CompanyUpdate
+} from '../../types/frontend.models';
+import {
+  mapDbCompanyToCompany,
+  mapCompanyToDbInsert,
+  mapCompanyUpdateToDbUpdate
+} from '../../types/mappers';
 import { v4 as uuidv4 } from 'uuid';
+import { Database } from '@/integrations/supabase/types';
 
 // Define types for database records
 interface DbRecord {
@@ -33,115 +44,6 @@ interface DbRecord {
   series_a_or_earlier?: boolean | null;
   [key: string]: any;
 }
-
-// Utility function to map database record to Company object
-const mapDbRecordToCompany = (record: DbRecord): Company => ({
-  id: record.id,
-  name: record.name,
-  website: record.website,
-  category: record.category as Category,
-  description: record.description,
-  features: record.features || [],
-  pricing: record.pricing || '',
-  logoUrl: record.logo_url || '',
-  targetAudience: record.target_audience || '',
-  details: record.details || {},
-  linkedinUrl: record.linkedin_url,
-  foundedYear: record.founded_year,
-  headquarters: record.headquarters,
-  employeeCount: record.employee_count,
-  fundingStage: record.funding_stage,
-  lastUpdated: record.last_updated ? new Date(record.last_updated) : undefined,
-  aiNativeCriteria: {
-    hasDotAiDomain: record.has_dot_ai_domain,
-    foundedAfter2020: record.founded_after_2020,
-    seriesAOrEarlier: record.series_a_or_earlier
-  }
-});
-
-// Utility function to map Company object to database record
-const mapCompanyToDbRecord = (company: Company): DbRecord => {
-  const dbRecord: DbRecord = {
-    id: company.id || uuidv4(),
-    name: company.name,
-    website: company.website,
-    category: company.category,
-    description: company.description,
-    features: company.features,
-    pricing: company.pricing,
-    target_audience: company.targetAudience,
-    logo_url: company.logoUrl || '',
-    details: company.details ? JSON.stringify(company.details) : '{}',
-    linkedin_url: company.linkedinUrl,
-    founded_year: company.foundedYear,
-    headquarters: company.headquarters,
-    employee_count: company.employeeCount,
-    funding_stage: company.fundingStage,
-    last_updated: company.lastUpdated || new Date()
-  };
-  
-  // Add AI native criteria fields if they exist
-  if (company.aiNativeCriteria) {
-    dbRecord.has_dot_ai_domain = company.aiNativeCriteria.hasDotAiDomain;
-    dbRecord.founded_after_2020 = company.aiNativeCriteria.foundedAfter2020;
-    dbRecord.series_a_or_earlier = company.aiNativeCriteria.seriesAOrEarlier;
-  }
-  
-  return dbRecord;
-};
-
-// Utility function to create partial database record for updates
-const createPartialDbRecord = (updates: Partial<Company>): Partial<DbRecord> => {
-  const dbUpdates: Partial<DbRecord> = {};
-  
-  if (updates.name !== undefined) dbUpdates.name = updates.name;
-  if (updates.website !== undefined) dbUpdates.website = updates.website;
-  if (updates.category !== undefined) dbUpdates.category = updates.category;
-  if (updates.description !== undefined) dbUpdates.description = updates.description;
-  if (updates.features !== undefined) dbUpdates.features = updates.features;
-  if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
-  if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
-  if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
-  if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl;
-  if (updates.foundedYear !== undefined) dbUpdates.founded_year = updates.foundedYear;
-  if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
-  if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
-  if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
-  if (updates.lastUpdated !== undefined) dbUpdates.last_updated = updates.lastUpdated;
-  
-  // Handle AI native criteria fields
-  if (updates.aiNativeCriteria) {
-    if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) {
-      dbUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
-    }
-    if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) {
-      dbUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
-    }
-    if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) {
-      dbUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
-    }
-  }
-  
-  // Handle details object separately to ensure it's properly serialized
-  if (updates.details !== undefined) {
-    dbUpdates.details = JSON.stringify(updates.details);
-  }
-  
-  return dbUpdates;
-};
-
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  Company, 
-  Category, 
-  CompanyCreate,
-  CompanyUpdate
-} from '../types/frontend.models';
-import {
-  mapDbCompanyToCompany,
-  mapCompanyToDbInsert,
-  mapCompanyUpdateToDbUpdate
-} from '../types/mappers';
 
 /**
  * Companies API service
@@ -170,10 +72,6 @@ export const companiesAPI = {
    * @param id The company ID
    * @returns Promise resolving to a Company object or null if not found
    */
-    
-    return data.map(mapDbRecordToCompany);
-  },
-  
   async getById(id: string): Promise<Company | null> {
     const { data, error } = await supabase
       .from('companies')
@@ -198,23 +96,17 @@ export const companiesAPI = {
    * @returns Promise resolving to the created Company object
    */
   async create(company: CompanyCreate): Promise<Company> {
+    // Convert the company to the format expected by the database
     const dbCompany = mapCompanyToDbInsert(company);
     
-    return mapDbRecordToCompany(data);
-  },
-
-  async create(company: Company): Promise<Company> {
-    // Convert company to DB record format
-    const dbRecord = mapCompanyToDbRecord(company);
-    
     // Ensure all required fields
-    if (!dbRecord.id || !dbRecord.name || !dbRecord.website || !dbRecord.category) {
+    if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
       throw new Error('Missing required fields for company');
     }
 
     const { data, error } = await supabase
       .from('companies')
-      .insert([dbCompany])
+      .insert(dbCompany)
       .select()
       .single();
 
@@ -233,18 +125,12 @@ export const companiesAPI = {
    * @returns Promise resolving to a boolean indicating success
    */
   async update(id: string, updates: CompanyUpdate): Promise<boolean> {
+    // Convert the updates to the format expected by the database
     const dbUpdates = mapCompanyUpdateToDbUpdate(updates);
-
-    
-    return mapDbRecordToCompany(data);
-  },
-  
-  async update(id: string, updates: Partial<Company>): Promise<boolean> {
-    const dbUpdates = createPartialDbRecord(updates);
     
     const { error } = await supabase
       .from('companies')
-      .update(dbUpdates)
+      .update(dbUpdates as Database['public']['Tables']['companies']['Update'])
       .eq('id', id);
     
     if (error) {
@@ -260,7 +146,6 @@ export const companiesAPI = {
    * @param id The ID of the company to delete
    * @returns Promise resolving to a boolean indicating success
    */
-  
   async delete(id: string): Promise<boolean> {
     const { error } = await supabase
       .from('companies')
@@ -280,8 +165,6 @@ export const companiesAPI = {
    * @param category The category to filter by
    * @returns Promise resolving to an array of Company objects
    */
-
-  
   async getByCategory(category: Category): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
@@ -303,21 +186,13 @@ export const companiesAPI = {
    * @returns Promise resolving to an array of Company objects
    */
   async search(query: string): Promise<Company[]> {
-    
-    return data.map(mapDbRecordToCompany);
-  },
-  
-  async getHighlighted(): Promise<Company[]> {
-    // This is a placeholder for a future implementation
-    // For now, we'll just return the first 6 companies
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .order('name', { ascending: true })
-      .limit(6);
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
     
     if (error) {
-      console.error('Error fetching highlighted companies:', error);
+      console.error('Error searching companies:', error);
       throw error;
     }
 
@@ -329,18 +204,16 @@ export const companiesAPI = {
    * @returns Promise resolving to an array of highlighted Company objects
    */
   async getHighlighted(): Promise<Company[]> {
-    
-    return data.map(mapDbRecordToCompany);
-  },
-  
-  async search(query: string): Promise<Company[]> {
+    // This is a placeholder for a future implementation
+    // For now, we'll just return the first 6 companies
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+      .order('name', { ascending: true })
+      .limit(6);
     
     if (error) {
-      console.error('Error searching companies:', error);
+      console.error('Error fetching highlighted companies:', error);
       throw error;
     }
 
@@ -377,7 +250,5 @@ export const companiesAPI = {
     await this.update(companyId, { logoUrl });
     
     return logoUrl;
-    
-    return data.map(mapDbRecordToCompany);
   }
 };
