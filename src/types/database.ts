@@ -1,6 +1,7 @@
+
 // Database structure for AI marketing companies
 
-interface Company {
+export interface Company {
   id: string;               // Unique identifier
   name: string;             // Company name
   url: string;              // Company website URL
@@ -23,7 +24,7 @@ interface Company {
 }
 
 // Categories enum
-enum Category {
+export enum Category {
   STRATEGY_PLANNING = "Strategy & Planning",
   CREATIVE_CONTENT = "Creative & Content",
   PERFORMANCE_MEDIA = "Performance & Media Buying",
@@ -39,7 +40,7 @@ enum Category {
 }
 
 // Sample database structure
-interface CompanyDatabase {
+export interface CompanyDatabase {
   companies: Company[];
   getCompaniesByCategory(category: Category): Company[];
   getCompanyById(id: string): Company | undefined;
