@@ -1,8 +1,8 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
 import { initialCompanies } from '../data/initialCompanies';
+import { supabase } from '@/integrations/supabase/client';
 
 // Create context for the database
 interface CompanyContextType {
@@ -18,7 +18,6 @@ interface CompanyContextType {
   isLoading: boolean;
   error: string | null;
   refreshCompanies: () => Promise<void>;
-  mockMode: boolean;
 }
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
@@ -28,7 +27,6 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [mockMode, setMockMode] = useState<boolean>(false);
   const [lastRefresh, setLastRefresh] = useState<number>(Date.now()); // Add refresh timestamp
 
   // Function to load companies from Supabase
@@ -36,20 +34,11 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       
-      // Check if Supabase environment variables are missing
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      // Get all companies from Supabase
+      const allCompanies = await supabaseAPI.companies.getAll();
       
-      if (!supabaseUrl || !supabaseKey) {
-        console.warn("Missing Supabase credentials. Running in mock mode with sample data.");
-        setMockMode(true);
-      }
-      
-      // Get all companies from Supabase (or mock data if in mock mode)
-      let allCompanies = await supabaseAPI.companies.getAll();
-      
-      // If no companies exist in Supabase but we have the credentials, initialize with sample data
-      if (allCompanies.length === 0 && supabaseUrl && supabaseKey) {
+      // If no companies exist in Supabase, initialize with sample data
+      if (allCompanies.length === 0) {
         console.log('No companies found in Supabase, initializing with sample data');
         
         // Add each company to the database
@@ -58,17 +47,16 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
         }
         
         // Get the updated list
-        allCompanies = await supabaseAPI.companies.getAll();
+        const updatedCompanies = await supabaseAPI.companies.getAll();
+        setCompanies(updatedCompanies);
+      } else {
+        setCompanies(allCompanies);
       }
       
-      setCompanies(allCompanies);
       setError(null);
     } catch (err) {
       console.error('Error loading companies:', err);
       setError('Failed to load companies. Please check your connection or Supabase credentials.');
-      // Fallback to initial companies data
-      setCompanies(initialCompanies);
-      setMockMode(true);
     } finally {
       setIsLoading(false);
       setLastRefresh(Date.now()); // Update refresh timestamp
@@ -217,7 +205,6 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     error,
     refreshCompanies,
-    mockMode
   };
 
   return (
