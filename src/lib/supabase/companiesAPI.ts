@@ -4,7 +4,6 @@ import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
 import { v4 as uuidv4 } from 'uuid';
 
-
 // Define types for database records
 interface DbRecord {
   id: string;
@@ -57,7 +56,7 @@ const mapDbRecordToCompany = (record: DbRecord): Company => ({
 // Utility function to map Company object to database record
 const mapCompanyToDbRecord = (company: Company): DbRecord => {
   const dbRecord: DbRecord = {
-    id: company.id,
+    id: company.id || uuidv4(),
     name: company.name,
     website: company.website,
     category: company.category,
@@ -65,8 +64,8 @@ const mapCompanyToDbRecord = (company: Company): DbRecord => {
     features: company.features,
     pricing: company.pricing,
     target_audience: company.targetAudience,
-    logo_url: company.logoUrl || company.logo,
-    details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
+    logo_url: company.logoUrl || '',
+    details: company.details ? JSON.stringify(company.details) : '{}',
     linkedin_url: company.linkedinUrl,
     founded_year: company.foundedYear,
     headquarters: company.headquarters,
@@ -103,86 +102,24 @@ const createPartialDbRecord = (updates: Partial<Company>): Partial<DbRecord> => 
   if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
   if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
   if (updates.lastUpdated !== undefined) dbUpdates.last_updated = updates.lastUpdated;
-
-// Function to map a Company object to a database record
-const mapCompanyToDbRecord = (company: Company): Record<string, any> => ({
-  id: company.id || uuidv4(),
-  name: company.name,
-  website: company.website,
-  category: company.category,
-  description: company.description,
-  features: company.features,
-  founded_year: company.foundedYear,
-  employee_count: company.employeeCount,
-  headquarters: company.headquarters,
-  has_dot_ai_domain: company.hasDotAiDomain,
-  founded_after_2020: company.foundedAfter2020,
-  series_a_or_earlier: company.seriesAOrEarlier,
-  funding_stage: company.fundingStage,
-  pricing: company.pricing,
-  target_audience: company.targetAudience,
-  logo_url: company.logoUrl || company.logo,
-  details: JSON.stringify(company.details || {}), // Convert to string for Supabase
-  linkedin_url: company.linkedinUrl,
-  founded_year: company.foundedYear,
-  headquarters: company.headquarters,
-});
-
-// Function to map a database record to a Company object
-const mapDbRecordToCompany = (record: any): Company => ({
-  id: record.id,
-  name: record.name,
-  website: record.website,
-  category: record.category,
-  description: record.description,
-  features: record.features || [],
-  foundedYear: record.founded_year,
-  employeeCount: record.employee_count,
-  headquarters: record.headquarters,
-  hasDotAiDomain: record.has_dot_ai_domain,
-  foundedAfter2020: record.founded_after_2020,
-  seriesAOrEarlier: record.series_a_or_earlier,
-  fundingStage: record.funding_stage,
-  pricing: record.pricing,
-  targetAudience: record.target_audience,
-  logoUrl: record.logo_url,
-  logo: record.logo_url,
-  details: record.details ? (typeof record.details === 'string' ? JSON.parse(record.details) : record.details) : {},
-  linkedinUrl: record.linkedin_url,
-});
-
-// Prepare updates for Supabase
-const prepareUpdates = (updates: Partial<Company>): Record<string, any> => {
-  const dbUpdates: Record<string, any> = {};
   
-  // Map camelCase properties to snake_case for database
-  if (updates.logoUrl) dbUpdates.logo_url = updates.logoUrl;
-  if (updates.foundedYear) dbUpdates.founded_year = updates.foundedYear;
-  if (updates.employeeCount) dbUpdates.employee_count = updates.employeeCount;
-  if (updates.hasDotAiDomain) dbUpdates.has_dot_ai_domain = updates.hasDotAiDomain;
-  if (updates.foundedAfter2020) dbUpdates.founded_after_2020 = updates.foundedAfter2020;
-  if (updates.seriesAOrEarlier) dbUpdates.series_a_or_earlier = updates.seriesAOrEarlier;
-  if (updates.fundingStage) dbUpdates.funding_stage = updates.fundingStage;
-  if (updates.targetAudience) dbUpdates.target_audience = updates.targetAudience;
-  if (updates.linkedinUrl) dbUpdates.linkedin_url = updates.linkedinUrl;
-
+  // Handle AI native criteria fields
+  if (updates.aiNativeCriteria) {
+    if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) {
+      dbUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
+    }
+    if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) {
+      dbUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
+    }
+    if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) {
+      dbUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
+    }
+  }
   
   // Handle details object separately to ensure it's properly serialized
   if (updates.details !== undefined) {
     dbUpdates.details = JSON.stringify(updates.details);
   }
-  
-  // Handle AI native criteria fields if they exist
-  if (updates.aiNativeCriteria) {
-    dbUpdates.ai_native_criteria = updates.aiNativeCriteria;
-  }
-  
-  // Copy over simple properties that don't need transformation
-  ['name', 'website', 'category', 'description', 'features', 'pricing', 'headquarters'].forEach(prop => {
-    if (updates[prop as keyof Company] !== undefined) {
-      dbUpdates[prop] = updates[prop as keyof Company];
-    }
-  });
   
   return dbUpdates;
 };
@@ -231,11 +168,7 @@ export const companiesAPI = {
 
     const { data, error } = await supabase
       .from('companies')
-
       .insert([dbRecord]) // Use array to satisfy TypeScript
-
-      .insert(dbRecord) // Pass the single object directly, not in an array
-
       .select()
       .single();
 
@@ -248,7 +181,7 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
-    const dbUpdates = prepareUpdates(updates);
+    const dbUpdates = createPartialDbRecord(updates);
     
     const { error } = await supabase
       .from('companies')
