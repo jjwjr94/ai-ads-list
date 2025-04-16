@@ -51,11 +51,19 @@ export const createSupabaseClient = () => {
           };
           return chainableMethods;
         },
-        insert: () => ({ data: null, error: null }),
-        upsert: () => ({ data: null, error: null }),
+        insert: () => ({ 
+          data: null, 
+          error: null,
+          select: () => ({ data: null, error: null, single: () => ({ data: null, error: null }) })
+        }),
+        upsert: () => ({ 
+          data: null, 
+          error: null,
+          select: () => ({ data: null, error: null, single: () => ({ data: null, error: null }) })
+        }),
         update: () => {
           const mockResponse = { data: null, error: null };
-          return {
+          const mockUpdateChain = {
             ...mockResponse,
             eq: () => ({
               ...mockResponse,
@@ -65,6 +73,7 @@ export const createSupabaseClient = () => {
               })
             })
           };
+          return mockUpdateChain;
         },
         delete: () => {
           const mockResponse = { data: null, error: null };
@@ -298,7 +307,7 @@ export const supabaseAPI = {
       
       return (data || []).map(company => ({
         ...company,
-        lastUpdated: company.lastUpdated ? new Date(data.lastUpdated) : undefined
+        lastUpdated: company.lastUpdated ? new Date(company.lastUpdated || '') : undefined
       }));
     }
   },
