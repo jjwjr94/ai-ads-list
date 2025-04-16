@@ -3,6 +3,15 @@ import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
+// Define a separate type for company details to break the circular reference
+type CompanyDetails = {
+  summary?: string;
+  features?: string[];
+  highlighted?: boolean;
+  pricing?: string;
+  bestFor?: string;
+};
+
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -95,14 +104,8 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Create a plain object with explicit type annotation to break the recursion
-      const detailsUpdate: {
-        summary?: string;
-        features?: string[];
-        highlighted?: boolean;
-        pricing?: string;
-        bestFor?: string;
-      } = {};
+      // Use the separate CompanyDetails type to break the circular reference
+      const detailsUpdate: CompanyDetails = {};
       
       // Only copy properties that exist in the updates
       if (updates.details.summary !== undefined) detailsUpdate.summary = updates.details.summary;
