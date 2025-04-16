@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -29,13 +30,19 @@ export function useCompanyOperations(
   }, []);
 
   // Add a new company with optimistic update
-  const addCompany = useCallback(async (company: Company) => {
+  const addCompany = useCallback(async (company: any) => {
     try {
       // Apply optimistic update
       optimisticAddCompany(company);
       
+      // Convert to proper type for creation
+      const companyCreate = {
+        ...company,
+        id: undefined // Remove ID to let the API/database handle it
+      };
+      
       // Perform actual API call
-      const newCompany = await supabaseAPI.companies.create(company);
+      const newCompany = await supabaseAPI.companies.create(companyCreate);
       
       // No need to refresh all companies since we've already updated locally
       return newCompany;
@@ -48,7 +55,7 @@ export function useCompanyOperations(
   }, [refreshCompanies, optimisticAddCompany]);
 
   // Update an existing company with optimistic update
-  const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
+  const updateCompany = useCallback(async (id: string, updates: any) => {
     try {
       console.log(`Updating company ${id} with:`, updates);
       

@@ -64,7 +64,7 @@ export const companiesAPI = {
       throw error;
     }
 
-    return (data || []).map(mapDbCompanyToCompany);
+    return (data || []).map((item) => mapDbCompanyToCompany(item as unknown as DbRecord));
   },
 
   /**
@@ -87,7 +87,7 @@ export const companiesAPI = {
       throw error;
     }
 
-    return data ? mapDbCompanyToCompany(data) : null;
+    return data ? mapDbCompanyToCompany(data as unknown as DbRecord) : null;
   },
 
   /**
@@ -106,7 +106,7 @@ export const companiesAPI = {
 
     const { data, error } = await supabase
       .from('companies')
-      .insert(dbCompany)
+      .insert(dbCompany as any)
       .select()
       .single();
 
@@ -115,7 +115,7 @@ export const companiesAPI = {
       throw error;
     }
 
-    return mapDbCompanyToCompany(data);
+    return mapDbCompanyToCompany(data as unknown as DbRecord);
   },
 
   /**

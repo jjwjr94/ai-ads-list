@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Edit, RefreshCw, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import Logo from "@/components/ui/logo";
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
@@ -99,6 +101,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <TableCaption>List of AI marketing companies</TableCaption>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[60px]">Logo</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Description</TableHead>
@@ -109,6 +112,14 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
           {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company) => (
               <TableRow key={company.id}>
+                <TableCell>
+                  <Logo 
+                    src={company.logoUrl || company.logo || ''} 
+                    alt={company.name}
+                    size="sm"
+                    company={company}
+                  />
+                </TableCell>
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
@@ -126,7 +137,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
+              <TableCell colSpan={5} className="text-center">
                 {isLoading ? 'Loading companies...' : 'No companies found'}
               </TableCell>
             </TableRow>

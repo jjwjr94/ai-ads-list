@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { Company } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -44,7 +45,12 @@ export function useCompanies() {
         
         // Add each company to the database
         for (const company of initialCompanies) {
-          await supabaseAPI.companies.create(company as Company);
+          // Convert to CompanyCreate type to ensure proper initialization
+          const companyCreate = {
+            ...company as any,
+            id: undefined // Remove ID to let Supabase generate one
+          };
+          await supabaseAPI.companies.create(companyCreate);
         }
         
         // Get the updated list
