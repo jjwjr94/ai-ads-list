@@ -57,7 +57,7 @@ export const companiesAPI = {
       pricing: company.pricing,
       target_audience: company.targetAudience,
       logo_url: company.logoUrl || company.logo,
-      details: company.details,
+      details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
       linkedin_url: company.linkedinUrl,
       founded_year: company.foundedYear,
       headquarters: company.headquarters,
@@ -102,13 +102,17 @@ export const companiesAPI = {
     if (updates.targetAudience !== undefined) supabaseUpdates.target_audience = updates.targetAudience;
     if (updates.logoUrl !== undefined) supabaseUpdates.logo_url = updates.logoUrl;
     if (updates.logo !== undefined) supabaseUpdates.logo_url = updates.logo;
-    if (updates.details !== undefined) supabaseUpdates.details = updates.details;
     if (updates.linkedinUrl !== undefined) supabaseUpdates.linkedin_url = updates.linkedinUrl;
     if (updates.foundedYear !== undefined) supabaseUpdates.founded_year = updates.foundedYear;
     if (updates.headquarters !== undefined) supabaseUpdates.headquarters = updates.headquarters;
     if (updates.employeeCount !== undefined) supabaseUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) supabaseUpdates.funding_stage = updates.fundingStage;
     if (updates.lastUpdated !== undefined) supabaseUpdates.last_updated = updates.lastUpdated;
+    
+    // Handle details object separately to ensure it's properly serialized
+    if (updates.details !== undefined) {
+      supabaseUpdates.details = JSON.parse(JSON.stringify(updates.details));
+    }
     
     if (updates.aiNativeCriteria) {
       if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
