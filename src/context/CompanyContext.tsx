@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -32,6 +33,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const loadCompanies = async () => {
     try {
       setIsLoading(true);
+      console.log('Loading companies from Supabase with timestamp:', new Date().toISOString());
       
       // Get all companies from Supabase
       const allCompanies = await supabaseAPI.companies.getAll();
@@ -49,6 +51,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
         const updatedCompanies = await supabaseAPI.companies.getAll();
         setCompanies(updatedCompanies);
       } else {
+        console.log(`Setting ${allCompanies.length} companies from database`);
         setCompanies(allCompanies);
       }
       
@@ -64,7 +67,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
 
   // Function to refresh companies
   const refreshCompanies = async () => {
-    console.log('Manually refreshing companies data');
+    console.log('Manually refreshing companies data at:', new Date().toISOString());
     await loadCompanies();
   };
   
@@ -74,13 +77,21 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     
     // Add event listener for window focus to refresh companies
     const handleFocus = () => {
+      console.log('Window focused, refreshing data');
       loadCompanies();
     };
+    
+    // Set up automatic refresh every 30 seconds
+    const refreshInterval = setInterval(() => {
+      console.log('Automatic refresh triggered');
+      loadCompanies();
+    }, 30000);
     
     window.addEventListener('focus', handleFocus);
     
     return () => {
       window.removeEventListener('focus', handleFocus);
+      clearInterval(refreshInterval);
     };
   }, []);
 
@@ -118,10 +129,10 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     },
     updateCompany: async (id: string, updates: Partial<Company>) => {
       try {
+        console.log(`Updating company ${id} with:`, updates);
         const updatedCompany = await supabaseAPI.companies.update(id, updates);
-        if (updatedCompany) {
-          await refreshCompanies();
-        }
+        console.log('Company updated, refreshing data');
+        await refreshCompanies();
         return updatedCompany;
       } catch (err) {
         console.error('Error updating company:', err);
@@ -133,6 +144,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       try {
         const success = await supabaseAPI.companies.delete(id);
         if (success) {
+          console.log('Company deleted, refreshing data');
           await refreshCompanies();
         }
         return success;
@@ -162,11 +174,11 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     },
     uploadLogo: async (id: string, file: File, altText: string) => {
       try {
-        console.log(`Uploading logo for company ID: ${id}`);
+        console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
         const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
         console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
         
-        // Update company with new logo URL
+        // Update company with new logo URL and add timestamp for cache busting
         const updatedCompany = await supabaseAPI.companies.update(id, {
           logo: logoUrl,
           logoUrl: logoUrl

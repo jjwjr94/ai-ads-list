@@ -27,25 +27,34 @@ type CompanyDbUpdates = {
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
+    // Add cache-busting timestamp parameter
+    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
-      .select('*');
+      .select('*')
+      .order('name')
+      .setHeader('cache-control', 'no-cache');
     
     if (error) {
       console.error('Error fetching companies:', error);
       throw error;
     }
     
+    console.log(`Retrieved ${data?.length || 0} companies from database`);
     // Map database records to Company objects
     return (data || []).map(mapDbRecordToCompany);
   },
   
   async getByCategory(category: Category): Promise<Company[]> {
     console.log(`Fetching companies for category: ${category} from Supabase`);
+    // Add cache-busting timestamp parameter
+    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .eq('category', categoryMapping[category]);
+      .eq('category', categoryMapping[category])
+      .order('name')
+      .setHeader('cache-control', 'no-cache');
     
     if (error) {
       console.error(`Error fetching companies by category ${category}:`, error);
@@ -57,10 +66,13 @@ export const companiesAPI = {
   },
   
   async getById(id: string): Promise<Company | null> {
+    // Add cache-busting timestamp parameter
+    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
       .select('*')
       .eq('id', id)
+      .setHeader('cache-control', 'no-cache')
       .maybeSingle();
     
     if (error) {
@@ -108,8 +120,8 @@ export const companiesAPI = {
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
     if (updates.details !== undefined) dbUpdates.details = updates.details;
-    if (updates.category !== undefined && categoryMapping[updates.category]) {
-      dbUpdates.category = categoryMapping[updates.category];
+    if (updates.category !== undefined && updates.category in categoryMapping) {
+      dbUpdates.category = categoryMapping[updates.category as Category];
     }
     
     // Always update last_updated timestamp
@@ -150,7 +162,8 @@ export const companiesAPI = {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .eq('details->highlighted', true);
+      .eq('details->highlighted', true)
+      .setHeader('cache-control', 'no-cache');
     
     if (error) {
       console.error('Error fetching highlighted companies:', error);
@@ -164,7 +177,8 @@ export const companiesAPI = {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+      .setHeader('cache-control', 'no-cache');
     
     if (error) {
       console.error(`Error searching companies for "${query}":`, error);
