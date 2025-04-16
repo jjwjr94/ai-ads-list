@@ -31,9 +31,17 @@ const Explore = () => {
         setIsLoading(true);
         console.log('Fetching category counts from Supabase...');
         const counts: Record<string, number> = {};
+        
+        const additionalCategories = {
+          [Category.SEO_ORGANIC]: [Category.SEO],
+          [Category.DATA_ANALYTICS]: [Category.ANALYTICS],
+          [Category.ANALYTICS]: [Category.DATA_ANALYTICS],
+          [Category.SEO]: [Category.SEO_ORGANIC]
+        };
+        
         for (const category of Object.values(Category)) {
           try {
-            const companies = await getCompaniesByCategory(category);
+            let companies = await getCompaniesByCategory(category);
             counts[category] = companies.length;
             console.log(`${category}: ${companies.length} tools`);
           } catch (err) {
@@ -41,6 +49,31 @@ const Explore = () => {
             counts[category] = 0;
           }
         }
+        
+        for (const [category, additionalCats] of Object.entries(additionalCategories)) {
+          let totalCompanies = counts[category] || 0;
+          let uniqueIds = new Set<string>();
+          
+          try {
+            const mainCompanies = await getCompaniesByCategory(category as Category);
+            mainCompanies.forEach(company => uniqueIds.add(company.id));
+          } catch (err) {
+            console.error(`Error fetching main category companies for ${category}:`, err);
+          }
+          
+          for (const additionalCat of additionalCats) {
+            try {
+              const additionalCompanies = await getCompaniesByCategory(additionalCat);
+              additionalCompanies.forEach(company => uniqueIds.add(company.id));
+            } catch (err) {
+              console.error(`Error fetching additional companies for ${additionalCat}:`, err);
+            }
+          }
+          
+          counts[category] = uniqueIds.size;
+          console.log(`Updated ${category} count to ${uniqueIds.size} (with related categories)`);
+        }
+        
         setCategoryCounts(counts);
       } catch (error) {
         console.error('Error fetching category counts:', error);
