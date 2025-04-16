@@ -3,15 +3,6 @@ import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
-// Define a separate type for company details to break the circular reference
-type CompanyDetails = {
-  summary?: string;
-  features?: string[];
-  highlighted?: boolean;
-  pricing?: string;
-  bestFor?: string;
-};
-
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -104,19 +95,16 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Combine both approaches for maximum type safety and compatibility
-      // Use the separate CompanyDetails type to break the circular reference
-      const detailsUpdate: CompanyDetails = {};
-      
-      // Only copy properties that exist in the updates
-      if (updates.details.summary !== undefined) detailsUpdate.summary = updates.details.summary;
-      if (updates.details.features !== undefined) detailsUpdate.features = updates.details.features;
-      if (updates.details.highlighted !== undefined) detailsUpdate.highlighted = updates.details.highlighted;
-      if (updates.details.pricing !== undefined) detailsUpdate.pricing = updates.details.pricing;
-      if (updates.details.bestFor !== undefined) detailsUpdate.bestFor = updates.details.bestFor;
-      
-      // Assign the explicitly typed object to dbUpdates
-      dbUpdates.details = detailsUpdate;
+      // Simplified approach: create a plain object without type references
+      // This completely avoids the circular reference issue
+      dbUpdates.details = {
+        // Use optional chaining and nullish coalescing for safe property access
+        summary: updates.details?.summary || '',
+        features: updates.details?.features || [],
+        highlighted: updates.details?.highlighted || false,
+        pricing: updates.details?.pricing || '',
+        bestFor: updates.details?.bestFor || ''
+      };
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
