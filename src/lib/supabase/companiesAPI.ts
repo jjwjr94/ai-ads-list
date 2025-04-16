@@ -4,15 +4,6 @@ import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
-// Define a separate type for company details to break the circular reference
-type CompanyDetails = {
-  summary?: string;
-  features?: string[];
-  highlighted?: boolean;
-  pricing?: string;
-  bestFor?: string;
-};
-
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -105,6 +96,18 @@ export const companiesAPI = {
     
     // Handle details separately to avoid type instantiation issues
     if (updates.details) {
+ simplified-fix
+      // Simplified approach: create a plain object without type references
+      // This completely avoids the circular reference issue
+      dbUpdates.details = {
+        // Use optional chaining and nullish coalescing for safe property access
+        summary: updates.details?.summary || '',
+        features: updates.details?.features || [],
+        highlighted: updates.details?.highlighted || false,
+        pricing: updates.details?.pricing || '',
+        bestFor: updates.details?.bestFor || ''
+      };
+
       // Create a simple object to avoid deep type instantiation
       const detailsObj: CompanyDetails = {};
       
@@ -115,6 +118,7 @@ export const companiesAPI = {
       if (updates.details.bestFor !== undefined) detailsObj.bestFor = updates.details.bestFor;
       
       dbUpdates.details = detailsObj;
+main
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
