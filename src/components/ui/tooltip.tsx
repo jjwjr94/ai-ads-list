@@ -1,16 +1,28 @@
+
+"use client"
+
 import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
-
+final-typescript-fixes
 // Properly type the TooltipProvider component to fix the ref type mismatch
+
+// Create a proper TooltipProvider component that wraps the Radix UI Provider
+main
 const TooltipProvider = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Provider>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>
 >(({ ...props }, ref) => (
+final-typescript-fixes
   <TooltipPrimitive.Provider {...props} />
 ))
 TooltipProvider.displayName = TooltipPrimitive.Provider.displayName
+
+  <TooltipPrimitive.Provider ref={ref} {...props} />
+))
+TooltipProvider.displayName = "TooltipProvider"
+main
 
 const Tooltip = TooltipPrimitive.Root
 
