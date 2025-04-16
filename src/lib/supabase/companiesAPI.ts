@@ -4,6 +4,15 @@ import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 
+// Define a completely separate type for database operations to avoid any circular references
+type DbCompanyDetails = {
+  summary: string;
+  features: string[];
+  highlighted: boolean;
+  pricing: string;
+  bestFor: string;
+};
+
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -96,6 +105,20 @@ export const companiesAPI = {
     
     // Handle details separately to avoid type instantiation issues
     if (updates.details) {
+final-typescript-fixes
+      // Create a completely separate object with explicit typing
+      // This breaks any potential circular references
+      const detailsObj: DbCompanyDetails = {
+        summary: typeof updates.details.summary === 'string' ? updates.details.summary : '',
+        features: Array.isArray(updates.details.features) ? updates.details.features : [],
+        highlighted: typeof updates.details.highlighted === 'boolean' ? updates.details.highlighted : false,
+        pricing: typeof updates.details.pricing === 'string' ? updates.details.pricing : '',
+        bestFor: typeof updates.details.bestFor === 'string' ? updates.details.bestFor : ''
+      };
+      
+      // Assign the explicitly typed object to dbUpdates
+      dbUpdates.details = detailsObj;
+
  simplified-fix
       // Simplified approach: create a plain object without type references
       // This completely avoids the circular reference issue
@@ -118,6 +141,7 @@ export const companiesAPI = {
       if (updates.details.bestFor !== undefined) detailsObj.bestFor = updates.details.bestFor;
       
       dbUpdates.details = detailsObj;
+main
 main
     }
     
