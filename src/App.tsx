@@ -16,17 +16,14 @@ import {
   CreativeContentPage,
   PerformanceMediaPage,
   SeoOrganicPage,
-  DataAnalyticsPage,
+  AnalyticsPage,
   WebAppDevelopmentPage,
   AccountManagementPage,
   SocialMediaPage,
   InfluencerMarketingPage,
   BrandManagementPage,
   AdFraudPage,
-  AiNativePage,
-  CopywritingPage,
-  AnalyticsPage,
-  SeoPage
+  AiNativePage
 } from "./pages/CategoryPages";
 
 const queryClient = new QueryClient();
@@ -54,7 +51,7 @@ const App = () => (
                   <Route path="/creative-content" element={<CreativeContentPage />} />
                   <Route path="/performance-media" element={<PerformanceMediaPage />} />
                   <Route path="/seo-organic" element={<SeoOrganicPage />} />
-                  <Route path="/data-analytics" element={<DataAnalyticsPage />} />
+                  <Route path="/data-analytics" element={<AnalyticsPage />} />
                   <Route path="/web-app-development" element={<WebAppDevelopmentPage />} />
                   <Route path="/account-management" element={<AccountManagementPage />} />
                   <Route path="/social-media" element={<SocialMediaPage />} />
@@ -62,11 +59,6 @@ const App = () => (
                   <Route path="/brand-management" element={<BrandManagementPage />} />
                   <Route path="/ad-fraud" element={<AdFraudPage />} />
                   <Route path="/ai-native" element={<AiNativePage />} />
-                  <Route path="/copywriting" element={<CopywritingPage />} />
-                  <Route path="/analytics" element={<AnalyticsPage />} />
-                  <Route path="/seo" element={<SeoPage />} />
-                  
-                  {/* Catch-all route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

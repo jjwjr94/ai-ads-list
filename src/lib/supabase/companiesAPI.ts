@@ -1,10 +1,11 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 import type { Database } from '../../integrations/supabase/types';
 
-// Company database operations
+// Simplify the type definition to avoid excessive depth
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -30,7 +31,7 @@ export const companiesAPI = {
     
     if (error) {
       console.error(`Error fetching companies by category ${category}:`, error);
-      throw error;
+      return []; // Return an empty array instead of throwing
     }
     
     console.log(`Found ${data?.length || 0} companies for category: ${category}`);
