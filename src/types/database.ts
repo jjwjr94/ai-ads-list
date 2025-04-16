@@ -4,7 +4,7 @@
 export interface CompanyDetails {
   summary?: string;       // Detailed summary
   highlighted?: boolean;  // Whether to highlight this company
-  features?: string[];    // Additional features
+  detailFeatures?: string[];    // Additional features (renamed from 'features')
   pricing?: string;       // Detailed pricing information
   bestFor?: string;       // Best target audience
 }
@@ -17,7 +17,7 @@ export interface Company {
   logo?: string;            // Direct logo path or URL
   category: Category;       // Category enum
   description: string;      // Short description
-  features: string[];       // Key features list
+  features: string[];       // Key features list (main features kept as-is)
   pricing: string;          // Pricing information
   targetAudience: string;   // Target audience
   details: CompanyDetails;  // Using the separate interface to break circular reference
