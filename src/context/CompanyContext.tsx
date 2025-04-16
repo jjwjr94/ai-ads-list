@@ -26,7 +26,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastRefresh, setLastRefresh] = useState<number>(Date.now()); // Add refresh timestamp
+  const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
   // Function to load companies from Supabase
   const loadCompanies = async () => {
@@ -58,7 +58,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       setError('Failed to load companies. Please check your connection or Supabase credentials.');
     } finally {
       setIsLoading(false);
-      setLastRefresh(Date.now()); // Update refresh timestamp
+      setLastRefresh(Date.now());
     }
   };
 
