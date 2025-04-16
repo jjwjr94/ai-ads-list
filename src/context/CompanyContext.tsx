@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -28,10 +27,18 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   // Function to load companies from Supabase with cache-busting
-  const loadCompanies = async () => {
+  const loadCompanies = async (force = false) => {
+    // Prevent multiple simultaneous refreshes
+    if (isRefreshing && !force) {
+      console.log('Already refreshing, skipping redundant refresh');
+      return;
+    }
+    
     try {
+      setIsRefreshing(true);
       setIsLoading(true);
       console.log('Loading companies from Supabase with timestamp:', new Date().toISOString());
       
@@ -61,14 +68,15 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       setError('Failed to load companies. Please check your connection or Supabase credentials.');
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
       setLastRefresh(Date.now());
     }
   };
 
-  // Function to refresh companies with cache busting
+  // Function to refresh companies with cache busting - only when explicitly requested
   const refreshCompanies = async () => {
     console.log('Manually refreshing companies data at:', new Date().toISOString());
-    await loadCompanies();
+    await loadCompanies(true); // Force refresh
     
     // Force browser to reload images by adding timestamp
     const timestamp = Date.now();
@@ -79,27 +87,15 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     return Promise.resolve();
   };
   
-  // Load companies on initial render
+  // Load companies on initial render only
   useEffect(() => {
     loadCompanies();
     
-    // Add event listener for window focus to refresh companies
-    const handleFocus = () => {
-      console.log('Window focused, refreshing data');
-      loadCompanies();
-    };
-    
-    // Set up automatic refresh every 30 seconds
-    const refreshInterval = setInterval(() => {
-      console.log('Automatic refresh triggered');
-      loadCompanies();
-    }, 30000);
-    
-    window.addEventListener('focus', handleFocus);
+    // Remove automatic refresh on window focus and interval refresh
+    // to prevent excessive refreshing while scrolling
     
     return () => {
-      window.removeEventListener('focus', handleFocus);
-      clearInterval(refreshInterval);
+      // Cleanup function - no intervals to clear anymore
     };
   }, []);
 
@@ -127,7 +123,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     addCompany: async (company: Company) => {
       try {
         const newCompany = await supabaseAPI.companies.add(company);
-        await refreshCompanies();
+        await refreshCompanies(); // Keep refresh after adding a company
         return newCompany;
       } catch (err) {
         console.error('Error adding company:', err);
@@ -140,7 +136,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
         console.log(`Updating company ${id} with:`, updates);
         const updatedCompany = await supabaseAPI.companies.update(id, updates);
         console.log('Company updated, refreshing data');
-        await refreshCompanies();
+        await refreshCompanies(); // Keep refresh after updating a company
         return updatedCompany;
       } catch (err) {
         console.error('Error updating company:', err);
@@ -153,7 +149,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
         const success = await supabaseAPI.companies.delete(id);
         if (success) {
           console.log('Company deleted, refreshing data');
-          await refreshCompanies();
+          await refreshCompanies(); // Keep refresh after deleting a company
         }
         return success;
       } catch (err) {
@@ -195,7 +191,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
         console.log('Company updated with new logo URL');
         
         // Force refresh companies to get updated logo paths
-        await refreshCompanies();
+        await refreshCompanies(); // Keep refresh after logo upload
         
         // Add cache-busting parameter
         return `${logoUrl}?t=${Date.now()}`;
