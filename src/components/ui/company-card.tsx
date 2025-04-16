@@ -46,6 +46,9 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
     aiNativeBadges.push('Series A or earlier');
   }
 
+  // Force logo refresh by adding company object, which includes lastUpdated timestamp
+  const logoSrc = company.logoUrl || company.logo;
+
   return (
     <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${company.details?.highlighted ? 'border-[#9b87f5] border-2' : ''}`}>
       <CardHeader className="pb-4">
@@ -67,11 +70,11 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <CardDescription className="mt-1">{company.description}</CardDescription>
           </div>
           <Logo 
-            src={company.logoUrl} 
+            src={logoSrc} 
             alt={`${company.name} logo`}
             size="lg"
             className="ml-4"
-            company={company} // Pass company for auto-finding logo
+            company={company} // Pass company for auto-finding logo and cache busting
           />
         </div>
       </CardHeader>

@@ -29,6 +29,7 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [mockMode, setMockMode] = useState<boolean>(false);
+  const [lastRefresh, setLastRefresh] = useState<number>(Date.now()); // Add refresh timestamp
 
   // Function to load companies from Supabase
   const loadCompanies = async () => {
@@ -70,11 +71,13 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       setMockMode(true);
     } finally {
       setIsLoading(false);
+      setLastRefresh(Date.now()); // Update refresh timestamp
     }
   };
 
   // Function to refresh companies
   const refreshCompanies = async () => {
+    console.log('Manually refreshing companies data');
     await loadCompanies();
   };
   
@@ -189,9 +192,11 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       
       console.log('Company updated with new logo URL');
       
-      // Refresh companies to get updated logo paths
+      // Force refresh companies to get updated logo paths
       await refreshCompanies();
-      return logoUrl;
+      
+      // Add cache-busting parameter
+      return `${logoUrl}?t=${Date.now()}`;
     } catch (err) {
       console.error('Error uploading logo:', err);
       setError('Failed to upload logo to Supabase storage.');

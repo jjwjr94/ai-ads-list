@@ -209,6 +209,8 @@ const AdminDashboard = () => {
       
       console.log(`Logo upload completed, received path: ${logoPath}`);
       
+      await refreshCompanies();
+      
       toast({
         title: "Logo Uploaded",
         description: "Company logo has been successfully uploaded.",
@@ -262,6 +264,7 @@ const AdminDashboard = () => {
         
         console.log("Updating company with data:", updatedCompanyData);
         await updateCompany(editingCompany.id, updatedCompanyData);
+        
         await refreshCompanies();
         
         toast({

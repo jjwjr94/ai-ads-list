@@ -52,7 +52,16 @@ const Logo: React.FC<LogoProps> = ({
   // Use company.logo or company.logoUrl if available, and src is not provided
   useEffect(() => {
     if (!src && company && (company.logo || company.logoUrl)) {
-      setLogoSrc(company.logo || company.logoUrl || null);
+      // Add timestamp to prevent caching
+      const logoUrl = company.logo || company.logoUrl || null;
+      if (logoUrl) {
+        setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+      } else {
+        setLogoSrc(null);
+      }
+    } else if (src) {
+      // Also add cache-busting for direct src
+      setLogoSrc(`${src}?t=${new Date().getTime()}`);
     }
   }, [company, src]);
 
@@ -65,7 +74,8 @@ const Logo: React.FC<LogoProps> = ({
           setIsLoading(true);
           const result = await findCompanyLogo(company);
           if (result.success && result.logoUrl) {
-            setLogoSrc(result.logoUrl);
+            // Add timestamp to prevent caching
+            setLogoSrc(`${result.logoUrl}?t=${new Date().getTime()}`);
           }
         } catch (error) {
           console.error('Error auto-finding logo:', error);
