@@ -1,5 +1,13 @@
-
 // Database structure for AI marketing companies
+
+// Break the circular reference by separating the details into its own interface
+export interface CompanyDetails {
+  summary?: string;       // Detailed summary
+  highlighted?: boolean;  // Whether to highlight this company
+  features?: string[];    // Additional features
+  pricing?: string;       // Detailed pricing information
+  bestFor?: string;       // Best target audience
+}
 
 export interface Company {
   id: string;               // Unique identifier
@@ -12,13 +20,7 @@ export interface Company {
   features: string[];       // Key features list
   pricing: string;          // Pricing information
   targetAudience: string;   // Target audience
-  details: {
-    summary?: string;       // Detailed summary
-    highlighted?: boolean;  // Whether to highlight this company
-    features?: string[];    // Additional features
-    pricing?: string;       // Detailed pricing information
-    bestFor?: string;       // Best target audience
-  };
+  details: CompanyDetails;  // Using the separate interface to break circular reference
   linkedinUrl?: string;     // LinkedIn URL
   foundedYear?: number;     // Year founded
   headquarters?: string;    // Company headquarters location
