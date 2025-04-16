@@ -101,7 +101,7 @@ export type Database = {
         | "Influencer & Partnership Marketing"
         | "Brand Management"
         | "Ad Fraud Detection & Prevention"
-        | "Ad-Native Agencies"
+        | "AI-Native Agencies"
         | "Copywriting"
         | "Analytics"
         | "SEO"
@@ -232,7 +232,7 @@ export const Constants = {
         "Influencer & Partnership Marketing",
         "Brand Management",
         "Ad Fraud Detection & Prevention",
-        "Ad-Native Agencies",
+        "AI-Native Agencies",
         "Copywriting",
         "Analytics",
         "SEO",

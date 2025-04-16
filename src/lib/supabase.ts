@@ -3,6 +3,25 @@ import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 import { supabase } from '../integrations/supabase/client';
 
+// Map between TypeScript Category and Supabase database category
+const categoryMapping: Record<Category, string> = {
+  "Strategy & Planning": "Strategy & Planning",
+  "Creative & Content": "Creative & Content",
+  "Performance & Media Buying": "Performance & Media Buying",
+  "SEO & Organic Growth": "SEO & Organic Growth", 
+  "Data & Analytics": "Data & Analytics",
+  "Web & App Development": "Web & App Development",
+  "Account Management & Client Services": "Account Management & Client Services",
+  "Social Media & Community Management": "Social Media & Community Management",
+  "Influencer & Partnership Marketing": "Influencer & Partnership Marketing",
+  "Brand Management": "Brand Management",
+  "Ad Fraud Detection & Prevention": "Ad Fraud Detection & Prevention",
+  "AI-Native Agencies": "AI-Native Agencies",
+  "Copywriting": "Copywriting",
+  "Analytics": "Analytics",
+  "SEO": "SEO"
+};
+
 // Helper functions to map between database column names and frontend property names
 const mapDbRecordToCompany = (record: any): Company => {
   return {
@@ -11,7 +30,7 @@ const mapDbRecordToCompany = (record: any): Company => {
     website: record.website || '',
     logoUrl: record.logo_url || '',
     logo: record.logo_url || '',
-    category: record.category,
+    category: record.category as Category,
     description: record.description || '',
     features: record.features || [],
     pricing: record.pricing || record.details?.pricing || '',
@@ -39,7 +58,7 @@ const mapCompanyToDbRecord = (company: Company) => {
     name: company.name,
     website: company.website || company.url || '',
     logo_url: company.logoUrl || company.logo || '',
-    category: company.category,
+    category: categoryMapping[company.category], // Use mapping here
     description: company.description || '',
     features: company.features || [],
     pricing: company.pricing || company.details?.pricing || '',
