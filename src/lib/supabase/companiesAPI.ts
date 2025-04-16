@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import type { Company } from '../../types/database';
+import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
 
 export const companiesAPI = {
@@ -15,7 +15,8 @@ export const companiesAPI = {
       return [];
     }
 
-    return data ?? [];
+    // Type assertion to ensure we're returning the correct type
+    return (data || []) as Company[];
   },
 
   async getById(id: string): Promise<Company | null> {
@@ -30,24 +31,30 @@ export const companiesAPI = {
       return null;
     }
 
-    return data ?? null;
+    // Type assertion to ensure we're returning the correct type
+    return data as Company;
   },
 
-  async create(company: Partial<Company>): Promise<boolean> {
-    const { error } = await supabase.from('companies').insert(company);
+  async create(company: Company): Promise<Company> {
+    const { data, error } = await supabase
+      .from('companies')
+      .insert(company as any)
+      .select()
+      .single();
 
     if (error) {
       console.error('Error creating company:', error);
-      return false;
+      throw new Error(`Failed to create company: ${error.message}`);
     }
 
-    return true;
+    // Return the newly created company
+    return data as Company;
   },
 
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
     const { error } = await supabase
       .from('companies')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id);
 
     if (error) {
@@ -59,7 +66,10 @@ export const companiesAPI = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from('companies').delete().eq('id', id);
+    const { error } = await supabase
+      .from('companies')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       console.error(`Error deleting company with id ${id}:`, error);
@@ -69,7 +79,7 @@ export const companiesAPI = {
     return true;
   },
 
-  async getByCategory(category: string): Promise<Company[]> {
+  async getByCategory(category: Category): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
@@ -80,7 +90,8 @@ export const companiesAPI = {
       return [];
     }
 
-    return data ?? [];
+    // Type assertion to ensure we're returning the correct type
+    return (data || []) as Company[];
   },
 
   async search(query: string): Promise<Company[]> {
@@ -94,7 +105,8 @@ export const companiesAPI = {
       return [];
     }
 
-    return data ?? [];
+    // Type assertion to ensure we're returning the correct type
+    return (data || []) as Company[];
   },
 
   async getHighlighted(): Promise<Company[]> {
@@ -109,6 +121,7 @@ export const companiesAPI = {
       return [];
     }
 
-    return data ?? [];
+    // Type assertion to ensure we're returning the correct type
+    return (data || []) as Company[];
   }
 };

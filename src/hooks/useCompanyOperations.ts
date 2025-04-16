@@ -27,7 +27,7 @@ export function useCompanyOperations(refreshCompanies: () => Promise<void>) {
   // Add a new company
   const addCompany = useCallback(async (company: Company) => {
     try {
-      const newCompany = await supabaseAPI.companies.add(company);
+      const newCompany = await supabaseAPI.companies.create(company);
       await refreshCompanies(); // Keep refresh after adding a company
       return newCompany;
     } catch (err) {
@@ -40,10 +40,10 @@ export function useCompanyOperations(refreshCompanies: () => Promise<void>) {
   const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
       console.log(`Updating company ${id} with:`, updates);
-      const updatedCompany = await supabaseAPI.companies.update(id, updates);
+      const success = await supabaseAPI.companies.update(id, updates);
       console.log('Company updated, refreshing data');
       await refreshCompanies(); // Keep refresh after updating a company
-      return updatedCompany;
+      return success;
     } catch (err) {
       console.error('Error updating company:', err);
       throw err;

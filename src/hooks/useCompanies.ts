@@ -32,7 +32,7 @@ export function useCompanies() {
         
         // Add each company to the database
         for (const company of initialCompanies) {
-          await supabaseAPI.companies.add(company);
+          await supabaseAPI.companies.create(company as Company);
         }
         
         // Get the updated list
