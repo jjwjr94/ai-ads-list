@@ -1,5 +1,5 @@
 
-import { Database } from '../integrations/supabase/types';
+import type { Database } from '../../integrations/supabase/types';
 import { companiesAPI } from './companiesAPI';
 import { storageAPI } from './storageAPI';
 

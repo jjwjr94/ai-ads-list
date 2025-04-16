@@ -1,8 +1,9 @@
 
-import { supabase } from '../integrations/supabase/client';
-import { Company, Category } from '../types/database';
+import { supabase } from '../../integrations/supabase/client';
+import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
+import type { Database } from '../../integrations/supabase/types';
 
 // Company database operations
 export const companiesAPI = {

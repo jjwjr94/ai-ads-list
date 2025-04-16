@@ -1,6 +1,6 @@
 
-import { Company, Category } from '../types/database';
-import { Database } from '../integrations/supabase/types';
+import { Company, Category } from '../../types/database';
+import type { Database } from '../../integrations/supabase/types';
 import { categoryMapping } from './categoryMapping';
 
 // Helper function to map database record to Company object

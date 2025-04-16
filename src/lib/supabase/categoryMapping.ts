@@ -1,6 +1,6 @@
 
-import { Category } from '../types/database';
-import { Database } from '../integrations/supabase/types';
+import { Category } from '../../types/database';
+import type { Database } from '../../integrations/supabase/types';
 
 // Map between TypeScript Category and Supabase database category
 export const categoryMapping: Record<Category, Database['public']['Enums']['company_category']> = {
