@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -96,13 +95,13 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Create a plain object instead of using the type directly
+      // Explicitly create a plain object for details
       dbUpdates.details = {
-        summary: updates.details.summary || '',
-        features: updates.details.features || [],
-        highlighted: updates.details.highlighted || false,
-        pricing: updates.details.pricing || '',
-        bestFor: updates.details.bestFor || ''
+        summary: updates.details.summary ?? '',
+        features: updates.details.features ?? [],
+        highlighted: updates.details.highlighted ?? false,
+        pricing: updates.details.pricing ?? '',
+        bestFor: updates.details.bestFor ?? ''
       };
     }
     
