@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import SeoTools from "./pages/SeoTools";
@@ -45,7 +46,8 @@ const App = () => (
               <main className="flex-1">
                 <SidebarTrigger className="m-4" />
                 <Routes>
-                  <Route path="/" element={<Home />} />
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/home" element={<Home />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/seo-tools" element={<SeoTools />} />
                   <Route path="/admin" element={<Admin />} />
