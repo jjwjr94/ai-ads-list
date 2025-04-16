@@ -15,7 +15,7 @@ interface LogoProps {
  * Enhanced Logo component for consistent logo display across the application
  * 
  * Features:
- * - Automatic logo finding using LinkedIn image search and website checking
+ * - Automatic logo finding using public/logos directory, LinkedIn image search and website checking
  * - Consistent sizing with predefined options
  * - Proper background and padding
  * - Fallback display when logo is missing
@@ -48,6 +48,46 @@ const Logo: React.FC<LogoProps> = ({
     .join('')
     .substring(0, 2)
     .toUpperCase();
+
+  // Check if company name is available and try to find direct match in public logos
+  useEffect(() => {
+    const checkPublicLogo = async () => {
+      if (company?.name && !src && !logoSrc) {
+        // Try direct match with company name for public directory
+        const companyNameSlug = company.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        // Try different extensions
+        const possibleExtensions = ['png', 'jpg', 'jpeg', 'svg', 'svg+xml'];
+        for (const ext of possibleExtensions) {
+          try {
+            const localLogoPath = `/logos/${companyNameSlug}.${ext}`;
+            const response = await fetch(localLogoPath, { method: 'HEAD' });
+            if (response.ok) {
+              // Add cache-busting parameter
+              const cacheBuster = `?t=${Date.now()}`;
+              setLogoSrc(localLogoPath + cacheBuster);
+              return;
+            }
+          } catch (e) {
+            // Continue checking other extensions
+          }
+        }
+        
+        // Also check if there's a renamed logo
+        try {
+          const response = await fetch(`/logos/${companyNameSlug}_logo.png`, { method: 'HEAD' });
+          if (response.ok) {
+            setLogoSrc(`/logos/${companyNameSlug}_logo.png?t=${Date.now()}`);
+            return;
+          }
+        } catch (e) {
+          // Continue to next method
+        }
+      }
+    };
+    
+    checkPublicLogo();
+  }, [company, src, logoSrc]);
 
   // Use company.logo or company.logoUrl if available, and src is not provided
   useEffect(() => {
@@ -89,6 +129,13 @@ const Logo: React.FC<LogoProps> = ({
     autoFindLogo();
   }, [company, src, logoSrc, hasError]);
 
+  // Add console logging for debugging
+  useEffect(() => {
+    if (logoSrc) {
+      console.log(`Logo source for ${alt}: ${logoSrc}`);
+    }
+  }, [logoSrc, alt]);
+
   return (
     <div 
       className={`
@@ -106,7 +153,10 @@ const Logo: React.FC<LogoProps> = ({
           src={logoSrc}
           alt={alt}
           className="max-w-full max-h-full object-contain"
-          onError={() => setHasError(true)}
+          onError={(e) => {
+            console.error(`Error loading logo from ${logoSrc}`);
+            setHasError(true);
+          }}
           loading="lazy"
         />
       ) : (

@@ -4,9 +4,10 @@
  * 
  * This utility provides functions to automatically find high-quality logos
  * for companies using various methods:
- * 1. Image search for "COMPANY NAME LinkedIn"
- * 2. Checking the company's official website
- * 3. Falling back to company initials (handled by the Logo component)
+ * 1. First checking the public/logos directory
+ * 2. Image search for "COMPANY NAME LinkedIn"
+ * 3. Checking the company's official website
+ * 4. Falling back to company initials (handled by the Logo component)
  */
 
 import { Company } from '@/types/database';
@@ -28,24 +29,40 @@ interface LogoSearchResult {
  */
 export async function findCompanyLogo(company: Company): Promise<LogoSearchResult> {
   try {
-    // Check if we have a pre-saved logo in the public directory
+    // First attempt: Check for logo in public/logos directory with various formats
     const companyNameSlug = company.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const localLogoPath = `/logos/${companyNameSlug}.png`;
+    const possibleExtensions = ['png', 'jpg', 'jpeg', 'svg', 'svg+xml'];
     
-    // First attempt: Check for locally saved logo
+    for (const ext of possibleExtensions) {
+      const localLogoPath = `/logos/${companyNameSlug}.${ext}`;
+      try {
+        // This is a more reliable way to check if an image exists in the public directory
+        const response = await fetch(localLogoPath, { method: 'HEAD' });
+        if (response.ok) {
+          console.log(`Found logo for ${company.name} at ${localLogoPath}`);
+          return {
+            success: true,
+            logoUrl: localLogoPath,
+            source: 'public_directory'
+          };
+        }
+      } catch (e) {
+        // Continue checking other extensions
+      }
+    }
+    
+    // Also check if there's a renamed logo (some companies may have logos with different naming patterns)
     try {
-      // This is a client-side check that will attempt to load the image
-      const img = new Image();
-      img.src = localLogoPath;
-      
-      // Return success if the image loads
-      return {
-        success: true,
-        logoUrl: localLogoPath,
-        source: 'local'
-      };
+      const response = await fetch(`/logos/${companyNameSlug}_logo.png`, { method: 'HEAD' });
+      if (response.ok) {
+        return {
+          success: true,
+          logoUrl: `/logos/${companyNameSlug}_logo.png`,
+          source: 'public_directory'
+        };
+      }
     } catch (e) {
-      console.log('No local logo found, continuing search...');
+      // Continue to next method
     }
     
     // Second attempt: LinkedIn image search

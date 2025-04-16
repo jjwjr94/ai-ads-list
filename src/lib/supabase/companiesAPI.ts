@@ -1,34 +1,11 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
-import type { Database } from '../../integrations/supabase/types';
-
-// Define a simplified update type to avoid excessive depth in type instantiation
-type CompanyDbUpdates = {
-  name?: string;
-  website?: string;
-  description?: string;
-  logo_url?: string;
-  features?: string[];
-  pricing?: string;
-  target_audience?: string;
-  linkedin_url?: string;
-  founded_year?: number;
-  headquarters?: string;
-  employee_count?: string;
-  funding_stage?: string;
-  details?: Record<string, any>;
-  category?: string;
-  last_updated?: string;
-};
 
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
-    // Add cache-busting timestamp parameter
-    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
       .select('*')
@@ -47,8 +24,6 @@ export const companiesAPI = {
   
   async getByCategory(category: Category): Promise<Company[]> {
     console.log(`Fetching companies for category: ${category} from Supabase`);
-    // Add cache-busting timestamp parameter
-    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
       .select('*')
@@ -66,8 +41,6 @@ export const companiesAPI = {
   },
   
   async getById(id: string): Promise<Company | null> {
-    // Add cache-busting timestamp parameter
-    const timestamp = new Date().getTime();
     const { data, error } = await supabase
       .from('companies')
       .select('*')
@@ -103,10 +76,8 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-    // Create a database record from the updates
     const dbUpdates: Record<string, any> = {};
     
-    // Map only the properties that are in the updates object
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.website !== undefined) dbUpdates.website = updates.website;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
@@ -124,7 +95,6 @@ export const companiesAPI = {
       dbUpdates.category = categoryMapping[updates.category as Category];
     }
     
-    // Always update last_updated timestamp
     dbUpdates.last_updated = new Date().toISOString();
     
     const { data, error } = await supabase
