@@ -16,7 +16,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ExternalLink, Star, Globe, DollarSign, Building2 } from 'lucide-react';
+import { ExternalLink, Star, Globe, DollarSign, Building2, Calendar, MapPin } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 
 interface CompanyCardProps {
@@ -25,18 +25,40 @@ interface CompanyCardProps {
 
 /**
  * Enhanced CompanyCard component with improved logo display and consistent styling
- * Now with automatic logo finding capabilities
+ * Now with automatic logo finding capabilities and AI-native criteria badges
  */
 const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
+  // Check if company meets AI-native criteria
+  const isAiNative = company.aiNativeCriteria?.hasDotAiDomain || 
+                     company.aiNativeCriteria?.foundedAfter2020 || 
+                     company.aiNativeCriteria?.seriesAOrEarlier;
+  
+  // Get AI-native criteria details for display
+  const aiNativeBadges = [];
+  if (company.aiNativeCriteria?.hasDotAiDomain) {
+    aiNativeBadges.push('.ai domain');
+  }
+  if (company.aiNativeCriteria?.foundedAfter2020) {
+    aiNativeBadges.push('Founded after 2020');
+  }
+  if (company.aiNativeCriteria?.seriesAOrEarlier) {
+    aiNativeBadges.push('Series A or earlier');
+  }
+
   return (
-    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${company.details.highlighted ? 'border-[#9b87f5] border-2' : ''}`}>
+    <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${company.details?.highlighted ? 'border-[#9b87f5] border-2' : ''}`}>
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              {company.details.highlighted && (
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              {company.details?.highlighted && (
                 <Badge variant="secondary" className="bg-[#9b87f5] text-white">
                   <Star className="h-3 w-3 mr-1" /> Featured
+                </Badge>
+              )}
+              {isAiNative && (
+                <Badge variant="outline" className="border-green-500 text-green-600">
+                  AI-Native
                 </Badge>
               )}
             </div>
@@ -44,7 +66,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <CardDescription className="mt-1">{company.description}</CardDescription>
           </div>
           <Logo 
-            src={company.logo} 
+            src={company.logoUrl} 
             alt={`${company.name} logo`}
             size="lg"
             className="ml-4"
@@ -60,11 +82,23 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="pt-4 min-h-[150px]">
-            <p className="text-sm text-gray-600">{company.details.summary}</p>
+            <p className="text-sm text-gray-600">{company.description}</p>
+            {aiNativeBadges.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs font-medium text-gray-500 mb-1">AI-Native Criteria:</p>
+                <div className="flex flex-wrap gap-1">
+                  {aiNativeBadges.map((badge, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {badge}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="features" className="pt-4 min-h-[150px]">
             <ul className="list-disc pl-5 space-y-1">
-              {company.details.features.map((feature, index) => (
+              {company.features?.map((feature, index) => (
                 <li key={index} className="text-sm text-gray-600">{feature}</li>
               ))}
             </ul>
@@ -75,31 +109,31 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
                 <DollarSign className="h-4 w-4 text-[#9b87f5]" />
                 <div>
                   <h4 className="text-sm font-medium">Pricing</h4>
-                  <p className="text-sm text-gray-600">{company.details.pricing}</p>
+                  <p className="text-sm text-gray-600">{company.pricing || "Contact for pricing"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-[#9b87f5]" />
                 <div>
                   <h4 className="text-sm font-medium">Best For</h4>
-                  <p className="text-sm text-gray-600">{company.details.bestFor}</p>
+                  <p className="text-sm text-gray-600">{company.targetAudience || "Various business sizes"}</p>
                 </div>
               </div>
-              {company.foundedYear && (
+              {company.aiNativeCriteria?.foundedAfter2020 && (
                 <div className="flex items-center gap-2">
-                  <span className="h-4 w-4 flex items-center justify-center text-[#9b87f5] font-bold text-xs">Y</span>
+                  <Calendar className="h-4 w-4 text-[#9b87f5]" />
                   <div>
                     <h4 className="text-sm font-medium">Founded</h4>
-                    <p className="text-sm text-gray-600">{company.foundedYear}</p>
+                    <p className="text-sm text-gray-600">After 2020</p>
                   </div>
                 </div>
               )}
-              {company.headquarters && (
+              {company.aiNativeCriteria?.seriesAOrEarlier && (
                 <div className="flex items-center gap-2">
-                  <span className="h-4 w-4 flex items-center justify-center text-[#9b87f5] font-bold text-xs">HQ</span>
+                  <span className="h-4 w-4 flex items-center justify-center text-[#9b87f5] font-bold text-xs">$</span>
                   <div>
-                    <h4 className="text-sm font-medium">Headquarters</h4>
-                    <p className="text-sm text-gray-600">{company.headquarters}</p>
+                    <h4 className="text-sm font-medium">Funding Stage</h4>
+                    <p className="text-sm text-gray-600">Series A or earlier</p>
                   </div>
                 </div>
               )}
@@ -109,17 +143,10 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
       </CardContent>
       <CardFooter className="flex justify-between pt-2 border-t">
         <Button variant="outline" size="sm" asChild>
-          <a href={company.url} target="_blank" rel="noopener noreferrer">
+          <a href={company.website} target="_blank" rel="noopener noreferrer">
             Visit Website <ExternalLink className="ml-1 h-3 w-3" />
           </a>
         </Button>
-        {company.linkedinUrl && (
-          <Button variant="ghost" size="sm" asChild>
-            <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer">
-              <Globe className="mr-1 h-3 w-3" /> LinkedIn
-            </a>
-          </Button>
-        )}
       </CardFooter>
     </Card>
   );

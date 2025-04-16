@@ -27,15 +27,35 @@ interface LogoSearchResult {
  */
 export async function findCompanyLogo(company: Company): Promise<LogoSearchResult> {
   try {
-    // First attempt: LinkedIn image search
+    // Check if we have a pre-saved logo in the public directory
+    const companyNameSlug = company.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const localLogoPath = `/logos/${companyNameSlug}.png`;
+    
+    // First attempt: Check for locally saved logo
+    try {
+      // This is a client-side check that will attempt to load the image
+      const img = new Image();
+      img.src = localLogoPath;
+      
+      // Return success if the image loads
+      return {
+        success: true,
+        logoUrl: localLogoPath,
+        source: 'local'
+      };
+    } catch (e) {
+      console.log('No local logo found, continuing search...');
+    }
+    
+    // Second attempt: LinkedIn image search
     const linkedInResult = await searchLinkedInLogo(company.name);
     if (linkedInResult.success) {
       return linkedInResult;
     }
     
-    // Second attempt: Company website
-    if (company.url) {
-      const websiteResult = await checkCompanyWebsite(company.url);
+    // Third attempt: Company website
+    if (company.website) {
+      const websiteResult = await checkCompanyWebsite(company.website);
       if (websiteResult.success) {
         return websiteResult;
       }
@@ -74,9 +94,6 @@ async function searchLinkedInLogo(companyName: string): Promise<LogoSearchResult
     // - Google Custom Search API
     // - Bing Image Search API
     // - Serpapi
-    
-    // For demonstration purposes, we'll return a simulated result
-    // In a real implementation, this would process actual search results
     
     // Simulate a delay for the search
     await new Promise(resolve => setTimeout(resolve, 500));

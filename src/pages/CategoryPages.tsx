@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Star } from 'lucide-react';
+import { Loader2, Star, Filter } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import CompanyCard from '@/components/ui/company-card';
 
@@ -52,6 +52,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const { getCompaniesByCategory, isLoading, error } = useCompanyDatabase();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [showFeatured, setShowFeatured] = useState(false);
+  const [showAiNativeOnly, setShowAiNativeOnly] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,9 +77,19 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     };
   }, [category, getCompaniesByCategory]);
 
-  const filteredCompanies = showFeatured
-    ? companies.filter(company => company.details.highlighted)
-    : companies;
+  // Filter companies based on selected filters
+  const filteredCompanies = companies.filter(company => {
+    // Check if company should be included based on featured filter
+    const featuredCheck = showFeatured ? company.details?.highlighted : true;
+    
+    // Check if company should be included based on AI-native filter
+    const aiNativeCheck = showAiNativeOnly ? 
+      (company.aiNativeCriteria?.hasDotAiDomain || 
+       company.aiNativeCriteria?.foundedAfter2020 || 
+       company.aiNativeCriteria?.seriesAOrEarlier) : true;
+    
+    return featuredCheck && aiNativeCheck;
+  });
 
   const categoryTitle = category.split(' & ');
 
@@ -93,9 +104,28 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
         </p>
       </div>
 
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end mb-6 gap-3">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Show featured only:</span>
+          <span className="text-sm text-gray-600">AI-Native Only:</span>
+          <Button 
+            variant={showAiNativeOnly ? "default" : "outline"} 
+            size="sm"
+            onClick={() => setShowAiNativeOnly(!showAiNativeOnly)}
+            disabled={loading}
+            className={showAiNativeOnly ? "bg-green-600 hover:bg-green-700" : ""}
+          >
+            {showAiNativeOnly ? (
+              <>
+                <Filter className="h-4 w-4 mr-1" /> AI-Native
+              </>
+            ) : (
+              "All Companies"
+            )}
+          </Button>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">Featured Only:</span>
           <Button 
             variant={showFeatured ? "default" : "outline"} 
             size="sm"
@@ -125,7 +155,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
         </div>
       ) : filteredCompanies.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">No companies found in this category.</p>
+          <p className="text-gray-500">No companies found matching your filters.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -150,3 +180,6 @@ export const InfluencerMarketingPage = () => <CategoryPage category={Category.IN
 export const BrandManagementPage = () => <CategoryPage category={Category.BRAND_MANAGEMENT} />;
 export const AdFraudPage = () => <CategoryPage category={Category.AD_FRAUD} />;
 export const AdNativePage = () => <CategoryPage category={Category.AD_NATIVE} />;
+export const CopywritingPage = () => <CategoryPage category={Category.COPYWRITING} />;
+export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} />;
+export const SeoPage = () => <CategoryPage category={Category.SEO} />;
