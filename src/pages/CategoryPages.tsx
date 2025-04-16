@@ -65,7 +65,6 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   useEffect(() => {
     fetchCompanies();
     
-    // Add event listeners for page focus to ensure data is fresh
     const handleFocus = () => {
       fetchCompanies();
     };
@@ -77,12 +76,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     };
   }, [category]);
 
-  // Filter companies based on selected filters
   const filteredCompanies = companies.filter(company => {
-    // Check if company should be included based on featured filter
     const featuredCheck = showFeatured ? company.details?.highlighted : true;
-    
-    // Check if company should be included based on AI-native filter
     const aiNativeCheck = showAiNativeOnly ? 
       (company.aiNativeCriteria?.hasDotAiDomain || 
        company.aiNativeCriteria?.foundedAfter2020 || 

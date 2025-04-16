@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 
@@ -110,6 +109,7 @@ export const supabaseAPI = {
         return initialCompanies;
       }
       
+      console.log('Fetching all companies from Supabase');
       const { data, error } = await supabase
         .from('companies')
         .select('*');
@@ -134,6 +134,7 @@ export const supabaseAPI = {
         return initialCompanies.filter(company => company.category === category);
       }
       
+      console.log(`Fetching companies for category: ${category} from Supabase`);
       const { data, error } = await supabase
         .from('companies')
         .select('*')
@@ -144,6 +145,7 @@ export const supabaseAPI = {
         throw error;
       }
       
+      console.log(`Found ${data?.length || 0} companies for category: ${category}`);
       return (data || []).map(company => ({
         ...company,
         lastUpdated: company.lastUpdated ? new Date(company.lastUpdated) : undefined

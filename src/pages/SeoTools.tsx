@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
@@ -16,8 +17,21 @@ const SeoTools = () => {
     const fetchCompanies = async () => {
       try {
         setLoading(true);
-        const seoCompanies = await getCompaniesByCategory(Category.SEO_ORGANIC);
-        setCompanies(seoCompanies);
+        // Updated to use both SEO_ORGANIC and SEO categories to ensure we show all SEO companies
+        const seoOrganic = await getCompaniesByCategory(Category.SEO_ORGANIC);
+        const seo = await getCompaniesByCategory(Category.SEO);
+        
+        // Combine both categories, avoiding duplicates by ID
+        const combinedCompanies = [...seoOrganic];
+        seo.forEach(company => {
+          if (!combinedCompanies.some(c => c.id === company.id)) {
+            combinedCompanies.push(company);
+          }
+        });
+        
+        console.log(`Found ${seoOrganic.length} SEO_ORGANIC companies and ${seo.length} SEO companies`);
+        console.log(`Total unique companies: ${combinedCompanies.length}`);
+        setCompanies(combinedCompanies);
       } catch (err) {
         console.error('Error fetching SEO companies:', err);
       } finally {
