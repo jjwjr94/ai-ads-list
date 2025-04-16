@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -26,7 +25,6 @@ const Explore = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // Fetch counts for each category when component mounts
   useEffect(() => {
     const fetchCategoryCounts = async () => {
       try {
@@ -59,7 +57,6 @@ const Explore = () => {
     fetchCategoryCounts();
   }, [getCompaniesByCategory]);
 
-  // Map category icons
   const getCategoryIcon = (category: string) => {
     switch(category) {
       case Category.STRATEGY_PLANNING:
@@ -97,7 +94,6 @@ const Explore = () => {
     }
   };
 
-  // Create category cards with links to category pages
   const categoryCards = [
     { 
       title: Category.STRATEGY_PLANNING, 

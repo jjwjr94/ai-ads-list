@@ -1,4 +1,3 @@
-
 // Database structure for AI marketing companies
 
 export interface Company {
@@ -46,7 +45,7 @@ export enum Category {
   INFLUENCER_MARKETING = "Influencer & Partnership Marketing",
   BRAND_MANAGEMENT = "Brand Management",
   AD_FRAUD = "Ad Fraud Detection & Prevention",
-  AD_NATIVE = "Ad-Native Agencies",
+  AI_NATIVE = "AI-Native Agencies",
   COPYWRITING = "Copywriting",
   ANALYTICS = "Analytics",
   SEO = "SEO"

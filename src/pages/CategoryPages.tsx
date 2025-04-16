@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category, Company } from '@/types/database';
@@ -192,7 +191,7 @@ export const SocialMediaPage = () => <CategoryPage category={Category.SOCIAL_MED
 export const InfluencerMarketingPage = () => <CategoryPage category={Category.INFLUENCER_MARKETING} />;
 export const BrandManagementPage = () => <CategoryPage category={Category.BRAND_MANAGEMENT} />;
 export const AdFraudPage = () => <CategoryPage category={Category.AD_FRAUD} />;
-export const AdNativePage = () => <CategoryPage category={Category.AD_NATIVE} />;
+export const AdNativePage = () => <CategoryPage category={Category.AI_NATIVE} />;
 export const CopywritingPage = () => <CategoryPage category={Category.COPYWRITING} />;
 export const AnalyticsPage = () => <CategoryPage category={Category.ANALYTICS} />;
 export const SeoPage = () => <CategoryPage category={Category.SEO} />;
