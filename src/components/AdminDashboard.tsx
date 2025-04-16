@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Company, Category } from '@/types/database';
@@ -124,7 +125,8 @@ const AdminDashboard = () => {
           summary: editingCompany.details?.summary,
           highlighted: editingCompany.details?.highlighted || false,
           pricing: editingCompany.details?.pricing || editingCompany.pricing,
-          bestFor: editingCompany.details?.bestFor || editingCompany.targetAudience
+          bestFor: editingCompany.details?.bestFor || editingCompany.targetAudience,
+          detailFeatures: editingCompany.details?.detailFeatures || []
         },
         linkedinUrl: editingCompany.linkedinUrl,
         foundedYear: editingCompany.foundedYear,
@@ -132,7 +134,7 @@ const AdminDashboard = () => {
         employeeCount: editingCompany.employeeCount,
         fundingStage: editingCompany.fundingStage
       });
-      setFeatures(editingCompany.features || editingCompany.details?.features || []);
+      setFeatures(editingCompany.features || editingCompany.details?.detailFeatures || []);
       
       setLogoPreview(editingCompany.logo || editingCompany.logoUrl || null);
       setLogoFile(null);
@@ -148,7 +150,8 @@ const AdminDashboard = () => {
           summary: '',
           highlighted: false,
           pricing: '',
-          bestFor: ''
+          bestFor: '',
+          detailFeatures: []
         },
         linkedinUrl: '',
         foundedYear: undefined,
@@ -283,7 +286,7 @@ const AdminDashboard = () => {
         targetAudience: data.details?.bestFor || '',
         details: {
           ...data.details,
-          features: features
+          detailFeatures: features
         }
       } as Company;
 

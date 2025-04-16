@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Category, Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -46,7 +45,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     ? companies.filter(company => company.details?.highlighted) 
     : companies;
 
-  // Loading skeletons for the cards
   const SkeletonCard = () => (
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -76,7 +74,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     </Card>
   );
 
-  // Format category title for display
   const formatCategoryTitle = (categoryString: string): string => {
     return categoryString.replace(/_/g, ' ');
   };
@@ -174,7 +171,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                         Key Features:
                       </div>
                       <ul className="pl-6 text-sm text-gray-600 list-disc">
-                        {(company.details.features || company.features || []).map((feature, idx) => (
+                        {(company.details.detailFeatures || company.features || []).map((feature, idx) => (
                           <li key={idx}>{feature}</li>
                         ))}
                       </ul>
