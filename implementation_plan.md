@@ -40,17 +40,28 @@ All category pages have been updated to:
 
 ### Logo Component
 A reusable Logo component has been created with:
+- Automatic logo finding using "COMPANY NAME LinkedIn" image search
+- Fallback to checking company websites for logos
 - Consistent sizing options (sm, md, lg, xl)
 - Proper background and padding
-- Fallback display for missing logos
+- Fallback display using company initials when no logo is found
 - Optimization for high-quality display
 
 ### CompanyCard Component
 An enhanced CompanyCard component provides:
-- Improved logo display using the Logo component
+- Improved logo display using the Logo component with auto-finding capabilities
 - Consistent styling for company information
 - Tabbed interface for different types of information
 - Responsive design for all screen sizes
+
+## Logo Finding System
+
+The logo finding system automatically sources high-quality logos through:
+1. Image search for "COMPANY NAME LinkedIn" to find professional logos
+2. Checking the company's official website for logo assets
+3. Falling back to company initials with consistent styling if no logo is found
+
+This approach ensures a consistent visual experience while maximizing the quality of logos displayed.
 
 ## Testing
 
@@ -58,6 +69,7 @@ The implementation has been tested for:
 - Database operations (CRUD functionality)
 - UI components (loading states, error handling)
 - Responsive design across different screen sizes
+- Logo finding and fallback mechanisms
 
 ## Future Enhancements
 
@@ -66,13 +78,14 @@ Potential future enhancements include:
 - Adding user authentication for admin access
 - Enhancing search and filtering capabilities
 - Implementing analytics for tracking user engagement
+- Expanding the logo finding system to use additional sources
 
 ## Usage Instructions
 
 ### Adding a New Company
 1. Navigate to the Admin page
 2. Fill out the company details form
-3. Upload a high-quality logo
+3. Upload a high-quality logo (or let the system find one automatically)
 4. Save the company to add it to the database
 
 ### Editing an Existing Company

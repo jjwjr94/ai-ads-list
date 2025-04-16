@@ -25,6 +25,7 @@ interface CompanyCardProps {
 
 /**
  * Enhanced CompanyCard component with improved logo display and consistent styling
+ * Now with automatic logo finding capabilities
  */
 const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
   return (
@@ -47,6 +48,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             alt={`${company.name} logo`}
             size="lg"
             className="ml-4"
+            company={company} // Pass company for auto-finding logo
           />
         </div>
       </CardHeader>

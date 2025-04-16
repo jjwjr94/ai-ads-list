@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Company } from '@/types/database';
+import { findCompanyLogo } from '@/lib/logoFinder';
 
 interface LogoProps {
   src: string;
   alt: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  company?: Company; // Optional company object for auto-finding logos
 }
 
 /**
  * Enhanced Logo component for consistent logo display across the application
  * 
  * Features:
+ * - Automatic logo finding using LinkedIn image search and website checking
  * - Consistent sizing with predefined options
  * - Proper background and padding
  * - Fallback display when logo is missing
@@ -20,7 +24,8 @@ const Logo: React.FC<LogoProps> = ({
   src, 
   alt, 
   size = 'md', 
-  className = '' 
+  className = '',
+  company
 }) => {
   // Size mapping for consistent dimensions
   const sizeClasses = {
@@ -30,8 +35,10 @@ const Logo: React.FC<LogoProps> = ({
     xl: 'w-24 h-24 p-2.5'
   };
 
-  // Handle missing or broken logo
-  const [hasError, setHasError] = React.useState(false);
+  // State for logo source and loading status
+  const [logoSrc, setLogoSrc] = useState<string | null>(src || null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
   
   // Extract first two letters for fallback
   const initials = alt
@@ -40,6 +47,29 @@ const Logo: React.FC<LogoProps> = ({
     .join('')
     .substring(0, 2)
     .toUpperCase();
+
+  // Auto-find logo if company is provided and no src is available
+  useEffect(() => {
+    const autoFindLogo = async () => {
+      // Only attempt to find logo if company is provided and no src is available
+      if (company && !src && !logoSrc && !hasError) {
+        try {
+          setIsLoading(true);
+          const result = await findCompanyLogo(company);
+          if (result.success && result.logoUrl) {
+            setLogoSrc(result.logoUrl);
+          }
+        } catch (error) {
+          console.error('Error auto-finding logo:', error);
+          setHasError(true);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    autoFindLogo();
+  }, [company, src, logoSrc, hasError]);
 
   return (
     <div 
@@ -51,9 +81,11 @@ const Logo: React.FC<LogoProps> = ({
         ${className}
       `}
     >
-      {!hasError && src ? (
+      {isLoading ? (
+        <div className="animate-pulse bg-gray-200 w-full h-full"></div>
+      ) : !hasError && logoSrc ? (
         <img
-          src={src}
+          src={logoSrc}
           alt={alt}
           className="max-w-full max-h-full object-contain"
           onError={() => setHasError(true)}
