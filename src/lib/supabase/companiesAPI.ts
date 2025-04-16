@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
@@ -12,38 +11,27 @@ const mapDbRecordToCompany = (record: any): Company => ({
 }) as Company;
 
 // Utility function to map Company object to database record
-const mapCompanyToDbRecord = (company: Company): Record<string, any> => {
-  // Create a base record with all fields properly mapped
-  const record: Record<string, any> = {
-    id: company.id,
-    name: company.name,
-    website: company.website,
-    category: company.category,
-    description: company.description,
-    features: company.features,
-    pricing: company.pricing,
-    target_audience: company.targetAudience,
-    logo_url: company.logoUrl || company.logo,
-    linkedin_url: company.linkedinUrl,
-    founded_year: company.foundedYear,
-    headquarters: company.headquarters,
-    employee_count: company.employeeCount,
-    funding_stage: company.fundingStage,
-    last_updated: company.lastUpdated || new Date(),
-    has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
-    founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
-    series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
-  };
-
-  // Handle details object by converting it to a simple object format
-  // that Supabase can store as JSON
-  if (company.details) {
-    // Convert details object to a plain object using JSON.stringify and parse
-    record.details = JSON.parse(JSON.stringify(company.details));
-  }
-  
-  return record;
-};
+const mapCompanyToDbRecord = (company: Company): Record<string, any> => ({
+  id: company.id,
+  name: company.name,
+  website: company.website,
+  category: company.category,
+  description: company.description,
+  features: company.features,
+  pricing: company.pricing,
+  target_audience: company.targetAudience,
+  logo_url: company.logoUrl || company.logo,
+  details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
+  linkedin_url: company.linkedinUrl,
+  founded_year: company.foundedYear,
+  headquarters: company.headquarters,
+  employee_count: company.employeeCount,
+  funding_stage: company.fundingStage,
+  last_updated: company.lastUpdated || new Date(),
+  has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
+  founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
+  series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
+});
 
 // Utility function to create partial database record for updates
 const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> => {
@@ -65,7 +53,7 @@ const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> =
   if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
   if (updates.lastUpdated !== undefined) dbUpdates.last_updated = updates.lastUpdated;
   
-  // Handle details object by ensuring it's properly serialized for JSON storage
+  // Handle details object separately to ensure it's properly serialized
   if (updates.details !== undefined) {
     dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
   }
@@ -113,13 +101,11 @@ export const companiesAPI = {
   },
 
   async create(company: Company): Promise<Company> {
-    // Create a properly formatted database record
     const dbRecord = mapCompanyToDbRecord(company);
 
-    // Fix: Ensure we pass an array to insert
     const { data, error } = await supabase
       .from('companies')
-      .insert([dbRecord]) // Pass as array to fix type issue
+      .insert(dbRecord)
       .select()
       .single();
 
@@ -132,7 +118,6 @@ export const companiesAPI = {
   },
 
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
-    // Create a properly formatted partial database record
     const dbUpdates = createPartialDbRecord(updates);
 
     const { error } = await supabase

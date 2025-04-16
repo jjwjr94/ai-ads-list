@@ -1,12 +1,8 @@
 
 import { useCallback } from 'react';
 import { supabaseAPI } from '../lib/supabase';
-import { Company } from '../types/database';
 
-// Update the parameter to match what's passed from CompanyContext
-export function useCompanyLogo(
-  updateCompany: (id: string, updates: Partial<Company>) => Promise<boolean>
-) {
+export function useCompanyLogo(refreshCompanies: () => Promise<void>) {
   // Upload a logo for a company
   const uploadLogo = useCallback(async (id: string, file: File, altText: string) => {
     try {
@@ -15,12 +11,15 @@ export function useCompanyLogo(
       console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
       
       // Update company with new logo URL
-      await updateCompany(id, {
+      const updatedCompany = await supabaseAPI.companies.update(id, {
         logo: logoUrl,
         logoUrl: logoUrl
       });
       
       console.log('Company updated with new logo URL');
+      
+      // Force refresh companies to get updated logo paths
+      await refreshCompanies();
       
       // Add cache-busting parameter
       return `${logoUrl}?t=${Date.now()}`;
@@ -28,7 +27,7 @@ export function useCompanyLogo(
       console.error('Error uploading logo:', err);
       throw err;
     }
-  }, [updateCompany]);
+  }, [refreshCompanies]);
 
   return {
     uploadLogo
