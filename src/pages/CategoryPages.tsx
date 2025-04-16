@@ -52,7 +52,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
+      console.log(`Fetching companies for category: ${category}`);
       const categoryCompanies = await getCompaniesByCategory(category);
+      console.log(`Fetched ${categoryCompanies.length} companies for ${category}`);
       setCompanies(categoryCompanies);
     } catch (err) {
       console.error('Error fetching companies:', err);
@@ -162,6 +164,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
       ) : error ? (
         <div className="text-center py-12">
           <p className="text-red-500">Error loading companies. Please try again later.</p>
+          {error && <p className="text-sm text-gray-500 mt-2">{error.toString()}</p>}
         </div>
       ) : filteredCompanies.length === 0 ? (
         <div className="text-center py-12">

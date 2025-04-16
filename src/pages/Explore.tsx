@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
 import { 
@@ -16,20 +17,43 @@ import {
   AdFraudPage,
   AdNativePage
 } from './CategoryPages';
+import { useToast } from '@/components/ui/use-toast';
+import { Loader2 } from 'lucide-react';
 
 const Explore = () => {
   const { getCompaniesByCategory } = useCompanyDatabase();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   // Fetch counts for each category when component mounts
   useEffect(() => {
     const fetchCategoryCounts = async () => {
-      const counts: Record<string, number> = {};
-      for (const category of Object.values(Category)) {
-        const companies = await getCompaniesByCategory(category);
-        counts[category] = companies.length;
+      try {
+        setIsLoading(true);
+        console.log('Fetching category counts from Supabase...');
+        const counts: Record<string, number> = {};
+        for (const category of Object.values(Category)) {
+          try {
+            const companies = await getCompaniesByCategory(category);
+            counts[category] = companies.length;
+            console.log(`${category}: ${companies.length} tools`);
+          } catch (err) {
+            console.error(`Error fetching counts for ${category}:`, err);
+            counts[category] = 0;
+          }
+        }
+        setCategoryCounts(counts);
+      } catch (error) {
+        console.error('Error fetching category counts:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch category data. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
       }
-      setCategoryCounts(counts);
     };
 
     fetchCategoryCounts();
@@ -134,26 +158,33 @@ const Explore = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categoryCards.map((category) => (
-          <a 
-            key={category.title}
-            href={category.path}
-            className="block group"
-          >
-            <div className="h-full border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#9b87f5]">
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5]">{category.title}</h3>
-                <p className="text-gray-600 mb-4">{category.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{category.count} tools</span>
-                  <span className="text-[#9b87f5] text-sm font-medium">Explore →</span>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 text-[#9b87f5] animate-spin" />
+          <p className="ml-2 text-gray-600">Loading category data...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categoryCards.map((category) => (
+            <Link 
+              key={category.title}
+              to={category.path}
+              className="block group"
+            >
+              <div className="h-full border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#9b87f5]">
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5]">{category.title}</h3>
+                  <p className="text-gray-600 mb-4">{category.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">{category.count} tools</span>
+                    <span className="text-[#9b87f5] text-sm font-medium">Explore →</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </a>
-        ))}
-      </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
