@@ -84,7 +84,7 @@ const Explore = () => {
         return BuildingIcon;
       case Category.AD_FRAUD:
         return Shield;
-      case Category.AD_NATIVE:
+      case Category.AI_NATIVE:
         return Layout;
       case Category.COPYWRITING:
         return Lightbulb;
@@ -166,10 +166,10 @@ const Explore = () => {
       count: categoryCounts[Category.AD_FRAUD] || 0
     },
     { 
-      title: Category.AD_NATIVE, 
-      path: '/ad-native',
+      title: Category.AI_NATIVE, 
+      path: '/ai-native',
       description: 'AI-native agencies and consulting services',
-      count: categoryCounts[Category.AD_NATIVE] || 0
+      count: categoryCounts[Category.AI_NATIVE] || 0
     }
   ];
 
