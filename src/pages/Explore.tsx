@@ -5,7 +5,6 @@ import { Category } from '@/types/database';
 import { 
   CodeSquare,
   Lightbulb,
-  Search,
   PieChart,
   Database,
   LayoutDashboard,
@@ -32,13 +31,6 @@ const Explore = () => {
         console.log('Fetching category counts from Supabase...');
         const counts: Record<string, number> = {};
         
-        const additionalCategories = {
-          [Category.SEO_ORGANIC]: [Category.SEO],
-          [Category.DATA_ANALYTICS]: [Category.ANALYTICS],
-          [Category.ANALYTICS]: [Category.DATA_ANALYTICS],
-          [Category.SEO]: [Category.SEO_ORGANIC]
-        };
-        
         for (const category of Object.values(Category)) {
           try {
             let companies = await getCompaniesByCategory(category);
@@ -48,30 +40,6 @@ const Explore = () => {
             console.error(`Error fetching counts for ${category}:`, err);
             counts[category] = 0;
           }
-        }
-        
-        for (const [category, additionalCats] of Object.entries(additionalCategories)) {
-          let totalCompanies = counts[category] || 0;
-          let uniqueIds = new Set<string>();
-          
-          try {
-            const mainCompanies = await getCompaniesByCategory(category as Category);
-            mainCompanies.forEach(company => uniqueIds.add(company.id));
-          } catch (err) {
-            console.error(`Error fetching main category companies for ${category}:`, err);
-          }
-          
-          for (const additionalCat of additionalCats) {
-            try {
-              const additionalCompanies = await getCompaniesByCategory(additionalCat);
-              additionalCompanies.forEach(company => uniqueIds.add(company.id));
-            } catch (err) {
-              console.error(`Error fetching additional companies for ${additionalCat}:`, err);
-            }
-          }
-          
-          counts[category] = uniqueIds.size;
-          console.log(`Updated ${category} count to ${uniqueIds.size} (with related categories)`);
         }
         
         setCategoryCounts(counts);
@@ -101,7 +69,7 @@ const Explore = () => {
       case Category.SEO_ORGANIC:
         return CodeSquare;
       case Category.DATA_ANALYTICS:
-        return PieChart;
+        return Database;
       case Category.WEB_APP_DEVELOPMENT:
         return CodeSquare;
       case Category.ACCOUNT_MANAGEMENT:
@@ -116,12 +84,6 @@ const Explore = () => {
         return Shield;
       case Category.AI_NATIVE:
         return Layout;
-      case Category.COPYWRITING:
-        return Lightbulb;
-      case Category.ANALYTICS:
-        return Database;
-      case Category.SEO:
-        return Search;
       default:
         return Database;
     }

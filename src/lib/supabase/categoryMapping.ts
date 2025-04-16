@@ -15,8 +15,5 @@ export const categoryMapping: Record<Category, Database['public']['Enums']['comp
   "Influencer & Partnership Marketing": "Influencer & Partnership Marketing",
   "Brand Management": "Brand Management",
   "Ad Fraud Detection & Prevention": "Ad Fraud Detection & Prevention",
-  "AI-Native Agencies": "AI-Native Agencies",
-  "Copywriting": "Copywriting",
-  "Analytics": "Analytics",
-  "SEO": "SEO"
+  "AI-Native Agencies": "AI-Native Agencies"
 };
