@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { CompanyProvider } from '../context/CompanyContext';
 import AdminDashboard from '../components/AdminDashboard';
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,13 +18,22 @@ const Admin = () => {
     try {
       // Clear browser cache for images
       const timestamp = Date.now();
+      
+      // Clear all image caches more aggressively
       const imgElements = document.querySelectorAll('img');
       imgElements.forEach(img => {
         if (img.src) {
-          // Add or update cache-busting parameter
-          const url = new URL(img.src);
-          url.searchParams.set('t', timestamp.toString());
-          img.src = url.toString();
+          if (!img.src.startsWith('data:')) { // Skip base64 images
+            // Force reload the image with cache busting
+            const url = new URL(img.src);
+            url.searchParams.set('t', timestamp.toString());
+            
+            // Re-assign the src to force a reload
+            img.src = 'about:blank'; // First clear the src
+            setTimeout(() => {
+              img.src = url.toString(); // Then set the new URL
+            }, 10);
+          }
         }
       });
       
@@ -49,9 +58,58 @@ const Admin = () => {
     }
   };
 
+  // Function to clear browser cache completely (storage, cookies, etc)
+  const handleClearAllCache = async () => {
+    setRefreshing(true);
+    
+    try {
+      // Clear localStorage
+      localStorage.clear();
+      
+      // Clear sessionStorage
+      sessionStorage.clear();
+      
+      // Clear cookies (only the ones we can)
+      document.cookie.split(";").forEach(cookie => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      });
+      
+      // Clear cache for images
+      const imgElements = document.querySelectorAll('img');
+      imgElements.forEach(img => {
+        if (img.src && !img.src.startsWith('data:')) {
+          img.src = 'about:blank';
+        }
+      });
+
+      // Force a hard refresh of the page
+      toast({
+        title: "Full cache cleared",
+        description: "All browser storage and caches have been cleared.",
+        action: <ToastAction altText="OK">OK</ToastAction>,
+      });
+      
+      // Wait before resetting state
+      setTimeout(() => {
+        setRefreshing(false);
+        window.location.reload(true); // Hard reload
+      }, 1000);
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+      toast({
+        title: "Cache clear failed",
+        description: "Failed to clear browser cache. Please try again.",
+        variant: "destructive",
+      });
+      setRefreshing(false);
+    }
+  };
+
   return (
     <>
-      <div className="flex justify-end p-4 bg-white border-b">
+      <div className="flex justify-end gap-2 p-4 bg-white border-b">
         <Button 
           variant="outline" 
           size="sm"
@@ -60,7 +118,18 @@ const Admin = () => {
           className="flex items-center gap-2"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} /> 
-          {refreshing ? 'Refreshing...' : 'Refresh Data & Clear Cache'}
+          {refreshing ? 'Refreshing...' : 'Refresh Data'}
+        </Button>
+        
+        <Button 
+          variant="destructive" 
+          size="sm"
+          onClick={handleClearAllCache}
+          disabled={refreshing}
+          className="flex items-center gap-2"
+        >
+          <Trash2 className="h-4 w-4" /> 
+          Clear All Cache
         </Button>
       </div>
       <CompanyProvider>

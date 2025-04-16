@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -76,6 +77,7 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
+    // Fix: Create a new object for database updates instead of using recursion
     const dbUpdates: Record<string, any> = {};
     
     if (updates.name !== undefined) dbUpdates.name = updates.name;

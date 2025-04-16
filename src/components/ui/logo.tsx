@@ -20,6 +20,7 @@ interface LogoProps {
  * - Proper background and padding
  * - Fallback display when logo is missing
  * - Optimized for high-quality display
+ * - Support for base64-encoded logos from Supabase
  */
 const Logo: React.FC<LogoProps> = ({ 
   src, 
@@ -48,6 +49,11 @@ const Logo: React.FC<LogoProps> = ({
     .join('')
     .substring(0, 2)
     .toUpperCase();
+
+  // Helper function to check if a string is a base64 image
+  const isBase64Image = (str: string): boolean => {
+    return str.startsWith('data:image/');
+  };
 
   // Check if company name is available and try to find direct match in public logos
   useEffect(() => {
@@ -92,16 +98,30 @@ const Logo: React.FC<LogoProps> = ({
   // Use company.logo or company.logoUrl if available, and src is not provided
   useEffect(() => {
     if (!src && company && (company.logo || company.logoUrl)) {
-      // Add timestamp to prevent caching
+      // Check if the logo is a base64 string 
       const logoUrl = company.logo || company.logoUrl || null;
+      
       if (logoUrl) {
-        setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+        if (isBase64Image(logoUrl)) {
+          // If it's already a base64 image, use it directly without cache busting
+          setLogoSrc(logoUrl);
+          console.log(`Using base64 encoded logo for ${company.name}`);
+        } else {
+          // Add timestamp for normal URLs to prevent caching
+          setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+        }
       } else {
         setLogoSrc(null);
       }
     } else if (src) {
-      // Also add cache-busting for direct src
-      setLogoSrc(`${src}?t=${new Date().getTime()}`);
+      if (isBase64Image(src)) {
+        // If it's a base64 image from props, use it directly
+        setLogoSrc(src);
+        console.log(`Using base64 encoded logo from props`);
+      } else {
+        // Add cache-busting for normal URL sources
+        setLogoSrc(`${src}?t=${new Date().getTime()}`);
+      }
     }
   }, [company, src]);
 
@@ -114,8 +134,14 @@ const Logo: React.FC<LogoProps> = ({
           setIsLoading(true);
           const result = await findCompanyLogo(company);
           if (result.success && result.logoUrl) {
-            // Add timestamp to prevent caching
-            setLogoSrc(`${result.logoUrl}?t=${new Date().getTime()}`);
+            // Check if the found logo is a base64 string
+            if (isBase64Image(result.logoUrl)) {
+              setLogoSrc(result.logoUrl);
+              console.log(`Found base64 logo for ${company.name}`);
+            } else {
+              // Add timestamp to prevent caching for normal URLs
+              setLogoSrc(`${result.logoUrl}?t=${new Date().getTime()}`);
+            }
           }
         } catch (error) {
           console.error('Error auto-finding logo:', error);
@@ -132,7 +158,11 @@ const Logo: React.FC<LogoProps> = ({
   // Add console logging for debugging
   useEffect(() => {
     if (logoSrc) {
-      console.log(`Logo source for ${alt}: ${logoSrc}`);
+      if (isBase64Image(logoSrc)) {
+        console.log(`Logo source for ${alt} is a base64 encoded image`);
+      } else {
+        console.log(`Logo source for ${alt}: ${logoSrc}`);
+      }
     }
   }, [logoSrc, alt]);
 
