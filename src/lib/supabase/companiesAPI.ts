@@ -103,8 +103,8 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-    // Create a simplified database record from the updates
-    const dbUpdates: CompanyDbUpdates = {};
+    // Create a database record from the updates
+    const dbUpdates: Record<string, any> = {};
     
     // Map only the properties that are in the updates object
     if (updates.name !== undefined) dbUpdates.name = updates.name;

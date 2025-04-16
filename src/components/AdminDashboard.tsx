@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Company, Category } from '@/types/database';
@@ -45,7 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
-import { PlusCircle, Trash2, Edit, Save, X, Search, Upload, Image, Loader2 } from 'lucide-react';
+import { PlusCircle, Trash2, Edit, Save, X, Search, Upload, Image, Loader2, RefreshCw } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { 
   AlertDialog,
@@ -87,6 +88,7 @@ const AdminDashboard = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('companies');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -169,6 +171,37 @@ const AdminDashboard = () => {
       });
     }
   }, [dbError, toast]);
+
+  const handleRefreshData = async () => {
+    try {
+      setIsRefreshing(true);
+      await refreshCompanies();
+      
+      toast({
+        title: "Data Refreshed",
+        description: "Company data has been refreshed from the database.",
+      });
+      
+      // Clear browser cache for images by forcing reload
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        const src = img.src;
+        if (src.includes('company-logos')) {
+          img.src = `${src.split('?')[0]}?t=${Date.now()}`;
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast({
+        title: "Refresh Failed",
+        description: "Failed to refresh company data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleAddFeature = () => {
     if (newFeature.trim()) {
@@ -381,6 +414,27 @@ const AdminDashboard = () => {
         </p>
       </div>
 
+      <div className="flex justify-end mb-6">
+        <Button
+          onClick={handleRefreshData}
+          variant="outline"
+          className="flex items-center gap-2"
+          disabled={isRefreshing}
+        >
+          {isRefreshing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4" />
+              Refresh Data
+            </>
+          )}
+        </Button>
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="companies">Companies List</TabsTrigger>
@@ -451,7 +505,10 @@ const AdminDashboard = () => {
                     <TableRow key={company.id}>
                       <TableCell>
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={company.logo || company.logoUrl} alt={`${company.name} logo`} />
+                          <AvatarImage 
+                            src={`${company.logo || company.logoUrl || ''}?t=${Date.now()}`} 
+                            alt={`${company.name} logo`} 
+                          />
                           <AvatarFallback>{company.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                       </TableCell>

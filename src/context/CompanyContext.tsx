@@ -29,13 +29,13 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
-  // Function to load companies from Supabase
+  // Function to load companies from Supabase with cache-busting
   const loadCompanies = async () => {
     try {
       setIsLoading(true);
       console.log('Loading companies from Supabase with timestamp:', new Date().toISOString());
       
-      // Get all companies from Supabase
+      // Get all companies from Supabase with cache control headers
       const allCompanies = await supabaseAPI.companies.getAll();
       
       // If no companies exist in Supabase, initialize with sample data
@@ -65,10 +65,18 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Function to refresh companies
+  // Function to refresh companies with cache busting
   const refreshCompanies = async () => {
     console.log('Manually refreshing companies data at:', new Date().toISOString());
     await loadCompanies();
+    
+    // Force browser to reload images by adding timestamp
+    const timestamp = Date.now();
+    
+    // Update the lastRefresh state to trigger a re-render
+    setLastRefresh(timestamp);
+    
+    return Promise.resolve();
   };
   
   // Load companies on initial render
