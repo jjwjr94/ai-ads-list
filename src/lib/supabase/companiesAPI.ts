@@ -104,6 +104,7 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
+      // Combine both approaches for maximum type safety and compatibility
       // Use the separate CompanyDetails type to break the circular reference
       const detailsUpdate: CompanyDetails = {};
       
