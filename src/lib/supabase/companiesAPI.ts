@@ -1,3 +1,4 @@
+
 import { supabase } from './supabaseClient';
 import type { Company } from './types';
 
@@ -67,11 +68,11 @@ export const companiesAPI = {
     return true;
   },
 
-  async getHighlighted(): Promise<any[]> {
+  async getHighlighted(): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
-      .select('id, name, details') // Simplified to avoid complex inference
-      .eq('details->highlighted', true)
+      .select('*') // Using full select to avoid deep type issues
+      .eq('details->>highlighted', 'true')
       .setHeader('cache-control', 'no-cache');
 
     if (error) {
