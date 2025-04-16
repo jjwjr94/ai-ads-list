@@ -1,18 +1,8 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
-import { companyDatabase } from '../lib/database';
-import { 
-  initialCompanies,
-  strategyPlanningCompanies,
-  creativeContentCompanies,
-  performanceMediaCompanies,
-  seoOrganicCompanies,
-  dataAnalyticsCompanies,
-  copywritingCompanies,
-  seoCompanies,
-  socialMediaCompanies,
-  analyticsCompanies
-} from '../data/initialCompanies';
+import { supabaseAPI } from '../lib/supabase';
+import { initialCompanies } from '../data/initialCompanies';
 
 // Create context for the database
 interface CompanyContextType {
@@ -38,30 +28,31 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to load companies
+  // Function to load companies from Supabase
   const loadCompanies = async () => {
     try {
       setIsLoading(true);
       
-      // Get all companies from the database
-      let allCompanies = await companyDatabase.getAllCompanies();
+      // Get all companies from Supabase
+      let allCompanies = await supabaseAPI.companies.getAll();
       
       // If no companies exist, initialize with sample data
       if (allCompanies.length === 0) {
+        console.log('No companies found, initializing with sample data');
         // Add each company to the database
         for (const company of initialCompanies) {
-          await companyDatabase.addCompany(company);
+          await supabaseAPI.companies.add(company);
         }
         
         // Get the updated list
-        allCompanies = await companyDatabase.getAllCompanies();
+        allCompanies = await supabaseAPI.companies.getAll();
       }
       
       setCompanies(allCompanies);
       setError(null);
     } catch (err) {
       console.error('Error loading companies:', err);
-      setError('Failed to load companies. Please try again later.');
+      setError('Failed to load companies from Supabase. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
@@ -88,97 +79,96 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Database operations wrapped with state updates
+  // Database operations using Supabase
   const getCompaniesByCategory = async (category: Category) => {
     try {
-      const result = await companyDatabase.getCompaniesByCategory(category);
-      return result;
+      return await supabaseAPI.companies.getByCategory(category);
     } catch (err) {
       console.error('Error getting companies by category:', err);
-      setError('Failed to get companies by category.');
+      setError('Failed to get companies by category from Supabase.');
       return [];
     }
   };
 
   const getCompanyById = async (id: string) => {
     try {
-      return await companyDatabase.getCompanyById(id);
+      return await supabaseAPI.companies.getById(id);
     } catch (err) {
       console.error('Error getting company by ID:', err);
-      setError('Failed to get company details.');
+      setError('Failed to get company details from Supabase.');
       return null;
     }
   };
 
   const addCompany = async (company: Company) => {
     try {
-      const newCompany = await companyDatabase.addCompany(company);
+      const newCompany = await supabaseAPI.companies.add(company);
       await refreshCompanies();
       return newCompany;
     } catch (err) {
       console.error('Error adding company:', err);
-      setError('Failed to add company.');
+      setError('Failed to add company to Supabase.');
       throw err;
     }
   };
 
   const updateCompany = async (id: string, updates: Partial<Company>) => {
     try {
-      const updatedCompany = await companyDatabase.updateCompany(id, updates);
+      const updatedCompany = await supabaseAPI.companies.update(id, updates);
       if (updatedCompany) {
         await refreshCompanies();
       }
       return updatedCompany;
     } catch (err) {
       console.error('Error updating company:', err);
-      setError('Failed to update company.');
+      setError('Failed to update company in Supabase.');
       throw err;
     }
   };
 
   const deleteCompany = async (id: string) => {
     try {
-      const success = await companyDatabase.deleteCompany(id);
+      const success = await supabaseAPI.companies.delete(id);
       if (success) {
         await refreshCompanies();
       }
       return success;
     } catch (err) {
       console.error('Error deleting company:', err);
-      setError('Failed to delete company.');
+      setError('Failed to delete company from Supabase.');
       return false;
     }
   };
 
   const getHighlightedCompanies = async () => {
     try {
-      return await companyDatabase.getHighlightedCompanies();
+      return await supabaseAPI.companies.getHighlighted();
     } catch (err) {
       console.error('Error getting highlighted companies:', err);
-      setError('Failed to get highlighted companies.');
+      setError('Failed to get highlighted companies from Supabase.');
       return [];
     }
   };
 
   const searchCompanies = async (query: string) => {
     try {
-      return await companyDatabase.searchCompanies(query);
+      return await supabaseAPI.companies.search(query);
     } catch (err) {
       console.error('Error searching companies:', err);
-      setError('Failed to search companies.');
+      setError('Failed to search companies in Supabase.');
       return [];
     }
   };
 
   const uploadLogo = async (id: string, file: File, altText: string) => {
     try {
-      const logoStorage = await companyDatabase.uploadLogo(id, file, altText);
+      const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
       // Refresh companies to get updated logo paths
       await refreshCompanies();
-      return logoStorage.path;
+      return logoUrl;
     } catch (err) {
       console.error('Error uploading logo:', err);
-      setError('Failed to upload logo.');
+      setError('Failed to upload logo to Supabase storage.');
       throw err;
     }
   };

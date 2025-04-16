@@ -6,14 +6,18 @@ export interface Company {
   name: string;             // Company name
   website: string;          // Company website URL
   logoUrl: string;          // Path to logo image
+  logo?: string;            // Direct logo path or URL
   category: Category;       // Category enum
   description: string;      // Short description
   features: string[];       // Key features list
   pricing: string;          // Pricing information
   targetAudience: string;   // Target audience
-  details?: {
+  details: {
     summary?: string;       // Detailed summary
     highlighted?: boolean;  // Whether to highlight this company
+    features?: string[];    // Additional features
+    pricing?: string;       // Detailed pricing information
+    bestFor?: string;       // Best target audience
   };
   linkedinUrl?: string;     // LinkedIn URL
   foundedYear?: number;     // Year founded
@@ -26,6 +30,7 @@ export interface Company {
     foundedAfter2020?: boolean | null;
     seriesAOrEarlier?: boolean | null;
   };
+  url?: string;             // Alias for website for backward compatibility
 }
 
 // Categories enum

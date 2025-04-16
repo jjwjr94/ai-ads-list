@@ -49,6 +49,13 @@ const Logo: React.FC<LogoProps> = ({
     .substring(0, 2)
     .toUpperCase();
 
+  // Use company.logo or company.logoUrl if available, and src is not provided
+  useEffect(() => {
+    if (!src && company && (company.logo || company.logoUrl)) {
+      setLogoSrc(company.logo || company.logoUrl || null);
+    }
+  }, [company, src]);
+
   // Auto-find logo if company is provided and no src is available
   useEffect(() => {
     const autoFindLogo = async () => {

@@ -93,15 +93,14 @@ const AdminDashboard = () => {
   const form = useForm<Partial<Company>>({
     defaultValues: {
       name: '',
-      url: '',
+      website: '',
       description: '',
       category: undefined,
       details: {
         summary: '',
-        features: [],
+        highlighted: false,
         pricing: '',
-        bestFor: '',
-        highlighted: false
+        bestFor: ''
       },
       linkedinUrl: '',
       foundedYear: undefined,
@@ -115,14 +114,14 @@ const AdminDashboard = () => {
     if (editingCompany) {
       form.reset({
         name: editingCompany.name,
-        url: editingCompany.url,
+        website: editingCompany.website || editingCompany.url,
         description: editingCompany.description,
         category: editingCompany.category,
         details: {
-          summary: editingCompany.details.summary,
-          pricing: editingCompany.details.pricing,
-          bestFor: editingCompany.details.bestFor,
-          highlighted: editingCompany.details.highlighted || false
+          summary: editingCompany.details?.summary,
+          highlighted: editingCompany.details?.highlighted || false,
+          pricing: editingCompany.details?.pricing || editingCompany.pricing,
+          bestFor: editingCompany.details?.bestFor || editingCompany.targetAudience
         },
         linkedinUrl: editingCompany.linkedinUrl,
         foundedYear: editingCompany.foundedYear,
@@ -130,24 +129,23 @@ const AdminDashboard = () => {
         employeeCount: editingCompany.employeeCount,
         fundingStage: editingCompany.fundingStage
       });
-      setFeatures(editingCompany.details.features || []);
+      setFeatures(editingCompany.features || editingCompany.details?.features || []);
       
-      setLogoPreview(editingCompany.logo || null);
+      setLogoPreview(editingCompany.logo || editingCompany.logoUrl || null);
       setLogoFile(null);
       
       setActiveTab('add');
     } else {
       form.reset({
         name: '',
-        url: '',
+        website: '',
         description: '',
         category: undefined,
         details: {
           summary: '',
-          features: [],
+          highlighted: false,
           pricing: '',
-          bestFor: '',
-          highlighted: false
+          bestFor: ''
         },
         linkedinUrl: '',
         foundedYear: undefined,
@@ -229,9 +227,12 @@ const AdminDashboard = () => {
       
       const companyData = {
         ...data,
+        features: features,
+        pricing: data.details?.pricing || '',
+        targetAudience: data.details?.bestFor || '',
         details: {
           ...data.details,
-          features
+          features: features
         }
       } as Company;
 
@@ -241,9 +242,11 @@ const AdminDashboard = () => {
         if (logoFile) {
           const logoPath = await handleLogoUpload(editingCompany.id);
           if (logoPath) {
+            updatedCompanyData.logoUrl = logoPath;
             updatedCompanyData.logo = logoPath;
           }
         } else {
+          updatedCompanyData.logoUrl = editingCompany.logoUrl;
           updatedCompanyData.logo = editingCompany.logo;
         }
         
@@ -256,6 +259,7 @@ const AdminDashboard = () => {
         const newCompany: Company = {
           ...companyData,
           id: uuidv4(),
+          logoUrl: '',
           logo: '',
           lastUpdated: new Date()
         };
@@ -265,7 +269,10 @@ const AdminDashboard = () => {
         if (logoFile) {
           const logoPath = await handleLogoUpload(addedCompany.id);
           if (logoPath) {
-            await updateCompany(addedCompany.id, { logo: logoPath });
+            await updateCompany(addedCompany.id, { 
+              logoUrl: logoPath,
+              logo: logoPath
+            });
           }
         }
         
@@ -424,15 +431,15 @@ const AdminDashboard = () => {
                     <TableRow key={company.id}>
                       <TableCell>
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={company.logo} alt={`${company.name} logo`} />
+                          <AvatarImage src={company.logo || company.logoUrl} alt={`${company.name} logo`} />
                           <AvatarFallback>{company.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                       </TableCell>
                       <TableCell className="font-medium">{company.name}</TableCell>
                       <TableCell>{company.category}</TableCell>
                       <TableCell className="max-w-xs truncate">{company.description}</TableCell>
-                      <TableCell>{company.details.highlighted ? 'Yes' : 'No'}</TableCell>
-                      <TableCell>{new Date(company.lastUpdated).toLocaleDateString()}</TableCell>
+                      <TableCell>{company.details?.highlighted ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{new Date(company.lastUpdated || Date.now()).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -572,7 +579,7 @@ const AdminDashboard = () => {
 
                     <FormField
                       control={form.control}
-                      name="url"
+                      name="website"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Website URL</FormLabel>
