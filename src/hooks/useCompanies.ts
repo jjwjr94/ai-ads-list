@@ -1,6 +1,5 @@
-
-import { useState, useCallback } from 'react';
-import { Company, Category } from '../types/database';
+import { useState, useCallback, useRef } from 'react';
+import { Company } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
 import { initialCompanies } from '../data/initialCompanies';
 
@@ -9,9 +8,22 @@ export function useCompanies() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const lastFetchTime = useRef<number>(0);
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-  // Function to load companies from Supabase with cache-busting
+  // Function to load companies from Supabase with caching
   const loadCompanies = async (force = false) => {
+    // Check if we should use cached data
+    const now = Date.now();
+    const shouldUseCache = !force && 
+                          companies.length > 0 && 
+                          (now - lastFetchTime.current) < CACHE_DURATION;
+    
+    if (shouldUseCache) {
+      console.log('Using cached companies data');
+      return;
+    }
+    
     // Prevent multiple simultaneous refreshes
     if (isRefreshing && !force) {
       console.log('Already refreshing, skipping redundant refresh');
@@ -23,7 +35,7 @@ export function useCompanies() {
       setIsLoading(true);
       console.log('Loading companies from Supabase with timestamp:', new Date().toISOString());
       
-      // Get all companies from Supabase with cache control headers
+      // Get all companies from Supabase
       const allCompanies = await supabaseAPI.companies.getAll();
       
       // If no companies exist in Supabase, initialize with sample data
@@ -43,6 +55,8 @@ export function useCompanies() {
         setCompanies(allCompanies);
       }
       
+      // Update last fetch time
+      lastFetchTime.current = Date.now();
       setError(null);
     } catch (err) {
       console.error('Error loading companies:', err);
@@ -53,11 +67,28 @@ export function useCompanies() {
     }
   };
 
-  // Function to refresh companies with cache busting - only when explicitly requested
+  // Function to refresh companies - only when explicitly requested
   const refreshCompanies = useCallback(async () => {
     console.log('Manually refreshing companies data at:', new Date().toISOString());
     await loadCompanies(true); // Force refresh
     return Promise.resolve();
+  }, []);
+  
+  // Optimistic update helpers
+  const optimisticAddCompany = useCallback((company: Company) => {
+    setCompanies(prev => [...prev, company]);
+  }, []);
+  
+  const optimisticUpdateCompany = useCallback((id: string, updates: Partial<Company>) => {
+    setCompanies(prev => 
+      prev.map(company => 
+        company.id === id ? { ...company, ...updates } : company
+      )
+    );
+  }, []);
+  
+  const optimisticDeleteCompany = useCallback((id: string) => {
+    setCompanies(prev => prev.filter(company => company.id !== id));
   }, []);
   
   return {
@@ -67,6 +98,9 @@ export function useCompanies() {
     isRefreshing,
     loadCompanies,
     refreshCompanies,
+    optimisticAddCompany,
+    optimisticUpdateCompany,
+    optimisticDeleteCompany,
     setCompanies
   };
 }

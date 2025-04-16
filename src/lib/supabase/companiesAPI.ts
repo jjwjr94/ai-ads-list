@@ -1,7 +1,74 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
+
+// Utility function to map database record to Company object
+const mapDbRecordToCompany = (record: any): Company => ({
+  ...record,
+  logoUrl: record.logo_url || '',
+  targetAudience: record.target_audience || '',
+  details: record.details || {}
+}) as Company;
+
+// Utility function to map Company object to database record
+const mapCompanyToDbRecord = (company: Company): Record<string, any> => ({
+  id: company.id,
+  name: company.name,
+  website: company.website,
+  category: company.category,
+  description: company.description,
+  features: company.features,
+  pricing: company.pricing,
+  target_audience: company.targetAudience,
+  logo_url: company.logoUrl || company.logo,
+  details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
+  linkedin_url: company.linkedinUrl,
+  founded_year: company.foundedYear,
+  headquarters: company.headquarters,
+  employee_count: company.employeeCount,
+  funding_stage: company.fundingStage,
+  last_updated: company.lastUpdated || new Date(),
+  has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
+  founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
+  series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
+});
+
+// Utility function to create partial database record for updates
+const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> => {
+  const dbUpdates: Record<string, any> = {};
+  
+  if (updates.name !== undefined) dbUpdates.name = updates.name;
+  if (updates.website !== undefined) dbUpdates.website = updates.website;
+  if (updates.category !== undefined) dbUpdates.category = updates.category;
+  if (updates.description !== undefined) dbUpdates.description = updates.description;
+  if (updates.features !== undefined) dbUpdates.features = updates.features;
+  if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
+  if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
+  if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+  if (updates.logo !== undefined) dbUpdates.logo_url = updates.logo;
+  if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl;
+  if (updates.foundedYear !== undefined) dbUpdates.founded_year = updates.foundedYear;
+  if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
+  if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
+  if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
+  if (updates.lastUpdated !== undefined) dbUpdates.last_updated = updates.lastUpdated;
+  
+  // Handle details object separately to ensure it's properly serialized
+  if (updates.details !== undefined) {
+    dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
+  }
+  
+  if (updates.aiNativeCriteria) {
+    if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
+      dbUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
+    if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) 
+      dbUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
+    if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) 
+      dbUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
+  }
+  
+  return dbUpdates;
+};
 
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
@@ -15,13 +82,7 @@ export const companiesAPI = {
       return [];
     }
 
-    // Explicitly cast data to Company[] and provide default values
-    return (data || []).map(company => ({
-      ...company,
-      logoUrl: company.logo_url || '',
-      targetAudience: company.target_audience || '',
-      details: company.details || {}
-    })) as Company[];
+    return (data || []).map(mapDbRecordToCompany);
   },
 
   async getById(id: string): Promise<Company | null> {
@@ -36,42 +97,15 @@ export const companiesAPI = {
       return null;
     }
 
-    // Explicitly cast data to Company and provide default values
-    return data ? {
-      ...data,
-      logoUrl: data.logo_url || '',
-      targetAudience: data.target_audience || '',
-      details: data.details || {}
-    } as Company : null;
+    return data ? mapDbRecordToCompany(data) : null;
   },
 
   async create(company: Company): Promise<Company> {
-    // Convert Company type to a Supabase compatible object
-    const supabaseCompany = {
-      id: company.id,
-      name: company.name,
-      website: company.website,
-      category: company.category,
-      description: company.description,
-      features: company.features,
-      pricing: company.pricing,
-      target_audience: company.targetAudience,
-      logo_url: company.logoUrl || company.logo,
-      details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
-      linkedin_url: company.linkedinUrl,
-      founded_year: company.foundedYear,
-      headquarters: company.headquarters,
-      employee_count: company.employeeCount,
-      funding_stage: company.fundingStage,
-      last_updated: company.lastUpdated || new Date(),
-      has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
-      founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
-      series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
-    };
+    const dbRecord = mapCompanyToDbRecord(company);
 
     const { data, error } = await supabase
       .from('companies')
-      .insert(supabaseCompany)
+      .insert(dbRecord)
       .select()
       .single();
 
@@ -80,52 +114,15 @@ export const companiesAPI = {
       throw new Error(`Failed to create company: ${error.message}`);
     }
 
-    // Explicitly cast data to Company and provide default values
-    return {
-      ...data,
-      logoUrl: data.logo_url || '',
-      targetAudience: data.target_audience || '',
-      details: data.details || {}
-    } as Company;
+    return mapDbRecordToCompany(data);
   },
 
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
-    // Convert Company type to a Supabase compatible object
-    const supabaseUpdates: Record<string, any> = {};
-    
-    if (updates.name !== undefined) supabaseUpdates.name = updates.name;
-    if (updates.website !== undefined) supabaseUpdates.website = updates.website;
-    if (updates.category !== undefined) supabaseUpdates.category = updates.category;
-    if (updates.description !== undefined) supabaseUpdates.description = updates.description;
-    if (updates.features !== undefined) supabaseUpdates.features = updates.features;
-    if (updates.pricing !== undefined) supabaseUpdates.pricing = updates.pricing;
-    if (updates.targetAudience !== undefined) supabaseUpdates.target_audience = updates.targetAudience;
-    if (updates.logoUrl !== undefined) supabaseUpdates.logo_url = updates.logoUrl;
-    if (updates.logo !== undefined) supabaseUpdates.logo_url = updates.logo;
-    if (updates.linkedinUrl !== undefined) supabaseUpdates.linkedin_url = updates.linkedinUrl;
-    if (updates.foundedYear !== undefined) supabaseUpdates.founded_year = updates.foundedYear;
-    if (updates.headquarters !== undefined) supabaseUpdates.headquarters = updates.headquarters;
-    if (updates.employeeCount !== undefined) supabaseUpdates.employee_count = updates.employeeCount;
-    if (updates.fundingStage !== undefined) supabaseUpdates.funding_stage = updates.fundingStage;
-    if (updates.lastUpdated !== undefined) supabaseUpdates.last_updated = updates.lastUpdated;
-    
-    // Handle details object separately to ensure it's properly serialized
-    if (updates.details !== undefined) {
-      supabaseUpdates.details = JSON.parse(JSON.stringify(updates.details));
-    }
-    
-    if (updates.aiNativeCriteria) {
-      if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
-        supabaseUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
-      if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) 
-        supabaseUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
-      if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) 
-        supabaseUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
-    }
+    const dbUpdates = createPartialDbRecord(updates);
 
     const { error } = await supabase
       .from('companies')
-      .update(supabaseUpdates)
+      .update(dbUpdates)
       .eq('id', id);
 
     if (error) {
@@ -161,13 +158,7 @@ export const companiesAPI = {
       return [];
     }
 
-    // Explicitly cast data to Company[] and provide default values
-    return (data || []).map(company => ({
-      ...company,
-      logoUrl: company.logo_url || '',
-      targetAudience: company.target_audience || '',
-      details: company.details || {}
-    })) as Company[];
+    return (data || []).map(mapDbRecordToCompany);
   },
 
   async search(query: string): Promise<Company[]> {
@@ -181,13 +172,7 @@ export const companiesAPI = {
       return [];
     }
 
-    // Explicitly cast data to Company[] and provide default values
-    return (data || []).map(company => ({
-      ...company,
-      logoUrl: company.logo_url || '',
-      targetAudience: company.target_audience || '',
-      details: company.details || {}
-    })) as Company[];
+    return (data || []).map(mapDbRecordToCompany);
   },
 
   async getHighlighted(): Promise<Company[]> {
@@ -202,12 +187,6 @@ export const companiesAPI = {
       return [];
     }
 
-    // Explicitly cast data to Company[] and provide default values
-    return (data || []).map(company => ({
-      ...company,
-      logoUrl: company.logo_url || '',
-      targetAudience: company.target_audience || '',
-      details: company.details || {}
-    })) as Company[];
+    return (data || []).map(mapDbRecordToCompany);
   }
 };
