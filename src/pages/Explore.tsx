@@ -4,19 +4,19 @@ import { Link } from 'react-router-dom';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
 import { 
-  StrategyPlanningPage, 
-  CreativeContentPage, 
-  PerformanceMediaPage,
-  SeoOrganicPage,
-  DataAnalyticsPage,
-  WebAppDevelopmentPage,
-  AccountManagementPage,
-  SocialMediaPage,
-  InfluencerMarketingPage,
-  BrandManagementPage,
-  AdFraudPage,
-  AdNativePage
-} from './CategoryPages';
+  CodeSquare,
+  Lightbulb,
+  Search,
+  PieChart,
+  Database,
+  LayoutDashboard,
+  UserRound,
+  MessageSquare,
+  Users,
+  BuildingIcon,
+  Shield,
+  Layout
+} from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -59,89 +59,115 @@ const Explore = () => {
     fetchCategoryCounts();
   }, [getCompaniesByCategory]);
 
+  // Map category icons
+  const getCategoryIcon = (category: string) => {
+    switch(category) {
+      case Category.STRATEGY_PLANNING:
+        return LayoutDashboard;
+      case Category.CREATIVE_CONTENT:
+        return Lightbulb;
+      case Category.PERFORMANCE_MEDIA:
+        return PieChart;
+      case Category.SEO_ORGANIC:
+        return CodeSquare;
+      case Category.DATA_ANALYTICS:
+        return PieChart;
+      case Category.WEB_APP_DEVELOPMENT:
+        return CodeSquare;
+      case Category.ACCOUNT_MANAGEMENT:
+        return UserRound;
+      case Category.SOCIAL_MEDIA:
+        return MessageSquare;
+      case Category.INFLUENCER_MARKETING:
+        return Users;
+      case Category.BRAND_MANAGEMENT:
+        return BuildingIcon;
+      case Category.AD_FRAUD:
+        return Shield;
+      case Category.AD_NATIVE:
+        return Layout;
+      case Category.COPYWRITING:
+        return Lightbulb;
+      case Category.ANALYTICS:
+        return Database;
+      case Category.SEO:
+        return Search;
+      default:
+        return Database;
+    }
+  };
+
   // Create category cards with links to category pages
   const categoryCards = [
     { 
       title: Category.STRATEGY_PLANNING, 
       path: '/strategy-planning',
-      component: StrategyPlanningPage,
       description: 'AI tools for strategic planning and decision-making',
       count: categoryCounts[Category.STRATEGY_PLANNING] || 0
     },
     { 
       title: Category.CREATIVE_CONTENT, 
       path: '/creative-content',
-      component: CreativeContentPage,
       description: 'AI-powered content creation and creative tools',
       count: categoryCounts[Category.CREATIVE_CONTENT] || 0
     },
     { 
       title: Category.PERFORMANCE_MEDIA, 
       path: '/performance-media',
-      component: PerformanceMediaPage,
       description: 'AI solutions for media buying and campaign optimization',
       count: categoryCounts[Category.PERFORMANCE_MEDIA] || 0
     },
     { 
       title: Category.SEO_ORGANIC, 
       path: '/seo-organic',
-      component: SeoOrganicPage,
       description: 'AI tools for SEO and organic growth strategies',
       count: categoryCounts[Category.SEO_ORGANIC] || 0
     },
     { 
       title: Category.DATA_ANALYTICS, 
       path: '/data-analytics',
-      component: DataAnalyticsPage,
       description: 'AI-powered data analysis and visualization tools',
       count: categoryCounts[Category.DATA_ANALYTICS] || 0
     },
     { 
       title: Category.WEB_APP_DEVELOPMENT, 
       path: '/web-app-development',
-      component: WebAppDevelopmentPage,
       description: 'AI solutions for web and app development',
       count: categoryCounts[Category.WEB_APP_DEVELOPMENT] || 0
     },
     { 
       title: Category.ACCOUNT_MANAGEMENT, 
       path: '/account-management',
-      component: AccountManagementPage,
       description: 'AI tools for client and account management',
       count: categoryCounts[Category.ACCOUNT_MANAGEMENT] || 0
     },
     { 
       title: Category.SOCIAL_MEDIA, 
       path: '/social-media',
-      component: SocialMediaPage,
       description: 'AI solutions for social media and community management',
       count: categoryCounts[Category.SOCIAL_MEDIA] || 0
     },
     { 
       title: Category.INFLUENCER_MARKETING, 
       path: '/influencer-marketing',
-      component: InfluencerMarketingPage,
       description: 'AI tools for influencer discovery and campaign management',
       count: categoryCounts[Category.INFLUENCER_MARKETING] || 0
     },
     { 
       title: Category.BRAND_MANAGEMENT, 
       path: '/brand-management',
-      component: BrandManagementPage,
       description: 'AI solutions for brand management and asset organization',
       count: categoryCounts[Category.BRAND_MANAGEMENT] || 0
     },
     { 
       title: Category.AD_FRAUD, 
       path: '/ad-fraud',
-      component: AdFraudPage,
       description: 'AI tools for ad fraud detection and prevention',
       count: categoryCounts[Category.AD_FRAUD] || 0
     },
     { 
       title: Category.AD_NATIVE, 
       path: '/ad-native',
-      component: AdNativePage,
       description: 'AI-native agencies and consulting services',
       count: categoryCounts[Category.AD_NATIVE] || 0
     }
@@ -165,24 +191,32 @@ const Explore = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoryCards.map((category) => (
-            <Link 
-              key={category.title}
-              to={category.path}
-              className="block group"
-            >
-              <div className="h-full border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#9b87f5]">
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5]">{category.title}</h3>
-                  <p className="text-gray-600 mb-4">{category.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">{category.count} tools</span>
-                    <span className="text-[#9b87f5] text-sm font-medium">Explore →</span>
+          {categoryCards.map((category) => {
+            const IconComponent = getCategoryIcon(category.title);
+            return (
+              <Link 
+                key={category.title}
+                to={category.path}
+                className="block group"
+              >
+                <div className="h-full border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#9b87f5]">
+                  <div className="p-6">
+                    <div className="flex items-center mb-3">
+                      <div className="rounded-full bg-[#f8f9fa] p-2 mr-3">
+                        <IconComponent className="h-6 w-6 text-[#9b87f5]" />
+                      </div>
+                      <h3 className="text-xl font-bold group-hover:text-[#9b87f5]">{category.title}</h3>
+                    </div>
+                    <p className="text-gray-600 mb-4">{category.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">{category.count} tools</span>
+                      <span className="text-[#9b87f5] text-sm font-medium">Explore →</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
