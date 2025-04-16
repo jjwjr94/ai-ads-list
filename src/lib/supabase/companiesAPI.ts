@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -96,14 +95,24 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Create a plain object instead of using the type directly
-      dbUpdates.details = {
-        summary: updates.details.summary || '',
-        features: updates.details.features || [],
-        highlighted: updates.details.highlighted || false,
-        pricing: updates.details.pricing || '',
-        bestFor: updates.details.bestFor || ''
-      };
+      // Create a plain object with explicit type annotation to break the recursion
+      const detailsUpdate: {
+        summary?: string;
+        features?: string[];
+        highlighted?: boolean;
+        pricing?: string;
+        bestFor?: string;
+      } = {};
+      
+      // Only copy properties that exist in the updates
+      if (updates.details.summary !== undefined) detailsUpdate.summary = updates.details.summary;
+      if (updates.details.features !== undefined) detailsUpdate.features = updates.details.features;
+      if (updates.details.highlighted !== undefined) detailsUpdate.highlighted = updates.details.highlighted;
+      if (updates.details.pricing !== undefined) detailsUpdate.pricing = updates.details.pricing;
+      if (updates.details.bestFor !== undefined) detailsUpdate.bestFor = updates.details.bestFor;
+      
+      // Assign the explicitly typed object to dbUpdates
+      dbUpdates.details = detailsUpdate;
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
