@@ -5,7 +5,25 @@ import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
 import { categoryMapping } from './categoryMapping';
 import type { Database } from '../../integrations/supabase/types';
 
-// Simplify the type definition to avoid excessive depth
+// Define a simplified update type to avoid excessive depth in type instantiation
+type CompanyDbUpdates = {
+  name?: string;
+  website?: string;
+  description?: string;
+  logo_url?: string;
+  features?: string[];
+  pricing?: string;
+  target_audience?: string;
+  linkedin_url?: string;
+  founded_year?: number;
+  headquarters?: string;
+  employee_count?: string;
+  funding_stage?: string;
+  details?: Record<string, any>;
+  category?: string;
+  last_updated?: string;
+};
+
 export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     console.log('Fetching all companies from Supabase');
@@ -73,8 +91,8 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-    // Create a partial database record from the updates
-    const dbUpdates: Partial<Database['public']['Tables']['companies']['Update']> = {};
+    // Create a simplified database record from the updates
+    const dbUpdates: CompanyDbUpdates = {};
     
     // Map only the properties that are in the updates object
     if (updates.name !== undefined) dbUpdates.name = updates.name;

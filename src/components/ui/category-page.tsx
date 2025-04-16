@@ -1,0 +1,230 @@
+
+import React, { useEffect, useState } from 'react';
+import { Category, Company } from '@/types/database';
+import { useCompanyDatabase } from '@/context/CompanyContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import Logo from '@/components/ui/logo';
+import { useToast } from '@/components/ui/use-toast';
+
+interface CategoryPageProps {
+  category: Category;
+}
+
+export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
+  const { getCompaniesByCategory, isLoading, error } = useCompanyDatabase();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        const fetchedCompanies = await getCompaniesByCategory(category);
+        
+        console.log(`Found ${fetchedCompanies.length} ${category} companies`);
+        setCompanies(fetchedCompanies);
+      } catch (err) {
+        console.error(`Error fetching ${category} companies:`, err);
+        toast({
+          title: 'Error',
+          description: `Failed to fetch ${category} companies. Please try again.`,
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, [category, getCompaniesByCategory, toast]);
+
+  const filteredCompanies = filter === "highlighted" 
+    ? companies.filter(company => company.details?.highlighted) 
+    : companies;
+
+  // Loading skeletons for the cards
+  const SkeletonCard = () => (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="flex flex-row items-center gap-4">
+        <Skeleton className="h-10 w-10 rounded-lg" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-60" />
+        </div>
+      </CardHeader>
+      <CardContent className="flex-1">
+        <div className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          
+          <div className="space-y-2 pt-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-full" />
+          </div>
+          
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Format category title for display
+  const formatCategoryTitle = (categoryString: string): string => {
+    return categoryString.replace(/_/g, ' ');
+  };
+
+  const categoryTitle = formatCategoryTitle(category);
+
+  return (
+    <div className="container mx-auto py-12 px-4">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold tracking-tight text-[#1A1F2C]">
+          {categoryTitle.split('&')[0]}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
+            {categoryTitle.includes('&') ? `& ${categoryTitle.split('&')[1]}` : ''}
+          </span>
+        </h1>
+        <p className="mt-4 text-lg text-gray-600">
+          Discover AI-powered tools for {categoryTitle.toLowerCase()}
+        </p>
+        
+        <div className="mt-6 flex justify-center gap-4">
+          <button 
+            onClick={() => setFilter("all")}
+            className={`px-4 py-2 rounded-md ${filter === "all" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+            disabled={loading || isLoading}
+          >
+            All Tools
+          </button>
+          <button 
+            onClick={() => setFilter("highlighted")}
+            className={`px-4 py-2 rounded-md ${filter === "highlighted" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+            disabled={loading || isLoading}
+          >
+            Featured Tools
+          </button>
+        </div>
+      </div>
+
+      {loading || isLoading ? (
+        <div className="grid grid-cols-1 gap-8">
+          {[1, 2, 3].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-red-500">Error loading tools. Please try again later.</p>
+        </div>
+      ) : filteredCompanies.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No tools found in this category. Please add some companies to get started.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-8">
+          {filteredCompanies.map((company) => (
+            <Card key={company.id} className={`flex flex-col h-full hover:shadow-lg transition-shadow ${company.details?.highlighted ? 'border-purple-300 bg-purple-50/30' : ''}`}>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Logo 
+                  src={company.logoUrl || company.logo || ''} 
+                  alt={`${company.name} logo`}
+                  size="md"
+                  className="bg-white"
+                />
+                <div>
+                  <CardTitle className="text-xl">
+                    <a
+                      href={company.website || company.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-purple-600 transition-colors"
+                    >
+                      {company.name}
+                    </a>
+                  </CardTitle>
+                  <CardDescription className="text-sm mt-1">{company.description}</CardDescription>
+                </div>
+                {company.details?.highlighted && (
+                  <div className="ml-auto">
+                    <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded flex items-center">
+                      <Star className="w-3 h-3 mr-1" />
+                      Featured
+                    </span>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent className="flex-1">
+                {company.details && (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">{company.details.summary}</p>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Star className="w-4 h-4 text-purple-600" />
+                        Key Features:
+                      </div>
+                      <ul className="pl-6 text-sm text-gray-600 list-disc">
+                        {(company.details.features || company.features || []).map((feature, idx) => (
+                          <li key={idx}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm">
+                      <DollarSign className="w-4 h-4 text-purple-600" />
+                      <span className="font-medium">Pricing:</span>
+                      <span className="text-gray-600">{company.details.pricing || company.pricing}</span>
+                    </div>
+
+                    {company.details.bestFor && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Building2 className="w-4 h-4 text-purple-600" />
+                        <span className="font-medium">Best For:</span>
+                        <span className="text-gray-600">{company.details.bestFor}</span>
+                      </div>
+                    )}
+                    
+                    {(company.linkedinUrl || company.website || company.url) && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Globe className="w-4 h-4 text-purple-600" />
+                        {company.linkedinUrl ? (
+                          <a 
+                            href={company.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-purple-600 hover:underline"
+                          >
+                            LinkedIn Profile
+                          </a>
+                        ) : (
+                          <a 
+                            href={company.website || company.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-purple-600 hover:underline"
+                          >
+                            Website
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
