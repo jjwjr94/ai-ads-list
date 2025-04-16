@@ -102,32 +102,15 @@ export const companiesAPI = {
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
     
-    // Handle details separately to avoid infinite type instantiation
+    // Handle details separately to avoid type instantiation issues
     if (updates.details) {
- comprehensive-fix
-      // Combine both approaches for maximum type safety and compatibility
-      // Use the separate CompanyDetails type to break the circular reference
-      const detailsUpdate: CompanyDetails = {};
-      
-      // Only copy properties that exist in the updates
-      if (updates.details.summary !== undefined) detailsUpdate.summary = updates.details.summary;
-      if (updates.details.features !== undefined) detailsUpdate.features = updates.details.features;
-      if (updates.details.highlighted !== undefined) detailsUpdate.highlighted = updates.details.highlighted;
-      if (updates.details.pricing !== undefined) detailsUpdate.pricing = updates.details.pricing;
-      if (updates.details.bestFor !== undefined) detailsUpdate.bestFor = updates.details.bestFor;
-      
-      // Assign the explicitly typed object to dbUpdates
-      dbUpdates.details = detailsUpdate;
-      // Explicitly create a plain object for details
-      // Use type assertion to avoid deep type instantiation
       dbUpdates.details = {
         summary: updates.details.summary ?? '',
         features: updates.details.features ?? [],
         highlighted: updates.details.highlighted ?? false,
         pricing: updates.details.pricing ?? '',
         bestFor: updates.details.bestFor ?? ''
-      } as Record<string, unknown>;
- main
+      };
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {
