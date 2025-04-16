@@ -8,7 +8,6 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
-import SeoTools from "./pages/SeoTools";
 import Explore from "./pages/Explore";
 import Admin from "./pages/Admin";
 import { CompanyProvider } from "./context/CompanyContext";
@@ -43,7 +42,6 @@ const App = () => (
                 <SidebarTrigger className="m-4" />
                 <Routes>
                   <Route path="/" element={<LandingPage />} />
-                  <Route path="/seo-tools" element={<SeoTools />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/admin" element={<Admin />} />
                   

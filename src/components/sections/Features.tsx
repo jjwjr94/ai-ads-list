@@ -31,7 +31,6 @@ const features = [
     title: "SEO & Organic Growth",
     description: "Enhance organic visibility with AI-powered SEO tools",
     icon: Search,
-    link: "/seo-tools"
   },
   {
     title: "Data & Analytics",
