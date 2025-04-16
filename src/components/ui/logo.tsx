@@ -52,7 +52,7 @@ const Logo: React.FC<LogoProps> = ({
 
   // Helper function to check if a string is a base64 image
   const isBase64Image = (str: string): boolean => {
-    return str.startsWith('data:image/');
+    return str?.startsWith('data:image/');
   };
 
   // Check if company name is available and try to find direct match in public logos

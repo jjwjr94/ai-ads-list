@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -80,6 +79,7 @@ export const companiesAPI = {
     // Fix: Create a new object for database updates instead of using recursion
     const dbUpdates: Record<string, any> = {};
     
+    // Only add fields that are defined in the updates object
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.website !== undefined) dbUpdates.website = updates.website;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
@@ -92,12 +92,20 @@ export const companiesAPI = {
     if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
-    if (updates.details !== undefined) dbUpdates.details = updates.details;
+    
+    // Handle details separately to avoid infinite type instantiation
+    if (updates.details) {
+      // Copy details without creating circular references
+      dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
+    }
+    
     if (updates.category !== undefined && updates.category in categoryMapping) {
       dbUpdates.category = categoryMapping[updates.category as Category];
     }
     
     dbUpdates.last_updated = new Date().toISOString();
+    
+    console.log('Updating company with values:', dbUpdates);
     
     const { data, error } = await supabase
       .from('companies')

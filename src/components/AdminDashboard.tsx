@@ -63,6 +63,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { ToastAction } from "@/components/ui/toast";
 
 const AdminDashboard = () => {
   const { 
@@ -514,7 +515,7 @@ const AdminDashboard = () => {
                       <TableCell>
                         <Avatar className="h-10 w-10">
                           <AvatarImage 
-                            src={`${company.logo || company.logoUrl || ''}?t=${Date.now()}`} 
+                            src={company.logo || company.logoUrl || ''} 
                             alt={`${company.name} logo`} 
                           />
                           <AvatarFallback>{company.name.substring(0, 2).toUpperCase()}</AvatarFallback>
