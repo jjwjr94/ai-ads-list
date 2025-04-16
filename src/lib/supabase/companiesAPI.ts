@@ -46,9 +46,32 @@ export const companiesAPI = {
   },
 
   async create(company: Company): Promise<Company> {
+    // Convert Company type to a Supabase compatible object
+    const supabaseCompany = {
+      id: company.id,
+      name: company.name,
+      website: company.website,
+      category: company.category,
+      description: company.description,
+      features: company.features,
+      pricing: company.pricing,
+      target_audience: company.targetAudience,
+      logo_url: company.logoUrl || company.logo,
+      details: company.details,
+      linkedin_url: company.linkedinUrl,
+      founded_year: company.foundedYear,
+      headquarters: company.headquarters,
+      employee_count: company.employeeCount,
+      funding_stage: company.fundingStage,
+      last_updated: company.lastUpdated || new Date(),
+      has_dot_ai_domain: company.aiNativeCriteria?.hasDotAiDomain,
+      founded_after_2020: company.aiNativeCriteria?.foundedAfter2020,
+      series_a_or_earlier: company.aiNativeCriteria?.seriesAOrEarlier,
+    };
+
     const { data, error } = await supabase
       .from('companies')
-      .insert(company)
+      .insert(supabaseCompany)
       .select()
       .single();
 
@@ -67,9 +90,38 @@ export const companiesAPI = {
   },
 
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
+    // Convert Company type to a Supabase compatible object
+    const supabaseUpdates: Record<string, any> = {};
+    
+    if (updates.name !== undefined) supabaseUpdates.name = updates.name;
+    if (updates.website !== undefined) supabaseUpdates.website = updates.website;
+    if (updates.category !== undefined) supabaseUpdates.category = updates.category;
+    if (updates.description !== undefined) supabaseUpdates.description = updates.description;
+    if (updates.features !== undefined) supabaseUpdates.features = updates.features;
+    if (updates.pricing !== undefined) supabaseUpdates.pricing = updates.pricing;
+    if (updates.targetAudience !== undefined) supabaseUpdates.target_audience = updates.targetAudience;
+    if (updates.logoUrl !== undefined) supabaseUpdates.logo_url = updates.logoUrl;
+    if (updates.logo !== undefined) supabaseUpdates.logo_url = updates.logo;
+    if (updates.details !== undefined) supabaseUpdates.details = updates.details;
+    if (updates.linkedinUrl !== undefined) supabaseUpdates.linkedin_url = updates.linkedinUrl;
+    if (updates.foundedYear !== undefined) supabaseUpdates.founded_year = updates.foundedYear;
+    if (updates.headquarters !== undefined) supabaseUpdates.headquarters = updates.headquarters;
+    if (updates.employeeCount !== undefined) supabaseUpdates.employee_count = updates.employeeCount;
+    if (updates.fundingStage !== undefined) supabaseUpdates.funding_stage = updates.fundingStage;
+    if (updates.lastUpdated !== undefined) supabaseUpdates.last_updated = updates.lastUpdated;
+    
+    if (updates.aiNativeCriteria) {
+      if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
+        supabaseUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
+      if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) 
+        supabaseUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
+      if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) 
+        supabaseUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
+    }
+
     const { error } = await supabase
       .from('companies')
-      .update(updates)
+      .update(supabaseUpdates)
       .eq('id', id);
 
     if (error) {
