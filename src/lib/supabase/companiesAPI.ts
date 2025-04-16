@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -93,8 +94,9 @@ export const companiesAPI = {
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
     
-    // Handle details separately to avoid infinite type instantiation
+    // Handle details separately to avoid type instantiation issues
     if (updates.details) {
+ simplified-fix
       // Simplified approach: create a plain object without type references
       // This completely avoids the circular reference issue
       dbUpdates.details = {
@@ -105,6 +107,18 @@ export const companiesAPI = {
         pricing: updates.details?.pricing || '',
         bestFor: updates.details?.bestFor || ''
       };
+
+      // Create a simple object to avoid deep type instantiation
+      const detailsObj: CompanyDetails = {};
+      
+      if (updates.details.summary !== undefined) detailsObj.summary = updates.details.summary;
+      if (updates.details.features !== undefined) detailsObj.features = updates.details.features;
+      if (updates.details.highlighted !== undefined) detailsObj.highlighted = updates.details.highlighted;
+      if (updates.details.pricing !== undefined) detailsObj.pricing = updates.details.pricing;
+      if (updates.details.bestFor !== undefined) detailsObj.bestFor = updates.details.bestFor;
+      
+      dbUpdates.details = detailsObj;
+main
     }
     
     if (updates.category !== undefined && updates.category in categoryMapping) {

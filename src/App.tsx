@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,10 +32,10 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <CompanyProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
           <SidebarProvider defaultOpen={false}>
             <div className="min-h-screen flex w-full">
               <AppSidebar />
@@ -64,8 +65,8 @@ const App = () => (
               </main>
             </div>
           </SidebarProvider>
-        </BrowserRouter>
-      </TooltipProvider>
+        </TooltipProvider>
+      </BrowserRouter>
     </CompanyProvider>
   </QueryClientProvider>
 );
