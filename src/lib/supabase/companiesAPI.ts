@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Company, Category } from '../../types/database';
 import { categoryMapping } from './categoryMapping';
@@ -21,7 +22,7 @@ const mapCompanyToDbRecord = (company: Company): Record<string, any> => ({
   pricing: company.pricing,
   target_audience: company.targetAudience,
   logo_url: company.logoUrl || company.logo,
-  details: JSON.parse(JSON.stringify(company.details || {})), // Convert to plain object
+  details: JSON.stringify(company.details || {}), // Convert to string for Supabase
   linkedin_url: company.linkedinUrl,
   founded_year: company.foundedYear,
   headquarters: company.headquarters,
@@ -55,7 +56,7 @@ const createPartialDbRecord = (updates: Partial<Company>): Record<string, any> =
   
   // Handle details object separately to ensure it's properly serialized
   if (updates.details !== undefined) {
-    dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
+    dbUpdates.details = JSON.stringify(updates.details);
   }
   
   if (updates.aiNativeCriteria) {
@@ -101,11 +102,17 @@ export const companiesAPI = {
   },
 
   async create(company: Company): Promise<Company> {
+    // Convert company to DB record format
     const dbRecord = mapCompanyToDbRecord(company);
+    
+    // Ensure all required fields
+    if (!dbRecord.id || !dbRecord.name || !dbRecord.website || !dbRecord.category) {
+      throw new Error('Missing required fields for company');
+    }
 
     const { data, error } = await supabase
       .from('companies')
-      .insert(dbRecord)
+      .insert([dbRecord]) // Use array format for insert
       .select()
       .single();
 
