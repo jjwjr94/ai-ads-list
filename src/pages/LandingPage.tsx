@@ -23,11 +23,6 @@ const LandingPage = () => {
                   Explore Tools <ArrowRight className="ml-2" />
                 </Button>
               </Link>
-              <Link to="/seo-tools">
-                <Button variant="outline" className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 px-6 py-6 rounded-lg text-lg">
-                  SEO Tools
-                </Button>
-              </Link>
             </div>
           </div>
           <div className="lg:w-1/2">
