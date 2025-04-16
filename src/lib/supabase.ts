@@ -2,9 +2,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 import { supabase } from '../integrations/supabase/client';
+import { Database } from '../integrations/supabase/types';
 
 // Map between TypeScript Category and Supabase database category
-const categoryMapping: Record<Category, string> = {
+const categoryMapping: Record<Category, Database['public']['Enums']['company_category']> = {
   "Strategy & Planning": "Strategy & Planning",
   "Creative & Content": "Creative & Content",
   "Performance & Media Buying": "Performance & Media Buying",
@@ -53,12 +54,13 @@ const mapDbRecordToCompany = (record: any): Company => {
 };
 
 const mapCompanyToDbRecord = (company: Company) => {
-  return {
+  // Properly type the database record
+  const dbRecord: Database['public']['Tables']['companies']['Insert'] = {
     id: company.id,
     name: company.name,
     website: company.website || company.url || '',
     logo_url: company.logoUrl || company.logo || '',
-    category: categoryMapping[company.category], // Use mapping here
+    category: categoryMapping[company.category],
     description: company.description || '',
     features: company.features || [],
     pricing: company.pricing || company.details?.pricing || '',
@@ -71,6 +73,8 @@ const mapCompanyToDbRecord = (company: Company) => {
     funding_stage: company.fundingStage || '',
     last_updated: new Date().toISOString()
   };
+  
+  return dbRecord;
 };
 
 // Helper functions for Supabase operations
@@ -97,7 +101,7 @@ export const supabaseAPI = {
       const { data, error } = await supabase
         .from('companies')
         .select('*')
-        .eq('category', category);
+        .eq('category', categoryMapping[category]);
       
       if (error) {
         console.error(`Error fetching companies by category ${category}:`, error);
@@ -113,13 +117,9 @@ export const supabaseAPI = {
         .from('companies')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
       if (error) {
-        if (error.code === 'PGRST116') {
-          // Record not found
-          return null;
-        }
         console.error(`Error fetching company ${id}:`, error);
         throw error;
       }
@@ -147,18 +147,24 @@ export const supabaseAPI = {
     },
     
     async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-      // Map updates to database column names
-      const dbUpdates = Object.keys(updates).reduce((acc: any, key) => {
-        if (key === 'logoUrl') acc.logo_url = updates.logoUrl;
-        else if (key === 'targetAudience') acc.target_audience = updates.targetAudience;
-        else if (key === 'linkedinUrl') acc.linkedin_url = updates.linkedinUrl;
-        else if (key === 'foundedYear') acc.founded_year = updates.foundedYear;
-        else if (key === 'employeeCount') acc.employee_count = updates.employeeCount;
-        else if (key === 'fundingStage') acc.funding_stage = updates.fundingStage;
-        else if (key === 'lastUpdated') acc.last_updated = new Date().toISOString();
-        else if (key !== 'logo' && key !== 'url') acc[key] = (updates as any)[key];
-        return acc;
-      }, {});
+      // Create a partial database record from the updates
+      const dbUpdates: Partial<Database['public']['Tables']['companies']['Update']> = {};
+      
+      // Map only the properties that are in the updates object
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.website !== undefined) dbUpdates.website = updates.website;
+      if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+      if (updates.features !== undefined) dbUpdates.features = updates.features;
+      if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
+      if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
+      if (updates.linkedinUrl !== undefined) dbUpdates.linkedin_url = updates.linkedinUrl;
+      if (updates.foundedYear !== undefined) dbUpdates.founded_year = updates.foundedYear;
+      if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
+      if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
+      if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
+      if (updates.details !== undefined) dbUpdates.details = updates.details;
+      if (updates.category !== undefined) dbUpdates.category = categoryMapping[updates.category];
       
       // Always update last_updated timestamp
       dbUpdates.last_updated = new Date().toISOString();
