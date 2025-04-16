@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Company, Category } from '../../types/database';
 import { mapCompanyToDbRecord, mapDbRecordToCompany } from './mappers';
@@ -76,7 +77,7 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-    // Fix: Create a new object for database updates instead of using recursion
+    // Create a new object for database updates
     const dbUpdates: Record<string, any> = {};
     
     // Only add fields that are defined in the updates object
@@ -95,7 +96,7 @@ export const companiesAPI = {
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
-      // Copy details without creating circular references
+      // Convert to string and parse back to avoid reference issues
       dbUpdates.details = JSON.parse(JSON.stringify(updates.details));
     }
     
