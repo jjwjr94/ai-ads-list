@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { supabaseAPI } from '@/lib/supabase';
@@ -54,11 +55,11 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   
   const {
     uploadLogo
-  } = useCompanyLogo(updateCompany); // Use updateCompany instead of refreshCompanies
+  } = useCompanyLogo(updateCompany);
 
   // Load companies on mount, but only once
   useEffect(() => {
-    loadCompanies(); // Use loadCompanies instead of refreshCompanies to respect caching
+    loadCompanies();
   }, [loadCompanies]);
 
   const value: CompanyContextType = {
