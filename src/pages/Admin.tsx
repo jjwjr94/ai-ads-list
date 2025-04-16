@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Company, Category } from '@/types/database';
@@ -46,7 +47,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { PlusCircle, Trash2, Edit, Save, X, Search, Upload, Image, Loader2 } from 'lucide-react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -85,6 +86,7 @@ const AdminDashboard = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState('companies');
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -135,6 +137,9 @@ const AdminDashboard = () => {
       // Reset logo preview if editing
       setLogoPreview(editingCompany.logo || null);
       setLogoFile(null);
+      
+      // Switch to add/edit tab programmatically
+      setActiveTab('add');
     } else {
       form.reset({
         name: '',
@@ -284,7 +289,7 @@ const AdminDashboard = () => {
       setLogoPreview(null);
       
       // Switch to companies tab
-      document.querySelector('[data-value="companies"]')?.click();
+      setActiveTab('companies');
       
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -327,7 +332,7 @@ const AdminDashboard = () => {
   const handleEdit = (company: Company) => {
     setEditingCompany(company);
     // Switch to add/edit tab
-    document.querySelector('[data-value="add"]')?.click();
+    setActiveTab('add');
   };
 
   const handleCancel = () => {
@@ -359,7 +364,7 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="companies" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="companies">Companies List</TabsTrigger>
           <TabsTrigger value="add">Add/Edit Company</TabsTrigger>
