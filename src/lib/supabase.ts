@@ -3,6 +3,57 @@ import { createClient } from '@supabase/supabase-js';
 import { Company, Category } from '../types/database';
 import { supabase } from '../integrations/supabase/client';
 
+// Helper functions to map between database column names and frontend property names
+const mapDbRecordToCompany = (record: any): Company => {
+  return {
+    id: record.id,
+    name: record.name,
+    website: record.website || '',
+    logoUrl: record.logo_url || '',
+    logo: record.logo_url || '',
+    category: record.category,
+    description: record.description || '',
+    features: record.features || [],
+    pricing: record.pricing || record.details?.pricing || '',
+    targetAudience: record.target_audience || record.details?.bestFor || '',
+    details: {
+      summary: record.details?.summary || '',
+      features: record.features || record.details?.features || [],
+      highlighted: record.details?.highlighted || false,
+      pricing: record.pricing || record.details?.pricing || '',
+      bestFor: record.target_audience || record.details?.bestFor || ''
+    },
+    linkedinUrl: record.linkedin_url || '',
+    foundedYear: record.founded_year || undefined,
+    headquarters: record.headquarters || '',
+    employeeCount: record.employee_count || '',
+    fundingStage: record.funding_stage || '',
+    lastUpdated: record.last_updated ? new Date(record.last_updated) : new Date(),
+    url: record.website || ''
+  };
+};
+
+const mapCompanyToDbRecord = (company: Company) => {
+  return {
+    id: company.id,
+    name: company.name,
+    website: company.website || company.url || '',
+    logo_url: company.logoUrl || company.logo || '',
+    category: company.category,
+    description: company.description || '',
+    features: company.features || [],
+    pricing: company.pricing || company.details?.pricing || '',
+    target_audience: company.targetAudience || company.details?.bestFor || '',
+    details: company.details || {},
+    linkedin_url: company.linkedinUrl || '',
+    founded_year: company.foundedYear,
+    headquarters: company.headquarters || '',
+    employee_count: company.employeeCount || '',
+    funding_stage: company.fundingStage || '',
+    last_updated: new Date().toISOString()
+  };
+};
+
 // Helper functions for Supabase operations
 export const supabaseAPI = {
   // Company operations
@@ -18,11 +69,8 @@ export const supabaseAPI = {
         throw error;
       }
       
-      // Convert any string dates to Date objects
-      return (data || []).map(company => ({
-        ...company,
-        lastUpdated: company.lastUpdated ? new Date(company.lastUpdated) : undefined
-      }));
+      // Map database records to Company objects
+      return (data || []).map(mapDbRecordToCompany);
     },
     
     async getByCategory(category: Category): Promise<Company[]> {
@@ -38,10 +86,7 @@ export const supabaseAPI = {
       }
       
       console.log(`Found ${data?.length || 0} companies for category: ${category}`);
-      return (data || []).map(company => ({
-        ...company,
-        lastUpdated: company.lastUpdated ? new Date(company.lastUpdated) : undefined
-      }));
+      return (data || []).map(mapDbRecordToCompany);
     },
     
     async getById(id: string): Promise<Company | null> {
@@ -62,22 +107,15 @@ export const supabaseAPI = {
       
       if (!data) return null;
       
-      return {
-        ...data,
-        lastUpdated: data.lastUpdated ? new Date(data.lastUpdated) : undefined
-      };
+      return mapDbRecordToCompany(data);
     },
     
     async add(company: Company): Promise<Company> {
-      // Ensure company has an ID and lastUpdated
-      const companyToAdd = {
-        ...company,
-        lastUpdated: new Date().toISOString()
-      };
+      const dbRecord = mapCompanyToDbRecord(company);
       
       const { data, error } = await supabase
         .from('companies')
-        .insert(companyToAdd)
+        .insert(dbRecord)
         .select()
         .single();
       
@@ -86,22 +124,29 @@ export const supabaseAPI = {
         throw error;
       }
       
-      return {
-        ...data,
-        lastUpdated: data.lastUpdated ? new Date(data.lastUpdated) : undefined
-      };
+      return mapDbRecordToCompany(data);
     },
     
     async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-      // Add updated timestamp
-      const updatesToApply = {
-        ...updates,
-        lastUpdated: new Date().toISOString()
-      };
+      // Map updates to database column names
+      const dbUpdates = Object.keys(updates).reduce((acc: any, key) => {
+        if (key === 'logoUrl') acc.logo_url = updates.logoUrl;
+        else if (key === 'targetAudience') acc.target_audience = updates.targetAudience;
+        else if (key === 'linkedinUrl') acc.linkedin_url = updates.linkedinUrl;
+        else if (key === 'foundedYear') acc.founded_year = updates.foundedYear;
+        else if (key === 'employeeCount') acc.employee_count = updates.employeeCount;
+        else if (key === 'fundingStage') acc.funding_stage = updates.fundingStage;
+        else if (key === 'lastUpdated') acc.last_updated = new Date().toISOString();
+        else if (key !== 'logo' && key !== 'url') acc[key] = (updates as any)[key];
+        return acc;
+      }, {});
+      
+      // Always update last_updated timestamp
+      dbUpdates.last_updated = new Date().toISOString();
       
       const { data, error } = await supabase
         .from('companies')
-        .update(updatesToApply)
+        .update(dbUpdates)
         .eq('id', id)
         .select()
         .single();
@@ -113,10 +158,7 @@ export const supabaseAPI = {
       
       if (!data) return null;
       
-      return {
-        ...data,
-        lastUpdated: data.lastUpdated ? new Date(data.lastUpdated) : undefined
-      };
+      return mapDbRecordToCompany(data);
     },
     
     async delete(id: string): Promise<boolean> {
@@ -144,10 +186,7 @@ export const supabaseAPI = {
         throw error;
       }
       
-      return (data || []).map(company => ({
-        ...company,
-        lastUpdated: company.lastUpdated ? new Date(data.lastUpdated) : undefined
-      }));
+      return (data || []).map(mapDbRecordToCompany);
     },
     
     async search(query: string): Promise<Company[]> {
@@ -161,10 +200,7 @@ export const supabaseAPI = {
         throw error;
       }
       
-      return (data || []).map(company => ({
-        ...company,
-        lastUpdated: company.lastUpdated ? new Date(company.lastUpdated || '') : undefined
-      }));
+      return (data || []).map(mapDbRecordToCompany);
     }
   },
   

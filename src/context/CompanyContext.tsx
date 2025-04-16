@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
 import { initialCompanies } from '../data/initialCompanies';
-import { supabase } from '@/integrations/supabase/client';
 
 // Create context for the database
 interface CompanyContextType {
@@ -86,122 +85,106 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Database operations using Supabase
-  const getCompaniesByCategory = async (category: Category) => {
-    try {
-      return await supabaseAPI.companies.getByCategory(category);
-    } catch (err) {
-      console.error('Error getting companies by category:', err);
-      setError('Failed to get companies by category from Supabase.');
-      return [];
-    }
-  };
-
-  const getCompanyById = async (id: string) => {
-    try {
-      return await supabaseAPI.companies.getById(id);
-    } catch (err) {
-      console.error('Error getting company by ID:', err);
-      setError('Failed to get company details from Supabase.');
-      return null;
-    }
-  };
-
-  const addCompany = async (company: Company) => {
-    try {
-      const newCompany = await supabaseAPI.companies.add(company);
-      await refreshCompanies();
-      return newCompany;
-    } catch (err) {
-      console.error('Error adding company:', err);
-      setError('Failed to add company to Supabase.');
-      throw err;
-    }
-  };
-
-  const updateCompany = async (id: string, updates: Partial<Company>) => {
-    try {
-      const updatedCompany = await supabaseAPI.companies.update(id, updates);
-      if (updatedCompany) {
-        await refreshCompanies();
-      }
-      return updatedCompany;
-    } catch (err) {
-      console.error('Error updating company:', err);
-      setError('Failed to update company in Supabase.');
-      throw err;
-    }
-  };
-
-  const deleteCompany = async (id: string) => {
-    try {
-      const success = await supabaseAPI.companies.delete(id);
-      if (success) {
-        await refreshCompanies();
-      }
-      return success;
-    } catch (err) {
-      console.error('Error deleting company:', err);
-      setError('Failed to delete company from Supabase.');
-      return false;
-    }
-  };
-
-  const getHighlightedCompanies = async () => {
-    try {
-      return await supabaseAPI.companies.getHighlighted();
-    } catch (err) {
-      console.error('Error getting highlighted companies:', err);
-      setError('Failed to get highlighted companies from Supabase.');
-      return [];
-    }
-  };
-
-  const searchCompanies = async (query: string) => {
-    try {
-      return await supabaseAPI.companies.search(query);
-    } catch (err) {
-      console.error('Error searching companies:', err);
-      setError('Failed to search companies in Supabase.');
-      return [];
-    }
-  };
-
-  const uploadLogo = async (id: string, file: File, altText: string) => {
-    try {
-      console.log(`Uploading logo for company ID: ${id}`);
-      const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
-      console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
-      
-      // Update company with new logo URL
-      const updatedCompany = await updateCompany(id, {
-        logo: logoUrl,
-        logoUrl: logoUrl
-      });
-      
-      console.log('Company updated with new logo URL');
-      
-      // Force refresh companies to get updated logo paths
-      await refreshCompanies();
-      
-      // Add cache-busting parameter
-      return `${logoUrl}?t=${Date.now()}`;
-    } catch (err) {
-      console.error('Error uploading logo:', err);
-      setError('Failed to upload logo to Supabase storage.');
-      throw err;
-    }
-  };
-
   const value = {
     companies,
-    getCompaniesByCategory,
-    getCompanyById,
-    addCompany,
-    updateCompany,
-    deleteCompany,
-    getHighlightedCompanies,
-    searchCompanies,
-    uploadLogo,
+    getCompaniesByCategory: async (category: Category) => {
+      try {
+        return await supabaseAPI.companies.getByCategory(category);
+      } catch (err) {
+        console.error('Error getting companies by category:', err);
+        setError('Failed to get companies by category from Supabase.');
+        return [];
+      }
+    },
+    getCompanyById: async (id: string) => {
+      try {
+        return await supabaseAPI.companies.getById(id);
+      } catch (err) {
+        console.error('Error getting company by ID:', err);
+        setError('Failed to get company details from Supabase.');
+        return null;
+      }
+    },
+    addCompany: async (company: Company) => {
+      try {
+        const newCompany = await supabaseAPI.companies.add(company);
+        await refreshCompanies();
+        return newCompany;
+      } catch (err) {
+        console.error('Error adding company:', err);
+        setError('Failed to add company to Supabase.');
+        throw err;
+      }
+    },
+    updateCompany: async (id: string, updates: Partial<Company>) => {
+      try {
+        const updatedCompany = await supabaseAPI.companies.update(id, updates);
+        if (updatedCompany) {
+          await refreshCompanies();
+        }
+        return updatedCompany;
+      } catch (err) {
+        console.error('Error updating company:', err);
+        setError('Failed to update company in Supabase.');
+        throw err;
+      }
+    },
+    deleteCompany: async (id: string) => {
+      try {
+        const success = await supabaseAPI.companies.delete(id);
+        if (success) {
+          await refreshCompanies();
+        }
+        return success;
+      } catch (err) {
+        console.error('Error deleting company:', err);
+        setError('Failed to delete company from Supabase.');
+        return false;
+      }
+    },
+    getHighlightedCompanies: async () => {
+      try {
+        return await supabaseAPI.companies.getHighlighted();
+      } catch (err) {
+        console.error('Error getting highlighted companies:', err);
+        setError('Failed to get highlighted companies from Supabase.');
+        return [];
+      }
+    },
+    searchCompanies: async (query: string) => {
+      try {
+        return await supabaseAPI.companies.search(query);
+      } catch (err) {
+        console.error('Error searching companies:', err);
+        setError('Failed to search companies in Supabase.');
+        return [];
+      }
+    },
+    uploadLogo: async (id: string, file: File, altText: string) => {
+      try {
+        console.log(`Uploading logo for company ID: ${id}`);
+        const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
+        console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
+        
+        // Update company with new logo URL
+        const updatedCompany = await supabaseAPI.companies.update(id, {
+          logo: logoUrl,
+          logoUrl: logoUrl
+        });
+        
+        console.log('Company updated with new logo URL');
+        
+        // Force refresh companies to get updated logo paths
+        await refreshCompanies();
+        
+        // Add cache-busting parameter
+        return `${logoUrl}?t=${Date.now()}`;
+      } catch (err) {
+        console.error('Error uploading logo:', err);
+        setError('Failed to upload logo to Supabase storage.');
+        throw err;
+      }
+    },
     isLoading,
     error,
     refreshCompanies,
