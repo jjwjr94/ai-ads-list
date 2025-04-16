@@ -1,9 +1,13 @@
-
 import { useCallback } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
 
-export function useCompanyOperations(refreshCompanies: () => Promise<void>) {
+export function useCompanyOperations(
+  refreshCompanies: () => Promise<void>,
+  optimisticUpdateCompany: (id: string, updates: Partial<Company>) => void,
+  optimisticAddCompany: (company: Company) => void,
+  optimisticDeleteCompany: (id: string) => void
+) {
   // Get companies by category
   const getCompaniesByCategory = useCallback(async (category: Category) => {
     try {
@@ -24,46 +28,64 @@ export function useCompanyOperations(refreshCompanies: () => Promise<void>) {
     }
   }, []);
 
-  // Add a new company
+  // Add a new company with optimistic update
   const addCompany = useCallback(async (company: Company) => {
     try {
+      // Apply optimistic update
+      optimisticAddCompany(company);
+      
+      // Perform actual API call
       const newCompany = await supabaseAPI.companies.create(company);
-      await refreshCompanies(); // Keep refresh after adding a company
+      
+      // No need to refresh all companies since we've already updated locally
       return newCompany;
     } catch (err) {
       console.error('Error adding company:', err);
+      // If there's an error, refresh to get the correct state
+      await refreshCompanies();
       throw err;
     }
-  }, [refreshCompanies]);
+  }, [refreshCompanies, optimisticAddCompany]);
 
-  // Update an existing company
+  // Update an existing company with optimistic update
   const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
       console.log(`Updating company ${id} with:`, updates);
+      
+      // Apply optimistic update
+      optimisticUpdateCompany(id, updates);
+      
+      // Perform actual API call
       const success = await supabaseAPI.companies.update(id, updates);
-      console.log('Company updated, refreshing data');
-      await refreshCompanies(); // Keep refresh after updating a company
+      
+      // No need to refresh all companies since we've already updated locally
       return success;
     } catch (err) {
       console.error('Error updating company:', err);
+      // If there's an error, refresh to get the correct state
+      await refreshCompanies();
       throw err;
     }
-  }, [refreshCompanies]);
+  }, [refreshCompanies, optimisticUpdateCompany]);
 
-  // Delete a company
+  // Delete a company with optimistic update
   const deleteCompany = useCallback(async (id: string) => {
     try {
+      // Apply optimistic update
+      optimisticDeleteCompany(id);
+      
+      // Perform actual API call
       const success = await supabaseAPI.companies.delete(id);
-      if (success) {
-        console.log('Company deleted, refreshing data');
-        await refreshCompanies(); // Keep refresh after deleting a company
-      }
+      
+      // No need to refresh all companies since we've already updated locally
       return success;
     } catch (err) {
       console.error('Error deleting company:', err);
+      // If there's an error, refresh to get the correct state
+      await refreshCompanies();
       return false;
     }
-  }, [refreshCompanies]);
+  }, [refreshCompanies, optimisticDeleteCompany]);
 
   return {
     getCompaniesByCategory,

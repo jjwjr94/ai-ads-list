@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { supabaseAPI } from '@/lib/supabase';
@@ -29,7 +28,10 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     isLoading, 
     error, 
     refreshCompanies,
-    setCompanies 
+    optimisticAddCompany,
+    optimisticUpdateCompany,
+    optimisticDeleteCompany,
+    loadCompanies
   } = useCompanies();
   
   const { 
@@ -38,7 +40,12 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     addCompany,
     updateCompany,
     deleteCompany
-  } = useCompanyOperations(refreshCompanies);
+  } = useCompanyOperations(
+    refreshCompanies,
+    optimisticUpdateCompany,
+    optimisticAddCompany,
+    optimisticDeleteCompany
+  );
   
   const {
     getHighlightedCompanies,
@@ -47,12 +54,12 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   
   const {
     uploadLogo
-  } = useCompanyLogo(refreshCompanies);
+  } = useCompanyLogo(updateCompany); // Use updateCompany instead of refreshCompanies
 
-  // Load companies on mount
+  // Load companies on mount, but only once
   useEffect(() => {
-    refreshCompanies();
-  }, [refreshCompanies]);
+    loadCompanies(); // Use loadCompanies instead of refreshCompanies to respect caching
+  }, [loadCompanies]);
 
   const value: CompanyContextType = {
     companies,
