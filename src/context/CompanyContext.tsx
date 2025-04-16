@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -47,22 +46,17 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
       // Get all companies from Supabase (or mock data if in mock mode)
       let allCompanies = await supabaseAPI.companies.getAll();
       
-      // If no companies exist, initialize with sample data
-      if (allCompanies.length === 0) {
-        console.log('No companies found, initializing with sample data');
+      // If no companies exist in Supabase but we have the credentials, initialize with sample data
+      if (allCompanies.length === 0 && supabaseUrl && supabaseKey) {
+        console.log('No companies found in Supabase, initializing with sample data');
         
-        // In mock mode, we'll just set the initial companies
-        if (mockMode) {
-          allCompanies = initialCompanies;
-        } else {
-          // Add each company to the database
-          for (const company of initialCompanies) {
-            await supabaseAPI.companies.add(company);
-          }
-          
-          // Get the updated list
-          allCompanies = await supabaseAPI.companies.getAll();
+        // Add each company to the database
+        for (const company of initialCompanies) {
+          await supabaseAPI.companies.add(company);
         }
+        
+        // Get the updated list
+        allCompanies = await supabaseAPI.companies.getAll();
       }
       
       setCompanies(allCompanies);
