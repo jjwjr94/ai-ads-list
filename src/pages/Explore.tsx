@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Category } from '@/types/database';
 import { 
@@ -17,13 +18,22 @@ import {
 } from './CategoryPages';
 
 const Explore = () => {
-  const { companies, getCompaniesByCategory } = useCompanyDatabase();
-  
-  // Count companies in each category
-  const categoryCounts = Object.values(Category).reduce((acc, category) => {
-    acc[category] = getCompaniesByCategory(category).length;
-    return acc;
-  }, {} as Record<string, number>);
+  const { getCompaniesByCategory } = useCompanyDatabase();
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+
+  // Fetch counts for each category when component mounts
+  useEffect(() => {
+    const fetchCategoryCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const category of Object.values(Category)) {
+        const companies = await getCompaniesByCategory(category);
+        counts[category] = companies.length;
+      }
+      setCategoryCounts(counts);
+    };
+
+    fetchCategoryCounts();
+  }, [getCompaniesByCategory]);
 
   // Create category cards with links to category pages
   const categoryCards = [
