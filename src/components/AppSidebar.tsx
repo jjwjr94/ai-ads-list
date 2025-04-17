@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Database, FolderTree } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +36,9 @@ const formatCategoryTitle = (categoryString: string): string => {
 };
 
 export function AppSidebar() {
+  const location = useLocation();
+  const isOnCategoryPage = location.pathname.includes('/');
+
   return (
     <Sidebar collapsible="icon" variant="floating" className="border-none shadow-none mt-12">
       <SidebarHeader className="flex justify-end items-center p-2">
@@ -63,18 +66,20 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
                 
-                {/* Categories submenu */}
-                <SidebarMenuSub>
-                  {categoryLinks.map((item) => (
-                    <SidebarMenuSubItem key={item.path}>
-                      <SidebarMenuSubButton asChild>
-                        <Link to={item.path}>
-                          {formatCategoryTitle(item.title)}
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
+                {/* Categories submenu - only show if on a category page */}
+                {isOnCategoryPage && (
+                  <SidebarMenuSub>
+                    {categoryLinks.map((item) => (
+                      <SidebarMenuSubItem key={item.path}>
+                        <SidebarMenuSubButton asChild>
+                          <Link to={item.path}>
+                            {formatCategoryTitle(item.title)}
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                )}
               </SidebarMenuItem>
 
               <SidebarMenuItem>
