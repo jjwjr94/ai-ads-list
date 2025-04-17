@@ -158,14 +158,13 @@ export const companiesAPI = {
   async add(company: CompanyCreate): Promise<Company | null> {
     const dbRecord = mapCompanyToDbRecord(company);
     
-    // Generate a new ID if one doesn't exist
-    if (!dbRecord.id) {
-      dbRecord.id = uuidv4();
-    }
+    // Generate an ID for the company for optimistic updates
+    const generatedId = company.id || uuidv4();
+    dbRecord.id = generatedId;
     
     const { data, error } = await supabase
       .from('companies')
-      .insert([dbRecord]) // Use array to satisfy TypeScript
+      .insert([dbRecord])
       .select()
       .single();
 

@@ -97,9 +97,9 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <CompanyForm 
-                company={editingCompany} 
+                company={editingCompany || undefined} 
                 onCancel={handleCancel}
-                onSave={handleSaveComplete}
+                onSuccess={handleSaveComplete}
               />
             </CardContent>
           </Card>

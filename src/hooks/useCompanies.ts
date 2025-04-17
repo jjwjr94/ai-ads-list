@@ -1,7 +1,8 @@
+
 import { useState, useCallback, useRef } from 'react';
-import { Company } from '../types/database';
-import { supabaseAPI } from '../lib/supabase';
-import { initialCompanies } from '../data/initialCompanies';
+import { Company } from '@/types/frontend.models';
+import { supabaseAPI } from '@/lib/supabase';
+import { initialCompanies } from '@/data/initialCompanies';
 
 export function useCompanies() {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -12,7 +13,7 @@ export function useCompanies() {
   const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
   // Function to load companies from Supabase with caching
-  const loadCompanies = async (force = false) => {
+  const loadCompanies = useCallback(async (force = false) => {
     // Check if we should use cached data
     const now = Date.now();
     const shouldUseCache = !force && 
@@ -49,7 +50,7 @@ export function useCompanies() {
             ...company,
             id: undefined // Remove ID to let Supabase generate one
           };
-          await supabaseAPI.companies.create(companyCreate);
+          await supabaseAPI.companies.add(companyCreate);
         }
         
         // Get the updated list
@@ -70,7 +71,7 @@ export function useCompanies() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [companies.length, isRefreshing]);
 
   // Function to refresh companies - clears cache and forces refresh
   const refreshCompanies = useCallback(async () => {
@@ -78,7 +79,7 @@ export function useCompanies() {
     lastFetchTime.current = 0; // Clear cache by resetting last fetch time
     await loadCompanies(true); // Force refresh
     return Promise.resolve();
-  }, []);
+  }, [loadCompanies]);
   
   // Get highlighted companies for the homepage
   const getHighlightedCompanies = useCallback(async () => {
@@ -108,19 +109,19 @@ export function useCompanies() {
   
   // Optimistic update helpers
   const optimisticAddCompany = useCallback((company: Company) => {
-    setCompanies(prev => [...prev, company]);
+    setCompanies(prevCompanies => [...prevCompanies, company]);
   }, []);
   
   const optimisticUpdateCompany = useCallback((id: string, updates: Partial<Company>) => {
-    setCompanies(prev => 
-      prev.map(company => 
+    setCompanies(prevCompanies => 
+      prevCompanies.map(company => 
         company.id === id ? { ...company, ...updates } : company
       )
     );
   }, []);
   
   const optimisticDeleteCompany = useCallback((id: string) => {
-    setCompanies(prev => prev.filter(company => company.id !== id));
+    setCompanies(prevCompanies => prevCompanies.filter(company => company.id !== id));
   }, []);
   
   return {

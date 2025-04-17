@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Company, Category } from '@/types/database';
+import { Company, Category } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useCompanyOperations } from '@/hooks/useCompanyOperations';
@@ -13,7 +13,7 @@ export interface CompanyContextType {
   error: string | null;
   getCompaniesByCategory: (category: Category) => Promise<Company[]>;
   getCompanyById: (id: string) => Promise<Company | null>;
-  addCompany: (company: Company) => Promise<Company>;
+  addCompany: (company: Company) => Promise<Company | null>;
   updateCompany: (id: string, updates: Partial<Company>) => Promise<boolean>;
   deleteCompany: (id: string) => Promise<boolean>;
   getHighlightedCompanies: () => Promise<Company[]>;

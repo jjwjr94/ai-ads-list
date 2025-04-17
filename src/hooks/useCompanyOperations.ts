@@ -1,8 +1,7 @@
 
 import { useCallback } from 'react';
-import { Company, Category } from '../types/database';
-import { CompanyCreate } from '../types/frontend.models';
-import { supabaseAPI } from '../lib/supabase';
+import { Company, Category, CompanyCreate } from '@/types/frontend.models';
+import { supabaseAPI } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
 export function useCompanyOperations(
@@ -45,7 +44,7 @@ export function useCompanyOperations(
       optimisticAddCompany(companyWithId as Company);
       
       // Perform actual API call
-      const newCompany = await supabaseAPI.companies.create(companyWithId);
+      const newCompany = await supabaseAPI.companies.add(companyWithId);
       
       // No need to refresh all companies since we've already updated locally
       return newCompany;
@@ -66,10 +65,10 @@ export function useCompanyOperations(
       optimisticUpdateCompany(id, updates);
       
       // Perform actual API call
-      const success = await supabaseAPI.companies.update(id, updates);
+      const updatedCompany = await supabaseAPI.companies.update(id, updates);
       
       // No need to refresh all companies since we've already updated locally
-      return success;
+      return updatedCompany !== null;
     } catch (err) {
       console.error('Error updating company:', err);
       // If there's an error, refresh to get the correct state
