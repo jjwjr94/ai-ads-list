@@ -1,4 +1,3 @@
-
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -29,11 +28,11 @@ import {
  * @returns A frontend Company object
  */
 export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
-  // Create the company details object
+  // Create the company details object, providing default values
   const details: CompanyDetails = {
     summary: dbCompany.details?.summary || '',
     highlighted: dbCompany.details?.highlighted || false,
-    features: dbCompany.details?.features || [], // Map the database features to frontend features
+    features: dbCompany.details?.features || [], 
     pricing: dbCompany.details?.pricing || '',
     bestFor: dbCompany.details?.bestFor || ''
   };
@@ -92,7 +91,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     details: {
       summary: company.details.summary,
       highlighted: company.details.highlighted,
-      features: company.details.features || [], // Map frontend features to database features
+      features: company.details.features || [], 
       pricing: company.details.pricing,
       bestFor: company.details.bestFor
     },

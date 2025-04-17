@@ -1,4 +1,3 @@
-
 /**
  * Frontend Models
  * 
@@ -40,9 +39,9 @@ export interface Company {
  * Frontend representation of company details
  */
 export interface CompanyDetails {
-  summary: string;
+  summary: string;  // Made non-optional to match frontend requirements
   highlighted: boolean;
-  features: string[];  // This field matches with database CompanyDetails.features
+  features: string[];  // Consistent with database model
   pricing: string;
   bestFor: string;
 }
