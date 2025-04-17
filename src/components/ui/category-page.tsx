@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -77,7 +76,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      // Only call refreshCompanies(), which should internally fetch and update companies
       await refreshCompanies();
       toast({
         title: 'Success',
@@ -95,18 +93,18 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     }
   };
 
-useEffect(() => {
-  fetchCompanies();
+  useEffect(() => {
+    fetchCompanies();
 
-  const intervalId = setInterval(() => {
-    if (!loading && !isRefreshing) {
-      console.log(`Auto-refreshing ${category} data`);
-      fetchCompanies();
-    }
-  }, 300000); // every 5 minutes
+    const intervalId = setInterval(() => {
+      if (!loading && !isRefreshing) {
+        console.log(`Auto-refreshing ${category} data`);
+        fetchCompanies();
+      }
+    }, 300000); // every 5 minutes
 
-  return () => clearInterval(intervalId);
-}, [category, fetchCompanies]);
+    return () => clearInterval(intervalId);
+  }, [category, fetchCompanies]);
 
   const filteredCompanies = companies.filter(company => {
     const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
@@ -170,29 +168,6 @@ useEffect(() => {
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
-        </div>
-        
-        <div className="mt-8 mb-8">
-          <NavigationMenu className="justify-center">
-            <NavigationMenuList className="flex flex-wrap justify-center gap-2">
-              {categoryLinks.map((link) => (
-                <NavigationMenuItem key={link.path}>
-                  <NavigationMenuLink
-                    asChild
-                    className={`block px-3 py-2 rounded-md text-sm ${
-                      link.path === `/${category.toLowerCase().replace(/_/g, '-')}` 
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'hover:bg-gray-100'
-                    }`}
-                  >
-                    <Link to={link.path}>
-                      {formatCategoryTitle(link.title)}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
         </div>
         
         <div className="mt-6 flex justify-center gap-4">

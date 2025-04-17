@@ -40,7 +40,7 @@ const App = () => (
           <Sonner />
           <div className="flex flex-col min-h-screen">
             <Header />
-            <SidebarProvider defaultOpen={false}>
+            <SidebarProvider defaultOpen={true}>
               <div className="flex w-full min-h-screen pt-12">
                 <AppSidebar />
                 <main className="flex-1 p-4 pt-2">
