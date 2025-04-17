@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -13,6 +14,37 @@ import { useToast } from '@/hooks/use-toast';
 interface CategoryPageProps {
   category: Category;
 }
+
+// Add a SkeletonCard component
+const SkeletonCard: React.FC = () => {
+  return (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="flex flex-row items-center gap-4">
+        <Skeleton className="w-12 h-12 rounded-md" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-60" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const { getCompaniesByCategory, isLoading, refreshCompanies } = useCompanyDatabase();
