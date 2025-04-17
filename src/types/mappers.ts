@@ -1,3 +1,4 @@
+
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -32,7 +33,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
   const details: CompanyDetails = {
     summary: dbCompany.details?.summary || '',
     highlighted: dbCompany.details?.highlighted || false,
-    features: dbCompany.details?.features || [],
+    features: dbCompany.details?.features || [], // Map the features array correctly
     pricing: dbCompany.details?.pricing || '',
     bestFor: dbCompany.details?.bestFor || ''
   };
@@ -55,7 +56,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
     name: dbCompany.name,
     website: dbCompany.website,
     category: dbCompany.category as Category,
-    description: dbCompany.description,
+    description: dbCompany.description || '',
     logoUrl: dbCompany.logo_url || '',
     targetAudience: dbCompany.target_audience || '',
     features: dbCompany.features || [],
@@ -76,10 +77,10 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @param company The frontend Company object
  * @returns A database company record suitable for insertion
  */
-export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
+export function mapCompanyToDbInsert(company: Company): DbInsertParams {
   // Create the database company record
   const dbCompany: DbInsertParams = {
-    id: company.id, // This might be undefined for new companies
+    id: company.id, // Keep the ID as provided
     name: company.name,
     website: company.website,
     category: company.category,
@@ -91,7 +92,7 @@ export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
     details: {
       summary: company.details.summary,
       highlighted: company.details.highlighted,
-      features: company.details.features,
+      features: company.details.detailFeatures || [], // Map detailFeatures to features
       pricing: company.details.pricing,
       bestFor: company.details.bestFor
     },

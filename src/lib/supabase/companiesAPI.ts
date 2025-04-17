@@ -1,4 +1,3 @@
-
 /**
  * Companies API
  * 
@@ -110,32 +109,37 @@ export const companiesAPI = {
    * @returns Promise resolving to the created Company object
    */
   async create(company: Company): Promise<Company> {
-    // Convert the company to the format expected by the database
-    const dbCompany = mapCompanyToDbInsert(company);
-    
-    // Ensure all required fields
-    if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
-      throw new Error('Missing required fields for company');
-    }
+    try {
+      // Convert the company to the format expected by the database
+      const dbCompany = mapCompanyToDbInsert(company);
+      
+      // Ensure all required fields
+      if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
+        throw new Error('Missing required fields for company');
+      }
 
-    // Use the ID provided by the client (already generated with uuidv4)
-    const { data, error } = await supabase
-      .from('companies')
-      .insert(dbCompany as any)
-      .select()
-      .single();
+      // Use the ID provided by the client (already generated with uuidv4)
+      const { data, error } = await supabase
+        .from('companies')
+        .insert(dbCompany as any)
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error creating company:', error);
+      if (error) {
+        console.error('Error creating company:', error);
+        throw error;
+      }
+
+      // Ensure last_updated is string if it exists
+      if (data.last_updated && typeof data.last_updated === 'object') {
+        data.last_updated = new Date(data.last_updated).toISOString();
+      }
+      
+      return mapDbCompanyToCompany(data as DbRecord);
+    } catch (error) {
+      console.error('Error in create company:', error);
       throw error;
     }
-
-    // Ensure last_updated is string if it exists
-    if (data.last_updated && typeof data.last_updated === 'object') {
-      data.last_updated = new Date(data.last_updated).toISOString();
-    }
-    
-    return mapDbCompanyToCompany(data as DbRecord);
   },
 
   /**
