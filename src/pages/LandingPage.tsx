@@ -1,7 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { 
+  ArrowRight, 
+  CodeSquare, 
+  Lightbulb, 
+  Search, 
+  PieChart, 
+  Database 
+} from "lucide-react";
 import { supabaseAPI } from '../lib/supabase';
 import { Company, Category } from '../types/database';
 import CompanyCard from '@/components/ui/company-card';
