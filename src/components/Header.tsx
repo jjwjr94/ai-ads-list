@@ -54,14 +54,14 @@ export function Header() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/database">
+                  <Link to="/auth">
                     <Button variant="ghost" size="icon">
                       <ShieldCheck className="h-5 w-5" />
                     </Button>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Database</p>
+                  <p>Login</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
