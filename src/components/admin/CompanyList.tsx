@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
@@ -13,11 +13,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
@@ -27,50 +25,11 @@ type SortField = 'name' | 'category';
 type SortDirection = 'asc' | 'desc';
 
 export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
-  const { deleteCompany } = useCompanyDatabase();
+  const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const queryClient = useQueryClient();
-
-  // Use React Query for data fetching with caching
-  const { data: companies = [], isLoading, refetch } = useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('companies')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        throw error;
-      }
-      
-      // Transform Supabase data to match Company interface
-      return (data || []).map(item => ({
-        ...item,
-        logoUrl: item.logo_url || '',
-        targetAudience: item.target_audience || '',
-        details: item.details || { summary: '', highlighted: false, features: [], pricing: '', bestFor: '' },
-        // Ensure other required fields are present
-        features: item.features || [],
-        pricing: item.pricing || '',
-      })) as Company[];
-    },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes (formerly cacheTime)
-  });
-
-  // Handle refresh with cache clearing
-  const handleRefresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: ['companies'] });
-    refetch();
-    toast({
-      title: "Data refreshed",
-      description: "The company list has been updated with the latest data.",
-    });
-  };
 
   // Handle sort toggle
   const toggleSort = (field: SortField) => {
@@ -83,10 +42,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   };
 
   // Filter and sort companies
-  const sortedAndFilteredCompanies = React.useMemo(() => {
+  const sortedAndFilteredCompanies = useMemo(() => {
     const filtered = companies.filter(company => 
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      company.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return filtered.sort((a, b) => {
@@ -105,7 +64,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
       try {
         await deleteCompany(id);
-        queryClient.invalidateQueries({ queryKey: ['companies'] });
         toast({
           title: "Company deleted",
           description: "The company has been successfully deleted.",
@@ -137,10 +95,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <Button 
           variant="outline" 
           size="icon" 
-          onClick={handleRefresh}
+          onClick={refreshCompanies}
           disabled={isLoading}
         >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
 
@@ -179,23 +137,13 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               <TableRow key={company.id}>
                 <TableCell>
                   <Logo 
-                    src={company.logoUrl || ''} 
+                    src={company.logoUrl || company.logo || ''} 
                     alt={company.name}
                     size="sm"
                     company={company}
                   />
                 </TableCell>
-                <TableCell className="font-medium">
-                  <a 
-                    href={company.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-1 hover:underline"
-                  >
-                    {company.name}
-                    <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                  </a>
-                </TableCell>
+                <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 <TableCell>

@@ -1,4 +1,3 @@
-
 /**
  * Companies API
  * 
@@ -10,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   Company,
   Category
-} from '../../types/frontend.models';
+} from '../../types/database';
 import {
   mapDbCompanyToCompany,
   mapCompanyToDbInsert,
@@ -18,7 +17,6 @@ import {
 } from '../../types/mappers';
 import { v4 as uuidv4 } from 'uuid';
 import { Database } from '@/integrations/supabase/types';
-import { categoryMapping } from './categoryMapping';
 
 // Define types for database records
 interface DbRecord {
@@ -110,50 +108,32 @@ export const companiesAPI = {
    * @param company The company to create
    * @returns Promise resolving to the created Company object
    */
-  async create(company: Company): Promise<Company> {
-    try {
-      console.log('Creating company with data:', JSON.stringify(company, null, 2));
-      
-      // Convert the company to the format expected by the database
-      const dbCompany = mapCompanyToDbInsert(company);
-      
-      console.log('Converted to database format:', JSON.stringify(dbCompany, null, 2));
-      
-      // Ensure all required fields
-      if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
-        throw new Error('Missing required fields for company');
-      }
+  async create(company: Omit<Company, "id">): Promise<Company> {
+    // Convert the company to the format expected by the database
+    const dbCompany = mapCompanyToDbInsert(company as any);
+    
+    // Ensure all required fields
+    if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
+      throw new Error('Missing required fields for company');
+    }
 
-      // Ensure category is a valid value from the enum
-      const categoryValue = dbCompany.category.toString();
+    const { data, error } = await supabase
+      .from('companies')
+      .insert(dbCompany as any)
+      .select()
+      .single();
 
-      // Use the ID provided by the client (already generated with uuidv4)
-      const { data, error } = await supabase
-        .from('companies')
-        .insert({
-          ...dbCompany,
-          category: categoryValue
-        } as any)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating company:', error);
-        throw error;
-      }
-
-      console.log('Company created successfully:', data);
-
-      // Ensure last_updated is string if it exists
-      if (data.last_updated && typeof data.last_updated === 'object') {
-        data.last_updated = new Date(data.last_updated).toISOString();
-      }
-      
-      return mapDbCompanyToCompany(data as DbRecord);
-    } catch (error) {
-      console.error('Error in create company:', error);
+    if (error) {
+      console.error('Error creating company:', error);
       throw error;
     }
+
+    // Ensure last_updated is string if it exists
+    if (data.last_updated && typeof data.last_updated === 'object') {
+      data.last_updated = new Date(data.last_updated).toISOString();
+    }
+    
+    return mapDbCompanyToCompany(data as DbRecord);
   },
 
   /**

@@ -1,12 +1,11 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { Company as FrontendCompany } from '../types/frontend.models';
+import { Company } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
 import { initialCompanies } from '../data/initialCompanies';
-import { mapDbCompanyToCompany } from '../types/mappers';
 
 export function useCompanies() {
-  const [companies, setCompanies] = useState<FrontendCompany[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -51,20 +50,7 @@ export function useCompanies() {
             ...company,
             id: undefined // Remove ID to let Supabase generate one
           };
-          
-          // Make sure to convert to the FrontendCompany type with proper CompanyDetails structure
-          const frontendCompany: FrontendCompany = {
-            ...company,
-            details: {
-              summary: company.details?.summary || '',
-              highlighted: company.details?.highlighted || false,
-              features: company.details?.features || [],
-              pricing: company.details?.pricing || '',
-              bestFor: company.details?.bestFor || ''
-            }
-          };
-          
-          await supabaseAPI.companies.create(frontendCompany);
+          await supabaseAPI.companies.create(companyCreate);
         }
         
         // Get the updated list
@@ -121,11 +107,11 @@ export function useCompanies() {
   }, [companies]);
   
   // Optimistic update helpers
-  const optimisticAddCompany = useCallback((company: FrontendCompany) => {
+  const optimisticAddCompany = useCallback((company: Company) => {
     setCompanies(prev => [...prev, company]);
   }, []);
   
-  const optimisticUpdateCompany = useCallback((id: string, updates: Partial<FrontendCompany>) => {
+  const optimisticUpdateCompany = useCallback((id: string, updates: Partial<Company>) => {
     setCompanies(prev => 
       prev.map(company => 
         company.id === id ? { ...company, ...updates } : company

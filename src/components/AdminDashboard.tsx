@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Company, Category } from '@/types/frontend.models';
+import { Company } from '@/types/database';
 import {
   Card,
   CardContent,
@@ -19,15 +18,12 @@ import { PlusCircle } from 'lucide-react';
 import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
 import LogoUploader from './admin/LogoUploader';
-import { useQueryClient } from '@tanstack/react-query';
-import { v4 as uuidv4 } from 'uuid';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('companies');
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isAddingCompany, setIsAddingCompany] = useState(false);
-  const queryClient = useQueryClient();
-
+  
   // Handle editing a company
   const handleEditCompany = (company: Company) => {
     setEditingCompany(company);
@@ -37,30 +33,7 @@ export const AdminDashboard: React.FC = () => {
   
   // Handle adding a new company
   const handleAddCompany = () => {
-    // Create a temporary company with a generated ID for the logo uploader
-    const newCompanyId = uuidv4();
-    console.log('Creating new company with ID:', newCompanyId);
-    
-    const newCompany: Company = {
-      id: newCompanyId,
-      name: '',
-      website: '',
-      logoUrl: '',
-      category: Category.AI_NATIVE,
-      description: '',
-      features: [],
-      pricing: '',
-      targetAudience: '',
-      details: {
-        summary: '', // Ensure a default empty string for required field
-        highlighted: false,
-        features: [],
-        pricing: '',
-        bestFor: ''
-      }
-    };
-    
-    setEditingCompany(newCompany);
+    setEditingCompany(null);
     setIsAddingCompany(true);
     setActiveTab('edit');
   };
@@ -74,7 +47,6 @@ export const AdminDashboard: React.FC = () => {
   
   // Handle save completion
   const handleSaveComplete = () => {
-    queryClient.invalidateQueries({ queryKey: ['companies'] });
     setEditingCompany(null);
     setIsAddingCompany(false);
     setActiveTab('companies');

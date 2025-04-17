@@ -1,7 +1,7 @@
+
 import { useCallback } from 'react';
-import { Company } from '../types/frontend.models'; 
+import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
-import { Category } from '../types/frontend.models';
 
 export function useCompanyOperations(
   refreshCompanies: () => Promise<void>,
@@ -30,22 +30,15 @@ export function useCompanyOperations(
   }, []);
 
   // Add a new company with optimistic update
-  const addCompany = useCallback(async (company: Company) => {
+  const addCompany = useCallback(async (company: any) => {
     try {
       // Apply optimistic update
       optimisticAddCompany(company);
       
-      // Keep the pre-assigned ID when creating a new company
-      const companyCreate: Company = {
+      // Convert to proper type for creation
+      const companyCreate = {
         ...company,
-        // Ensure complete company details structure
-        details: {
-          summary: company.details.summary || '',
-          highlighted: company.details.highlighted || false,
-          features: company.details.features || [],
-          pricing: company.details.pricing || '',
-          bestFor: company.details.bestFor || ''
-        }
+        id: undefined // Remove ID to let the API/database handle it
       };
       
       // Perform actual API call
@@ -62,7 +55,7 @@ export function useCompanyOperations(
   }, [refreshCompanies, optimisticAddCompany]);
 
   // Update an existing company with optimistic update
-  const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
+  const updateCompany = useCallback(async (id: string, updates: any) => {
     try {
       console.log(`Updating company ${id} with:`, updates);
       

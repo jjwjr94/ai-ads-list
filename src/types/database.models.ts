@@ -35,10 +35,13 @@ export interface DbCompany {
   series_a_or_earlier?: boolean | null;
 }
 
+/**
+ * Database representation of company details
+ */
 export interface DbCompanyDetails {
-  summary?: string | null;       // Keep as optional in database model
+  summary?: string | null;
   highlighted?: boolean | null;
-  features?: string[] | null;    // Consistent with frontend model
+  features?: string[] | null;
   pricing?: string | null;
   bestFor?: string | null;
 }

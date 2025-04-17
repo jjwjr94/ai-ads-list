@@ -28,11 +28,11 @@ import {
  * @returns A frontend Company object
  */
 export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
-  // Create the company details object, providing default values
+  // Create the company details object
   const details: CompanyDetails = {
     summary: dbCompany.details?.summary || '',
     highlighted: dbCompany.details?.highlighted || false,
-    features: dbCompany.details?.features || [], 
+    features: dbCompany.details?.features || [],
     pricing: dbCompany.details?.pricing || '',
     bestFor: dbCompany.details?.bestFor || ''
   };
@@ -55,12 +55,12 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
     name: dbCompany.name,
     website: dbCompany.website,
     category: dbCompany.category as Category,
-    description: dbCompany.description || '',
+    description: dbCompany.description,
     logoUrl: dbCompany.logo_url || '',
     targetAudience: dbCompany.target_audience || '',
     features: dbCompany.features || [],
     pricing: dbCompany.pricing || '',
-    details: details,
+    details,
     linkedinUrl: dbCompany.linkedin_url,
     foundedYear: dbCompany.founded_year,
     headquarters: dbCompany.headquarters,
@@ -76,10 +76,10 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @param company The frontend Company object
  * @returns A database company record suitable for insertion
  */
-export function mapCompanyToDbInsert(company: Company): DbInsertParams {
+export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
   // Create the database company record
   const dbCompany: DbInsertParams = {
-    id: company.id, // Keep the ID as provided
+    id: company.id, // This might be undefined for new companies
     name: company.name,
     website: company.website,
     category: company.category,
@@ -91,7 +91,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     details: {
       summary: company.details.summary,
       highlighted: company.details.highlighted,
-      features: company.details.features || [], 
+      features: company.details.features,
       pricing: company.details.pricing,
       bestFor: company.details.bestFor
     },

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Company } from '@/types/frontend.models';
+import { Company } from '@/types/database';
 import {
   Card,
   CardContent,

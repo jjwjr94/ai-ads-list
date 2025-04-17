@@ -39,9 +39,9 @@ export interface Company {
  * Frontend representation of company details
  */
 export interface CompanyDetails {
-  summary: string;  // Made non-optional to match frontend requirements
+  summary: string;
   highlighted: boolean;
-  features: string[];  // Consistent with database model
+  features: string[];
   pricing: string;
   bestFor: string;
 }
