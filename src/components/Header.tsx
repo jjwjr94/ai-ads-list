@@ -2,9 +2,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import Logo from "@/components/ui/logo";
+import { ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function Header() {
   const [session, setSession] = useState<Session | null>(null);
@@ -44,7 +50,7 @@ export function Header() {
             <>
               <Link to="/admin">
                 <Button variant="outline" size="sm">
-                  Admin
+                  Database
                 </Button>
               </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -52,11 +58,20 @@ export function Header() {
               </Button>
             </>
           ) : (
-            <Link to="/auth">
-              <Button size="sm">
-                Login
-              </Button>
-            </Link>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/auth">
+                    <Button variant="ghost" size="icon">
+                      <ShieldCheck className="h-5 w-5" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Admin</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       </div>

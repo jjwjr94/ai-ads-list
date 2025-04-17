@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Company } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
+import { useSession } from '@/hooks/useSession';
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
@@ -30,8 +30,8 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const { toast } = useToast();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const { session } = useSession();
 
-  // Handle sort toggle
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(current => current === 'asc' ? 'desc' : 'asc');
@@ -41,7 +41,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     }
   };
 
-  // Filter and sort companies
   const sortedAndFilteredCompanies = useMemo(() => {
     const filtered = companies.filter(company => 
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -59,7 +58,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     });
   }, [companies, searchTerm, sortField, sortDirection]);
 
-  // Handle company deletion
   const handleDeleteCompany = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
       try {
@@ -92,14 +90,16 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={refreshCompanies}
-          disabled={isLoading}
-        >
-          <RefreshCw className="h-4 w-4" />
-        </Button>
+        {session && (
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={refreshCompanies}
+            disabled={isLoading}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <Table>
@@ -128,7 +128,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               </Button>
             </TableHead>
             <TableHead>Description</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            {session && <TableHead className="w-[100px]">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -156,21 +156,23 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                 </TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => onEditCompany(company as Company)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteCompany(company.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+                {session && (
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button variant="ghost" size="icon" onClick={() => onEditCompany(company as Company)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteCompany(company.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="text-center">
+              <TableCell colSpan={session ? 5 : 4} className="text-center">
                 {isLoading ? 'Loading companies...' : 'No companies found'}
               </TableCell>
             </TableRow>
