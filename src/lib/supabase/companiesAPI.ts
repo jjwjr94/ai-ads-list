@@ -1,4 +1,3 @@
-
 /**
  * Companies API
  * 
@@ -54,8 +53,7 @@ export const companiesAPI = {
   async getAll(): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
-      .select('*')
-      .order('name', { ascending: true });
+      .select('*');
     
     if (error) {
       console.error('Error fetching companies:', error);
@@ -112,7 +110,7 @@ export const companiesAPI = {
    */
   async create(company: Omit<Company, "id">): Promise<Company> {
     // Convert the company to the format expected by the database
-    const dbCompany = mapCompanyToDbInsert(company);
+    const dbCompany = mapCompanyToDbInsert(company as any);
     
     // Ensure all required fields
     if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
@@ -146,7 +144,7 @@ export const companiesAPI = {
    */
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
     // Convert the updates to the format expected by the database
-    const dbUpdates = mapCompanyUpdateToDbUpdate(updates as Partial<Company>);
+    const dbUpdates = mapCompanyUpdateToDbUpdate(updates as any);
     
     const { error } = await supabase
       .from('companies')
@@ -245,8 +243,7 @@ export const companiesAPI = {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .filter('details->highlighted', 'eq', true)
-      .order('name', { ascending: true });
+      .filter('details->highlighted', 'eq', true);
     
     if (error) {
       console.error('Error fetching highlighted companies:', error);
@@ -263,14 +260,14 @@ export const companiesAPI = {
         return mapDbCompanyToCompany(item as DbRecord);
       });
       
-      return mappedCompanies;
+      // Randomize the order of highlighted companies
+      return mappedCompanies.sort(() => 0.5 - Math.random());
     }
     
     // If no highlighted companies, get random companies as fallback
     const { data: randomData, error: randomError } = await supabase
       .from('companies')
       .select('*')
-      .order('name', { ascending: true })
       .limit(6);
     
     if (randomError) {
@@ -287,7 +284,8 @@ export const companiesAPI = {
       return mapDbCompanyToCompany(item as DbRecord);
     });
     
-    return mappedRandomCompanies;
+    // Return random companies in a random order
+    return mappedRandomCompanies.sort(() => 0.5 - Math.random());
   },
 
   /**

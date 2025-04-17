@@ -26,7 +26,9 @@ const LandingPage = () => {
         // Try to get highlighted companies first
         const highlighted = await supabaseAPI.companies.getHighlighted();
         if (highlighted && highlighted.length > 0) {
-          setFeaturedCompanies(highlighted);
+          // Randomize the highlighted companies order
+          const shuffledHighlighted = [...highlighted].sort(() => 0.5 - Math.random());
+          setFeaturedCompanies(shuffledHighlighted);
         } else {
           // Fallback to getting all companies and selecting a few random ones
           const allCompanies = await supabaseAPI.companies.getAll();
