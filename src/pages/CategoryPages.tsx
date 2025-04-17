@@ -1,3 +1,4 @@
+
 import { Category } from '@/types/frontend.models';
 import { CategoryPage } from '@/components/ui/category-page';
 

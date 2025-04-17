@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { supabaseAPI } from '../lib/supabase';
-import { Company } from '../types/frontend.models';
+import { Company } from '@/types/frontend.models';
 
 export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Company>) => Promise<boolean>) {
   // Upload a logo for a company
@@ -13,7 +13,7 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       
       // Update company with new logo URL
       const updated = await updateCompany(id, {
-        logoUrl: logoUrl
+        logoUrl
       });
       
       console.log('Company updated with new logo URL:', updated);
