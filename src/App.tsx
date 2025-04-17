@@ -39,10 +39,10 @@ const App = () => (
           <div className="flex flex-col min-h-screen">
             <Header />
             <SidebarProvider defaultOpen={false}>
-              <div className="min-h-screen flex w-full pt-12"> {/* Added pt-12 for padding-top */}
+              <div className="flex w-full min-h-screen pt-12"> {/* Keep padding-top */}
                 <AppSidebar />
-                <main className="flex-1">
-                  <SidebarTrigger className="m-4" />
+                <main className="flex-1 p-4 pt-2">
+                  <SidebarTrigger className="mb-4" />
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/explore" element={<Explore />} />

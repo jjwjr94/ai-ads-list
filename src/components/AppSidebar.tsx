@@ -33,19 +33,19 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" variant="floating" className="border-none">
+    <Sidebar collapsible="icon" variant="floating" className="border-none shadow-none mt-12">
       <SidebarHeader className="flex justify-end items-center p-2">
         {/* Logo removed from sidebar */}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-gray-700">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link to={item.path}>
+                    <Link to={item.path} className="hover:bg-gray-100">
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
