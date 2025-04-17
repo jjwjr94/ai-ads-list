@@ -1,18 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2, X, PlusCircle } from 'lucide-react';
+import { Loader2, X, PlusCircle, Save } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-
-import React, { useState, useEffect } from 'react';
-import { Company, Category } from '@/types/database';
-import { useCompanyDatabase } from '@/context/CompanyContext';
-
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -28,33 +26,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-
 } from '@/components/ui/select';
+
 import { Company, Category } from '@/types/frontend.models';
 import { useCompanyOperations } from '@/hooks/useCompanyOperations';
+import LogoUploader from './LogoUploader';
 
 // Default empty company for new company form
 const defaultCompany: Partial<Company> = {
   name: '',
   website: '',
   category: Category.STRATEGY_PLANNING,
-
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useForm } from "react-hook-form";
-import { PlusCircle, Save, X, Loader2 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
-import { v4 as uuidv4 } from 'uuid';
-import LogoUploader from './LogoUploader';
-
-interface CompanyFormProps {
-  company?: Company | null;
-  onCancel: () => void;
-  onSave: () => void;
-}
+};
 
 const emptyCompany: Company = {
   id: '',
@@ -62,9 +45,7 @@ const emptyCompany: Company = {
   website: '',
   category: undefined,
   logoUrl: '',
-
   description: '',
-  logoUrl: '',
   targetAudience: '',
   features: [''],
   pricing: '',
@@ -107,7 +88,7 @@ type CompanyFormProps = {
   isEditing?: boolean;
 };
 
-export const CompanyForm: React.FC<CompanyFormProps> = ({
+const CompanyForm: React.FC<CompanyFormProps> = ({
   company,
   onSuccess,
   onCancel = () => {},
@@ -115,29 +96,13 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
 }) => {
   const { addCompany, updateCompany } = useCompanyOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
-  // Initialize form with company data or defaults
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: company || defaultCompany,
-  });
-
-  // Form submission handler
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
-    try {
-      if (isEditing && company?.id) {
-        await updateCompany(company.id, data);
-      } else {
-        await addCompany(data as Company);
-
   const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
   
   const defaultValues = company || { ...emptyCompany, id: uuidv4() };
   
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues
   });
 
@@ -146,7 +111,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
       setTempId(uuidv4());
       form.setValue('id', tempId);
     }
-  }, [isEditing, form]);
+  }, [isEditing, form, tempId]);
 
   const onSubmit = async (data: Company) => {
     setIsSubmitting(true);
@@ -169,28 +134,19 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           title: "Company added",
           description: "The new company has been successfully added.",
         });
-
       }
       if (onSuccess) onSuccess();
     } catch (error) {
-
-      console.error('Error saving company:', error);
-
       console.error('Error submitting form:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "An error occurred while saving the company.",
         variant: "destructive",
       });
-
     } finally {
       setIsSubmitting(false);
     }
   };
-
-
-  // Feature list management
-
 
   const addFeature = () => {
     const currentFeatures = form.getValues('features') || [];
@@ -205,88 +161,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
-        {/* Basic Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Company name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Website */}
-          <FormField
-            control={form.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Category */}
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.values(Category).map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Founded Year */}
-          <FormField
-            control={form.control}
-            name="foundedYear"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Founded Year</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="2020" 
-                    {...field}
-                    value={field.value || ''}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        {/* Description */}
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -381,7 +255,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           <div>
             <h3 className="text-lg font-medium mb-4">Company Logo</h3>
             <LogoUploader 
-              companyId={isEditing ? company.id : tempId}
+              companyId={isEditing && company ? company.id : tempId}
               currentLogoUrl={form.watch('logoUrl')}
               onLogoUpdated={(logoUrl) => {
                 form.setValue('logoUrl', logoUrl);
@@ -389,7 +263,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             />
           </div>
         </div>
-
 
         <FormField
           control={form.control}
@@ -408,10 +281,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             </FormItem>
           )}
         />
-
-        {/* Features */}
-
-
 
         <div className="space-y-2">
           <FormLabel>Features</FormLabel>
@@ -451,10 +320,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           </Button>
         </div>
 
-        {/* Highlighted */}
-
-
-
         <FormField
           control={form.control}
           name="details.highlighted"
@@ -475,10 +340,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             </FormItem>
           )}
         />
-
-        {/* Form Actions */}
-
-
 
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
