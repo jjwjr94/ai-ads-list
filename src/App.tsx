@@ -49,7 +49,7 @@ const App = () => (
                     <Route path="/explore" element={<Explore />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route
-                      path="/admin"
+                      path="/database"
                       element={
                         <ProtectedRoute>
                           <Admin />

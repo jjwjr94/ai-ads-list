@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -54,7 +53,7 @@ export function Header() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/admin">
+                  <Link to="/database">
                     <Button variant="ghost" size="icon">
                       <ShieldCheck className="h-5 w-5" />
                     </Button>

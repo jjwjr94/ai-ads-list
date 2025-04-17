@@ -27,7 +27,7 @@ const menuItems = [
   {
     title: "Database",
     icon: Database,
-    path: "/admin",
+    path: "/database",
   },
 ];
 
