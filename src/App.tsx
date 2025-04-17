@@ -9,7 +9,7 @@ import { Header } from "@/components/Header";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import Explore from "./pages/Explore";
-import Admin from "./pages/Admin";
+import Database from "./pages/Database";
 import { CompanyProvider } from "./context/CompanyContext";
 import {
   StrategyPlanningPage,
@@ -52,7 +52,7 @@ const App = () => (
                       path="/database"
                       element={
                         <ProtectedRoute>
-                          <Admin />
+                          <Database />
                         </ProtectedRoute>
                       }
                     />
