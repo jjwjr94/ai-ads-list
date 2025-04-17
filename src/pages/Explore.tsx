@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -8,8 +9,15 @@ import {
 } from 'lucide-react';
 
 export const Explore = () => {
-  const { companies, isLoading } = useCompanies();
+  const { companies, isLoading, loadCompanies } = useCompanies();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    // Load companies on mount if needed
+    if (companies.length === 0) {
+      loadCompanies();
+    }
+  }, [companies.length, loadCompanies]);
 
   useEffect(() => {
     if (companies.length > 0) {
@@ -137,7 +145,7 @@ export const Explore = () => {
           Discover AI-powered tools across all marketing functions
         </p>
       </div>
-      {isLoading ? (
+      {isLoading && companies.length === 0 ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 text-[#9b87f5] animate-spin" />
           <p className="ml-2 text-gray-600">Loading category data...</p>

@@ -12,7 +12,7 @@ interface CategoryPageProps {
 }
 
 export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
-  const { getCompaniesByCategory, isLoading, error } = useCompanyDatabase();
+  const { getCompaniesByCategory, isLoading, refreshCompanies } = useCompanyDatabase();
   const [companies, setCompanies] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -22,6 +22,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     const fetchCompanies = async () => {
       try {
         setLoading(true);
+        await refreshCompanies();
         const fetchedCompanies = await getCompaniesByCategory(category);
         
         console.log(`Found ${fetchedCompanies.length} ${category} companies`);
@@ -39,7 +40,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     };
 
     fetchCompanies();
-  }, [category, getCompaniesByCategory, toast]);
+  }, [category, getCompaniesByCategory, refreshCompanies, toast]);
 
   const filteredCompanies = filter === "highlighted" 
     ? companies.filter(company => company.details?.highlighted) 
@@ -97,33 +98,33 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
           <button 
             onClick={() => setFilter("all")}
             className={`px-4 py-2 rounded-md ${filter === "all" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-            disabled={loading || isLoading}
+            disabled={loading}
           >
             All Tools
           </button>
           <button 
             onClick={() => setFilter("highlighted")}
             className={`px-4 py-2 rounded-md ${filter === "highlighted" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-            disabled={loading || isLoading}
+            disabled={loading}
           >
             Featured Tools
           </button>
         </div>
       </div>
 
-      {loading || isLoading ? (
+      {loading ? (
         <div className="grid grid-cols-1 gap-8">
           {[1, 2, 3].map((i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
-      ) : error ? (
+      ) : companies.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-red-500">Error loading tools. Please try again later.</p>
+          <p className="text-gray-500">No tools found in this category. Please check back later or try another category.</p>
         </div>
       ) : filteredCompanies.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">No tools found in this category. Please add some companies to get started.</p>
+          <p className="text-gray-500">No featured tools found in this category. Try viewing all tools instead.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-8">
