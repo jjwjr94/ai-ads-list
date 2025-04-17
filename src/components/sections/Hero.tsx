@@ -1,10 +1,9 @@
-
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCompanyDatabase } from "@/context/CompanyContext";
-import { Company } from "@/types/database";
+import { Company } from "@/types/frontend.models";
 import { 
   Carousel,
   CarouselContent,
@@ -24,12 +23,10 @@ export const Hero = () => {
     navigate("/explore");
   };
 
-  // Fetch highlighted companies or a random selection
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         console.log("Fetching companies for hero carousel");
-        // First try to get highlighted companies
         const highlighted = await getHighlightedCompanies();
         
         if (highlighted && highlighted.length >= 3) {
@@ -37,13 +34,11 @@ export const Hero = () => {
           setDisplayCompanies(highlighted);
         } else if (companies.length > 0) {
           console.log("Not enough highlighted companies, selecting random ones");
-          // If not enough highlighted, select random companies
           const shuffled = [...companies].sort(() => 0.5 - Math.random());
           setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)));
         }
       } catch (error) {
         console.error("Error fetching companies for carousel:", error);
-        // Fallback to randomly selected companies from the main list
         if (companies.length > 0) {
           const shuffled = [...companies].sort(() => 0.5 - Math.random());
           setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)));
@@ -56,7 +51,6 @@ export const Hero = () => {
     }
   }, [isLoading, companies, getHighlightedCompanies]);
 
-  // Auto-rotate the carousel
   useEffect(() => {
     if (!carouselApi) return;
     
@@ -67,7 +61,7 @@ export const Hero = () => {
       } else {
         carouselApi.scrollTo(0);
       }
-    }, 3000); // Change slide every 3 seconds
+    }, 3000);
     
     return () => clearInterval(autoPlayInterval);
   }, [carouselApi]);
@@ -100,7 +94,6 @@ export const Hero = () => {
             </GradientButton>
           </div>
           
-          {/* Company Carousel */}
           {displayCompanies.length > 0 && (
             <div className="mt-4 px-4 md:px-10">
               <Carousel
@@ -126,7 +119,6 @@ export const Hero = () => {
             </div>
           )}
           
-          {/* Show loading state or empty state if needed */}
           {displayCompanies.length === 0 && (
             <div className="mt-4 text-gray-500">
               {isLoading ? "Loading featured tools..." : "No featured tools available yet"}

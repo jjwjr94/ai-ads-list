@@ -45,7 +45,7 @@ export interface Company {
  */
 export interface CompanyDetails {
   summary?: string;
-  highlighted: boolean;
+  highlighted?: boolean; // Make highlighted optional to match database model
   features?: string[]; // Make features optional to match database model
   pricing: string;
   bestFor: string;

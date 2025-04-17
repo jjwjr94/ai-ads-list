@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Company } from '@/types/frontend.models';
 import { findCompanyLogo } from '@/lib/logoFinder';
@@ -42,6 +43,29 @@ const Logo: React.FC<LogoProps> = ({
   const isBase64Image = (str: string): boolean => {
     return str?.startsWith('data:image/');
   };
+
+  // Check for the new uploaded logo
+  useEffect(() => {
+    // Check for the newly uploaded logo
+    const newLogoPath = '/lovable-uploads/c67095e0-d437-4c42-8ccb-220152d106db.png';
+    
+    try {
+      // Try to fetch the new logo
+      fetch(newLogoPath, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            console.log('Using new uploaded logo');
+            setLogoSrc(`${newLogoPath}?t=${Date.now()}`);
+            setHasError(false);
+          }
+        })
+        .catch(err => {
+          console.log('New logo not available, continuing with normal flow');
+        });
+    } catch (e) {
+      // Continue with normal logo finding logic
+    }
+  }, []);
 
   // Check if company name is available and try to find direct match in public logos
   useEffect(() => {
