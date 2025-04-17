@@ -8,9 +8,9 @@ export function Header() {
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img 
-            src="/lovable-uploads/819e4dcb-315b-4d43-9f7e-c7e8fd0ff70b.png" 
-            alt="AI Ads Zen Garden" 
-            className="h-8 w-8"
+            src="/lovable-uploads/e4a4eaee-01dc-427a-9bcd-4e6cd49c99ee.png" 
+            alt="AI Ads List" 
+            className="h-8"
           />
         </Link>
         <div className="flex items-center gap-4">
