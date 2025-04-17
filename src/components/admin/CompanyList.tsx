@@ -197,7 +197,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                     to={getCategoryPath(company.category)}
                     className="text-purple-600 hover:text-purple-800 flex items-center gap-1"
                   >
-                    {company.category}
+                    {company.category.replace(/_/g, ' ')}
                     <ExternalLink className="h-3 w-3" />
                   </Link>
                 </TableCell>
