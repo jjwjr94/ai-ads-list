@@ -16,60 +16,6 @@ export const Explore = () => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // Load companies once on component mount
-  useEffect(() => {
-    const initializeData = async () => {
-      if (!isInitialized) {
-        await loadCompanies();
-        setIsInitialized(true);
-      }
-    };
-
-    initializeData();
-  }, [isInitialized, loadCompanies]);
-
-  // Update category counts whenever companies data changes
-  useEffect(() => {
-    if (companies.length > 0) {
-      const counts: Record<string, number> = {};
-      companies.forEach(company => {
-        counts[company.category] = (counts[company.category] || 0) + 1;
-      });
-      setCategoryCounts(counts);
-    }
-  }, [companies]);
-
-  const getCategoryIcon = (category: Category) => {
-    switch (category) {
-      case Category.STRATEGY_PLANNING:
-        return BarChart;
-      case Category.CREATIVE_CONTENT:
-        return PenTool;
-      case Category.PERFORMANCE_MEDIA:
-        return LineChart;
-      case Category.SEO_ORGANIC:
-        return Globe;
-      case Category.DATA_ANALYTICS:
-        return LineChart;
-      case Category.WEB_APP_DEVELOPMENT:
-        return Code;
-      case Category.ACCOUNT_MANAGEMENT:
-        return Briefcase;
-      case Category.SOCIAL_MEDIA:
-        return MessageSquare;
-      case Category.INFLUENCER_MARKETING:
-        return Users2;
-      case Category.BRAND_MANAGEMENT:
-        return Users;
-      case Category.AD_FRAUD:
-        return Shield;
-      case Category.AI_NATIVE:
-        return Layout;
-      default:
-        return Database;
-    }
-  };
-
   // Define categoryCards before using it in useState
   const categoryCards = [
     { 
@@ -149,6 +95,29 @@ export const Explore = () => {
   // Initialize filteredCards after categoryCards is defined
   const [filteredCards, setFilteredCards] = useState(categoryCards);
 
+  // Load companies once on component mount
+  useEffect(() => {
+    const initializeData = async () => {
+      if (!isInitialized) {
+        await loadCompanies();
+        setIsInitialized(true);
+      }
+    };
+
+    initializeData();
+  }, [isInitialized, loadCompanies]);
+
+  // Update category counts whenever companies data changes
+  useEffect(() => {
+    if (companies.length > 0) {
+      const counts: Record<string, number> = {};
+      companies.forEach(company => {
+        counts[company.category] = (counts[company.category] || 0) + 1;
+      });
+      setCategoryCounts(counts);
+    }
+  }, [companies]);
+
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
     if (!query.trim()) {
@@ -156,12 +125,44 @@ export const Explore = () => {
       return;
     }
 
+    // Filter category cards for display
     const filtered = categoryCards.filter(card => 
       card.title.toLowerCase().includes(query.toLowerCase()) ||
       card.description.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredCards(filtered);
   }, [categoryCards]);
+
+  const getCategoryIcon = (category: Category) => {
+    switch (category) {
+      case Category.STRATEGY_PLANNING:
+        return BarChart;
+      case Category.CREATIVE_CONTENT:
+        return PenTool;
+      case Category.PERFORMANCE_MEDIA:
+        return LineChart;
+      case Category.SEO_ORGANIC:
+        return Globe;
+      case Category.DATA_ANALYTICS:
+        return LineChart;
+      case Category.WEB_APP_DEVELOPMENT:
+        return Code;
+      case Category.ACCOUNT_MANAGEMENT:
+        return Briefcase;
+      case Category.SOCIAL_MEDIA:
+        return MessageSquare;
+      case Category.INFLUENCER_MARKETING:
+        return Users2;
+      case Category.BRAND_MANAGEMENT:
+        return Users;
+      case Category.AD_FRAUD:
+        return Shield;
+      case Category.AI_NATIVE:
+        return Layout;
+      default:
+        return Database;
+    }
+  };
 
   return (
     <div className="container mx-auto py-12 px-4">

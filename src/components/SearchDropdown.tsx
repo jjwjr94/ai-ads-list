@@ -38,7 +38,7 @@ export const SearchDropdown = ({ companies, categoryCards, searchQuery }: Search
       type: 'company' as const,
       title: company.name,
       description: company.description || '',
-      path: `/${company.category.toLowerCase()}#${company.id}`
+      path: `/${company.category?.toLowerCase().replace(/\s+/g, '-')}#${company.id}`
     }));
 
   const categoryResults: SearchResult[] = categoryCards
@@ -57,7 +57,7 @@ export const SearchDropdown = ({ companies, categoryCards, searchQuery }: Search
 
   return (
     <div className="relative w-full">
-      <Command className="absolute top-0 w-full rounded-lg border shadow-md bg-popover">
+      <Command className="absolute top-0 w-full rounded-lg border shadow-md bg-popover z-50">
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           {categoryResults.length > 0 && (
