@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -16,7 +15,34 @@ export const Explore = () => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // Define categoryCards before using it in useState
+  // Load companies once on component mount
+  useEffect(() => {
+    const initializeData = async () => {
+      if (!isInitialized) {
+        await loadCompanies();
+        setIsInitialized(true);
+      }
+    };
+
+    initializeData();
+  }, [isInitialized, loadCompanies]);
+
+  // Update category counts whenever companies data changes
+  useEffect(() => {
+    const counts: Record<string, number> = {};
+    
+    // Process companies to count by category
+    if (companies && companies.length > 0) {
+      companies.forEach(company => {
+        const category = company.category || '';
+        counts[category] = (counts[category] || 0) + 1;
+      });
+    }
+    
+    setCategoryCounts(counts);
+  }, [companies]);
+  
+  // Define categoryCards with count values from the categoryCounts state
   const categoryCards = [
     { 
       title: Category.STRATEGY_PLANNING, 
@@ -95,43 +121,24 @@ export const Explore = () => {
   // Initialize filteredCards after categoryCards is defined
   const [filteredCards, setFilteredCards] = useState(categoryCards);
 
-  // Load companies once on component mount
+  // Update filtered cards whenever category cards are updated with new counts
   useEffect(() => {
-    const initializeData = async () => {
-      if (!isInitialized) {
-        await loadCompanies();
-        setIsInitialized(true);
-      }
-    };
-
-    initializeData();
-  }, [isInitialized, loadCompanies]);
-
-  // Update category counts whenever companies data changes
-  useEffect(() => {
-    if (companies.length > 0) {
-      const counts: Record<string, number> = {};
-      companies.forEach(company => {
-        counts[company.category] = (counts[company.category] || 0) + 1;
-      });
-      setCategoryCounts(counts);
+    if (searchQuery) {
+      // If there's a search query, filter according to it
+      const filtered = categoryCards.filter(card => 
+        card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredCards(filtered);
+    } else {
+      // Otherwise, use all category cards
+      setFilteredCards(categoryCards);
     }
-  }, [companies]);
+  }, [categoryCards, searchQuery]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-    if (!query.trim()) {
-      setFilteredCards(categoryCards);
-      return;
-    }
-
-    // Filter category cards for display
-    const filtered = categoryCards.filter(card => 
-      card.title.toLowerCase().includes(query.toLowerCase()) ||
-      card.description.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCards(filtered);
-  }, [categoryCards]);
+  }, []);
 
   const getCategoryIcon = (category: Category) => {
     switch (category) {
