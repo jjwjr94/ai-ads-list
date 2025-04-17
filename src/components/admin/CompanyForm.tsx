@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
@@ -66,6 +67,14 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const form = useForm({
     defaultValues: company || emptyCompany
   });
+
+  // Update form values when company prop changes (including logo updates)
+  useEffect(() => {
+    if (company) {
+      // Reset the entire form with updated company data
+      form.reset(company);
+    }
+  }, [company, form]);
 
   // Handle form submission
   const onSubmit = async (data: Company) => {
@@ -197,6 +206,12 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
                 <FormMessage />
               </FormItem>
             )}
+          />
+          
+          {/* Hidden Logo URL field to ensure it's included in form submission */}
+          <input 
+            type="hidden" 
+            {...form.register('logoUrl')} 
           />
         </div>
 
