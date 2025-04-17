@@ -87,11 +87,22 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   };
 
   const getCategoryPath = (category: string): string => {
-    return "/" + category
-      .toLowerCase()
-      .replace(/&/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/_/g, '-');
+    const categoryMap: Record<string, string> = {
+      'Performance & Media Buying': '/performance-media',
+      'SEO & Organic Growth': '/seo-organic',
+      'Strategy & Planning': '/strategy-planning',
+      'Data & Analytics': '/data-analytics',
+      'Creative & Content': '/creative-content',
+      'Web & App Development': '/web-app-development',
+      'Account Management': '/account-management',
+      'Social Media & Community Management': '/social-media',
+      'Influencer Marketing': '/influencer-marketing',
+      'Brand Management': '/brand-management',
+      'Ad Fraud': '/ad-fraud',
+      'AI Native': '/ai-native'
+    };
+
+    return categoryMap[category] || '/';
   };
 
   return (
