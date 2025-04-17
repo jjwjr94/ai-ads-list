@@ -60,7 +60,7 @@ export function AppSidebar() {
               {/* Categories menu item */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Categories">
-                  <Link to="#" className="hover:bg-gray-100">
+                  <Link to="/explore" className="hover:bg-gray-100">
                     <FolderTree />
                     <span>Categories</span>
                   </Link>
