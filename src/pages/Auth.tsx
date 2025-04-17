@@ -20,15 +20,18 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { error, data } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
+
+        // Automatically navigate to admin page after sign up
         toast({
-          title: "Success!",
-          description: "Please check your email for verification link.",
+          title: "Account Created!",
+          description: "Welcome to the admin dashboard.",
         });
+        navigate("/admin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
