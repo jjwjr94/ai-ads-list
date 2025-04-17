@@ -80,6 +80,32 @@ export function useCompanies() {
     return Promise.resolve();
   }, []);
   
+  // Get highlighted companies for the homepage
+  const getHighlightedCompanies = useCallback(async () => {
+    try {
+      // Try to get companies marked as highlighted first
+      const highlighted = await supabaseAPI.companies.getHighlighted();
+      if (highlighted && highlighted.length > 0) {
+        return highlighted;
+      }
+      
+      // Fallback to returning random companies if none are highlighted
+      if (companies.length > 0) {
+        // If we already have companies loaded, return a random selection
+        const shuffled = [...companies].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, Math.min(6, companies.length));
+      }
+      
+      // If no companies are loaded yet, fetch from API and return a selection
+      const allCompanies = await supabaseAPI.companies.getAll();
+      const shuffled = [...allCompanies].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, Math.min(6, allCompanies.length));
+    } catch (error) {
+      console.error('Error getting highlighted companies:', error);
+      return [];
+    }
+  }, [companies]);
+  
   // Optimistic update helpers
   const optimisticAddCompany = useCallback((company: Company) => {
     setCompanies(prev => [...prev, company]);
@@ -104,6 +130,7 @@ export function useCompanies() {
     isRefreshing,
     loadCompanies,
     refreshCompanies,
+    getHighlightedCompanies,
     optimisticAddCompany,
     optimisticUpdateCompany,
     optimisticDeleteCompany,

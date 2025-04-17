@@ -12,7 +12,7 @@ import {
   Category, 
   CompanyCreate,
   CompanyUpdate
-} from '../../types/frontend.models';
+} from '../../types/database';
 import {
   mapDbCompanyToCompany,
   mapCompanyToDbInsert,
@@ -38,7 +38,7 @@ interface DbRecord {
   headquarters?: string;
   employee_count?: string;
   funding_stage?: string;
-  last_updated?: Date | string;
+  last_updated?: string; // Ensure this is string type
   has_dot_ai_domain?: boolean;
   founded_after_2020?: boolean | null;
   series_a_or_earlier?: boolean | null;
@@ -64,7 +64,16 @@ export const companiesAPI = {
       throw error;
     }
 
-    return (data || []).map((item) => mapDbCompanyToCompany(item as unknown as DbRecord));
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && item.last_updated instanceof Date) {
+        item.last_updated = item.last_updated.toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
   },
 
   /**
@@ -87,7 +96,15 @@ export const companiesAPI = {
       throw error;
     }
 
-    return data ? mapDbCompanyToCompany(data as unknown as DbRecord) : null;
+    if (data) {
+      // Ensure last_updated is string if it exists
+      if (data.last_updated && data.last_updated instanceof Date) {
+        data.last_updated = data.last_updated.toISOString();
+      }
+      return mapDbCompanyToCompany(data as DbRecord);
+    }
+    
+    return null;
   },
 
   /**
@@ -115,7 +132,12 @@ export const companiesAPI = {
       throw error;
     }
 
-    return mapDbCompanyToCompany(data as unknown as DbRecord);
+    // Ensure last_updated is string if it exists
+    if (data.last_updated && data.last_updated instanceof Date) {
+      data.last_updated = data.last_updated.toISOString();
+    }
+    
+    return mapDbCompanyToCompany(data as DbRecord);
   },
 
   /**
@@ -130,7 +152,7 @@ export const companiesAPI = {
     
     const { error } = await supabase
       .from('companies')
-      .update(dbUpdates as Database['public']['Tables']['companies']['Update'])
+      .update(dbUpdates as any)
       .eq('id', id);
     
     if (error) {
@@ -177,7 +199,16 @@ export const companiesAPI = {
       throw error;
     }
 
-    return (data || []).map(mapDbCompanyToCompany);
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && item.last_updated instanceof Date) {
+        item.last_updated = item.last_updated.toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
   },
 
   /**
@@ -196,7 +227,16 @@ export const companiesAPI = {
       throw error;
     }
 
-    return (data || []).map(mapDbCompanyToCompany);
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && item.last_updated instanceof Date) {
+        item.last_updated = item.last_updated.toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
   },
 
   /**
@@ -204,20 +244,52 @@ export const companiesAPI = {
    * @returns Promise resolving to an array of highlighted Company objects
    */
   async getHighlighted(): Promise<Company[]> {
-    // This is a placeholder for a future implementation
-    // For now, we'll just return the first 6 companies
     const { data, error } = await supabase
       .from('companies')
       .select('*')
-      .order('name', { ascending: true })
-      .limit(6);
+      .filter('details->highlighted', 'eq', true)
+      .order('name', { ascending: true });
     
     if (error) {
       console.error('Error fetching highlighted companies:', error);
       throw error;
     }
 
-    return (data || []).map(mapDbCompanyToCompany);
+    if (data && data.length > 0) {
+      // Type assertion to ensure compatibility
+      const mappedCompanies = data.map((item) => {
+        // Ensure last_updated is string if it exists
+        if (item.last_updated && item.last_updated instanceof Date) {
+          item.last_updated = item.last_updated.toISOString();
+        }
+        return mapDbCompanyToCompany(item as DbRecord);
+      });
+      
+      return mappedCompanies;
+    }
+    
+    // If no highlighted companies, get random companies as fallback
+    const { data: randomData, error: randomError } = await supabase
+      .from('companies')
+      .select('*')
+      .order('name', { ascending: true })
+      .limit(6);
+    
+    if (randomError) {
+      console.error('Error fetching random companies:', randomError);
+      throw randomError;
+    }
+
+    // Type assertion to ensure compatibility
+    const mappedRandomCompanies = (randomData || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && item.last_updated instanceof Date) {
+        item.last_updated = item.last_updated.toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedRandomCompanies;
   },
 
   /**
