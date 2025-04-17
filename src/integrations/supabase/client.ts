@@ -2,12 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Ensure we have the Supabase URL and Anon key from the project configuration
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Use direct values for the Supabase URL and Anon key
+// These are public keys that are safe to use in browser code
+const SUPABASE_URL = 'https://mkbrqiknsraiskoybdry.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rYnJxaWtuc3JhaXNrb3liZHJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4MTEwODcsImV4cCI6MjA2MDM4NzA4N30.JUPus1q5WEBwXFC9cvqQnt6WEzM1ajqx71MAT9Tw0dk';
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  throw new Error('Missing Supabase configuration. Please ensure your Supabase project is correctly connected.');
-}
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
