@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 
@@ -21,16 +21,43 @@ interface CompanyListProps {
   onEditCompany: (company: Company) => void;
 }
 
+type SortField = 'name' | 'category';
+type SortDirection = 'asc' | 'desc';
+
 export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // Filter companies based on search term
-  const filteredCompanies = companies.filter(company => 
-    company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Handle sort toggle
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(current => current === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Filter and sort companies
+  const sortedAndFilteredCompanies = useMemo(() => {
+    const filtered = companies.filter(company => 
+      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return filtered.sort((a, b) => {
+      const aValue = a[sortField]?.toLowerCase() ?? '';
+      const bValue = b[sortField]?.toLowerCase() ?? '';
+      
+      if (sortDirection === 'asc') {
+        return aValue.localeCompare(bValue);
+      }
+      return bValue.localeCompare(aValue);
+    });
+  }, [companies, searchTerm, sortField, sortDirection]);
 
   // Handle company deletion
   const handleDeleteCompany = async (id: string) => {
@@ -80,15 +107,33 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[60px]">Logo</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead>
+              <Button
+                variant="ghost"
+                onClick={() => toggleSort('name')}
+                className="flex items-center gap-2 hover:bg-transparent"
+              >
+                Name
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>
+              <Button
+                variant="ghost"
+                onClick={() => toggleSort('category')}
+                className="flex items-center gap-2 hover:bg-transparent"
+              >
+                Category
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
             <TableHead>Description</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredCompanies.length > 0 ? (
-            filteredCompanies.map((company) => (
+          {sortedAndFilteredCompanies.length > 0 ? (
+            sortedAndFilteredCompanies.map((company) => (
               <TableRow key={company.id}>
                 <TableCell>
                   <Logo 
