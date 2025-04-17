@@ -54,8 +54,8 @@ export function useCompanies() {
               pricing: company.details?.pricing || '',
               bestFor: company.details?.bestFor || '',
               summary: company.details?.summary || '',
-              highlighted: company.details?.highlighted || false,
-              features: company.details?.features || []
+              highlighted: company.details?.highlighted || false
+              // Remove the reference to details.features since it doesn't exist in the CompanyDetails type
             }
           };
           
