@@ -84,7 +84,7 @@ export const Hero = () => {
           <h1 className="mb-3 text-4xl font-bold tracking-tight text-[#1A1F2C] sm:text-5xl md:text-6xl">
             Discover the Best 
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
-              AI Ads & Marketing Tools
+              AI Ads and AI Marketing Tools for Your Business
             </span>
           </h1>
           <p className="max-w-2xl mx-auto mb-4 text-lg text-gray-600 sm:text-xl">
