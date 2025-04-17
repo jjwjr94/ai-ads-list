@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -13,8 +14,7 @@ export const Explore = () => {
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredCards, setFilteredCards] = useState(categoryCards);
-
+  
   // Load companies once on component mount
   useEffect(() => {
     const initializeData = async () => {
@@ -69,6 +69,7 @@ export const Explore = () => {
     }
   };
 
+  // Define categoryCards before using it in useState
   const categoryCards = [
     { 
       title: Category.STRATEGY_PLANNING, 
@@ -143,6 +144,9 @@ export const Explore = () => {
       count: categoryCounts[Category.AI_NATIVE] || 0
     }
   ];
+  
+  // Initialize filteredCards after categoryCards is defined
+  const [filteredCards, setFilteredCards] = useState(categoryCards);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
