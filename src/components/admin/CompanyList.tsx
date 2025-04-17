@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -170,13 +170,23 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               <TableRow key={company.id}>
                 <TableCell>
                   <Logo 
-                    src={company.logoUrl || company.logo || ''} 
+                    src={company.logo_url || ''} 
                     alt={company.name}
                     size="sm"
                     company={company}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{company.name}</TableCell>
+                <TableCell className="font-medium">
+                  <a 
+                    href={company.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-1 hover:underline"
+                  >
+                    {company.name}
+                    <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                  </a>
+                </TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 <TableCell>
