@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Company } from '@/types/frontend.models';
 import {
@@ -24,28 +23,24 @@ export const AdminDashboard: React.FC = () => {
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isAddingCompany, setIsAddingCompany] = useState(false);
   
-  // Handle editing a company
   const handleEditCompany = (company: Company) => {
     setEditingCompany(company);
     setIsAddingCompany(false);
     setActiveTab('edit');
   };
   
-  // Handle adding a new company
   const handleAddCompany = () => {
     setEditingCompany(null);
     setIsAddingCompany(true);
     setActiveTab('edit');
   };
   
-  // Handle canceling edit/add
   const handleCancel = () => {
     setEditingCompany(null);
     setIsAddingCompany(false);
     setActiveTab('companies');
   };
   
-  // Handle save completion
   const handleSaveComplete = () => {
     setEditingCompany(null);
     setIsAddingCompany(false);
@@ -55,7 +50,7 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold">Companies Database</h1>
         {activeTab === 'companies' && (
           <Button onClick={handleAddCompany}>
             <PlusCircle className="mr-2 h-4 w-4" />
