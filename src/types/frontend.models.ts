@@ -1,3 +1,4 @@
+
 /**
  * Frontend Models
  * 
@@ -41,7 +42,7 @@ export interface Company {
 export interface CompanyDetails {
   summary: string;
   highlighted: boolean;
-  features: string[];
+  features: string[];  // This field matches with database CompanyDetails.features
   pricing: string;
   bestFor: string;
 }

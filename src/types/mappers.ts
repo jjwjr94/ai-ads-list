@@ -1,4 +1,3 @@
-
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -61,10 +60,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
     targetAudience: dbCompany.target_audience || '',
     features: dbCompany.features || [],
     pricing: dbCompany.pricing || '',
-    details: {
-      ...details,
-      detailFeatures: dbCompany.details?.features || [] // Map database features to detailFeatures
-    },
+    details: details,
     linkedinUrl: dbCompany.linkedin_url,
     foundedYear: dbCompany.founded_year,
     headquarters: dbCompany.headquarters,
@@ -95,7 +91,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     details: {
       summary: company.details.summary,
       highlighted: company.details.highlighted,
-      features: company.details.detailFeatures || [], // Map detailFeatures to database features
+      features: company.details.features || [], // Map frontend features to database features
       pricing: company.details.pricing,
       bestFor: company.details.bestFor
     },

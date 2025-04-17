@@ -18,6 +18,7 @@ import {
 } from '../../types/mappers';
 import { v4 as uuidv4 } from 'uuid';
 import { Database } from '@/integrations/supabase/types';
+import { categoryMapping } from './categoryMapping';
 
 // Define types for database records
 interface DbRecord {
@@ -123,10 +124,16 @@ export const companiesAPI = {
         throw new Error('Missing required fields for company');
       }
 
+      // Ensure category is a valid value from the enum
+      const categoryValue = dbCompany.category.toString();
+
       // Use the ID provided by the client (already generated with uuidv4)
       const { data, error } = await supabase
         .from('companies')
-        .insert(dbCompany)
+        .insert({
+          ...dbCompany,
+          category: categoryValue
+        } as any)
         .select()
         .single();
 

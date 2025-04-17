@@ -4,10 +4,11 @@
 // Break the circular reference by separating the details into its own interface
 export interface CompanyDetails {
   summary?: string | null;       // Detailed summary
-  highlighted?: boolean;  // Whether to highlight this company
-  detailFeatures?: string[];    // Additional features (renamed from 'features')
+  highlighted?: boolean;         // Whether to highlight this company
+  detailFeatures?: string[];     // Additional features (renamed from 'features')
   pricing?: string | null;       // Detailed pricing information
   bestFor?: string | null;       // Best target audience
+  features?: string[];           // Adding this to match frontend.models.CompanyDetails
 }
 
 export interface Company {
