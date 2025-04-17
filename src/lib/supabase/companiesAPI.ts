@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   Company,
   Category
-} from '../../types/database';
+} from '../../types/frontend.models';
 import {
   mapDbCompanyToCompany,
   mapCompanyToDbInsert,

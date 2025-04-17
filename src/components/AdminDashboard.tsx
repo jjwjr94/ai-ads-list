@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Company, Category } from '@/types/database';
+import { Company, Category } from '@/types/frontend.models';
 import {
   Card,
   CardContent,
@@ -46,7 +46,7 @@ export const AdminDashboard: React.FC = () => {
       name: '',
       website: '',
       logoUrl: '',
-      category: Category.AI_NATIVE, // Using the enum value instead of string literal
+      category: Category.AI_NATIVE,
       description: '',
       features: [],
       pricing: '',
@@ -54,7 +54,7 @@ export const AdminDashboard: React.FC = () => {
       details: {
         summary: '',
         highlighted: false,
-        detailFeatures: [],
+        features: [],
         pricing: '',
         bestFor: ''
       }

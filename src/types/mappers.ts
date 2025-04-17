@@ -1,3 +1,4 @@
+
 /**
  * Mapper functions for converting between database and frontend models
  * 
