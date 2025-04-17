@@ -47,10 +47,19 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         throw error;
       }
       
-      return data || [];
+      // Transform Supabase data to match Company interface
+      return (data || []).map(item => ({
+        ...item,
+        logoUrl: item.logo_url || '',
+        targetAudience: item.target_audience || '',
+        details: item.details || { summary: '', highlighted: false, features: [], pricing: '', bestFor: '' },
+        // Ensure other required fields are present
+        features: item.features || [],
+        pricing: item.pricing || '',
+      })) as Company[];
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes
+    gcTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes (formerly cacheTime)
   });
 
   // Handle refresh with cache clearing
@@ -170,7 +179,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               <TableRow key={company.id}>
                 <TableCell>
                   <Logo 
-                    src={company.logo_url || ''} 
+                    src={company.logoUrl || ''} 
                     alt={company.name}
                     size="sm"
                     company={company}
