@@ -32,7 +32,7 @@ const categoryLinks = [
 ];
 
 const formatCategoryTitle = (categoryString: string): string => {
-  return categoryString.replace(/_/g, ' ');
+  return categoryString.replace(/_/g, ' ').replace(/&/g, ' & ');
 };
 
 export function AppSidebar() {
@@ -71,7 +71,7 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {categoryLinks.map((item) => (
                       <SidebarMenuSubItem key={item.path}>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuSubButton asChild className="whitespace-normal break-words py-2 h-auto min-h-7">
                           <Link to={item.path}>
                             {formatCategoryTitle(item.title)}
                           </Link>
