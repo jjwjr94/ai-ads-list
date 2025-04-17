@@ -1,21 +1,20 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
+import { Globe, DollarSign, Building2, Star, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { Link } from "react-router-dom";
 import Logo from '@/components/ui/logo';
+import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 
 interface CategoryPageProps {
   category: Category;
 }
 
-// Add a SkeletonCard component
 const SkeletonCard: React.FC = () => {
   return (
     <Card className="flex flex-col h-full">
@@ -52,12 +51,12 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
 
   const fetchCompanies = useCallback(async () => {
     try {
       setLoading(true);
-      await refreshCompanies();
       const fetchedCompanies = await getCompaniesByCategory(category);
       
       console.log(`Found ${fetchedCompanies.length} ${category} companies`);
@@ -72,14 +71,35 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     } finally {
       setLoading(false);
     }
-  }, [category, getCompaniesByCategory, refreshCompanies, toast]);
+  }, [category, getCompaniesByCategory, toast]);
+
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await refreshCompanies();
+      await fetchCompanies();
+      toast({
+        title: 'Success',
+        description: 'Companies list has been refreshed.',
+      });
+    } catch (err) {
+      console.error('Error refreshing companies:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to refresh companies. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     fetchCompanies();
     
     const intervalId = setInterval(() => {
-      if (!loading) {
-        console.log(`Refreshing ${category} data`);
+      if (!loading && !isRefreshing) {
+        console.log(`Auto-refreshing ${category} data`);
         fetchCompanies();
       }
     }, 300000);
@@ -87,7 +107,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [category, fetchCompanies, loading]);
+  }, [category, fetchCompanies, loading, isRefreshing]);
 
   const filteredCompanies = companies.filter(company => {
     const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
@@ -134,14 +154,23 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
           Discover AI-powered tools for {categoryTitle.toLowerCase()}
         </p>
 
-        <div className="mt-6 max-w-md mx-auto">
+        <div className="mt-6 flex max-w-md mx-auto gap-2">
           <Input
             type="text"
             placeholder="Search tools in this category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
+            className="flex-1"
           />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={isRefreshing || loading}
+            className="shrink-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
         
         <div className="mt-8 mb-8">
