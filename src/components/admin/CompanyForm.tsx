@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { PlusCircle, Save, X, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
+import LogoUploader from './LogoUploader';
 
 interface CompanyFormProps {
   company?: Company | null;
