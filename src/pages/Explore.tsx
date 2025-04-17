@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Category } from '@/types/frontend.models';
-import { Loader2, Database, BarChart, PenTool, LineChart, Globe, Code, Users, MessageSquare } from 'lucide-react';
+import { 
+  Loader2, Database, BarChart, PenTool, LineChart, Globe, Code, 
+  Users, MessageSquare, Briefcase, Users2, Shield, Layout 
+} from 'lucide-react';
 
 export const Explore = () => {
   const { companies, isLoading } = useCompanies();
@@ -32,8 +35,18 @@ export const Explore = () => {
         return LineChart;
       case Category.WEB_APP_DEVELOPMENT:
         return Code;
+      case Category.ACCOUNT_MANAGEMENT:
+        return Briefcase;
       case Category.SOCIAL_MEDIA:
         return MessageSquare;
+      case Category.INFLUENCER_MARKETING:
+        return Users2;
+      case Category.BRAND_MANAGEMENT:
+        return Users;
+      case Category.AD_FRAUD:
+        return Shield;
+      case Category.AI_NATIVE:
+        return Layout;
       default:
         return Database;
     }
@@ -77,10 +90,40 @@ export const Explore = () => {
       count: categoryCounts[Category.WEB_APP_DEVELOPMENT] || 0
     },
     { 
+      title: Category.ACCOUNT_MANAGEMENT, 
+      path: '/account-management',
+      description: 'AI tools for client and account management',
+      count: categoryCounts[Category.ACCOUNT_MANAGEMENT] || 0
+    },
+    { 
       title: Category.SOCIAL_MEDIA, 
       path: '/social-media',
       description: 'AI solutions for social media and community management',
       count: categoryCounts[Category.SOCIAL_MEDIA] || 0
+    },
+    { 
+      title: Category.INFLUENCER_MARKETING, 
+      path: '/influencer-marketing',
+      description: 'AI tools for influencer discovery and campaign management',
+      count: categoryCounts[Category.INFLUENCER_MARKETING] || 0
+    },
+    { 
+      title: Category.BRAND_MANAGEMENT, 
+      path: '/brand-management',
+      description: 'AI solutions for brand management and asset organization',
+      count: categoryCounts[Category.BRAND_MANAGEMENT] || 0
+    },
+    { 
+      title: Category.AD_FRAUD, 
+      path: '/ad-fraud',
+      description: 'AI tools for ad fraud detection and prevention',
+      count: categoryCounts[Category.AD_FRAUD] || 0
+    },
+    { 
+      title: Category.AI_NATIVE, 
+      path: '/ai-native',
+      description: 'AI-native agencies and consulting services',
+      count: categoryCounts[Category.AI_NATIVE] || 0
     }
   ];
 

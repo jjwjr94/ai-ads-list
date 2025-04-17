@@ -6,10 +6,10 @@
  */
 
 /**
- * Database categories enum - aligned with actual database values
+ * Database categories enum - includes all categories for type safety
  * 
- * Note: This enum has been added to ensure type safety between
- * frontend and backend category values.
+ * Note: Some categories don't have companies mapped to them yet in the database,
+ * but we include them here for future use.
  */
 export enum DbCategory {
   STRATEGY_PLANNING = "Strategy & Planning",
@@ -18,7 +18,12 @@ export enum DbCategory {
   SEO_ORGANIC = "SEO & Organic Growth",
   DATA_ANALYTICS = "Data & Analytics",
   WEB_APP_DEVELOPMENT = "Web & App Development",
-  SOCIAL_MEDIA = "Social Media & Community Management"
+  SOCIAL_MEDIA = "Social Media & Community Management",
+  ACCOUNT_MANAGEMENT = "Account Management & Client Services",
+  INFLUENCER_MARKETING = "Influencer & Partnership Marketing",
+  BRAND_MANAGEMENT = "Brand Management",
+  AD_FRAUD = "Ad Fraud Detection & Prevention",
+  AI_NATIVE = "AI-Native Agencies"
 }
 
 /**
@@ -29,7 +34,7 @@ export interface DbCompany {
   id: string;
   name: string;
   website: string;
-  category: DbCategory; // Updated to use DbCategory enum instead of string
+  category: DbCategory; // Using DbCategory enum for type safety
   description: string;
   
   // Optional fields with snake_case naming (database convention)

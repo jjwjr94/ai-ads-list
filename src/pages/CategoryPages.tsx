@@ -7,12 +7,9 @@ export const PerformanceMediaPage = () => <CategoryPage category={Category.PERFO
 export const SeoOrganicPage = () => <CategoryPage category={Category.SEO_ORGANIC} />;
 export const AnalyticsPage = () => <CategoryPage category={Category.DATA_ANALYTICS} />;
 export const WebAppDevelopmentPage = () => <CategoryPage category={Category.WEB_APP_DEVELOPMENT} />;
+export const AccountManagementPage = () => <CategoryPage category={Category.ACCOUNT_MANAGEMENT} />;
 export const SocialMediaPage = () => <CategoryPage category={Category.SOCIAL_MEDIA} />;
-
-// Note: The following pages have been removed as they reference categories
-// that don't exist in the database:
-// - AccountManagementPage
-// - InfluencerMarketingPage
-// - BrandManagementPage
-// - AdFraudPage
-// - AiNativePage
+export const InfluencerMarketingPage = () => <CategoryPage category={Category.INFLUENCER_MARKETING} />;
+export const BrandManagementPage = () => <CategoryPage category={Category.BRAND_MANAGEMENT} />;
+export const AdFraudPage = () => <CategoryPage category={Category.AD_FRAUD} />;
+export const AiNativePage = () => <CategoryPage category={Category.AI_NATIVE} />;
