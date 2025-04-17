@@ -4,7 +4,6 @@ import { Company } from '@/types/database';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -17,7 +16,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ExternalLink, Star, Globe, DollarSign, Building2, Calendar, MapPin } from 'lucide-react';
+import { ExternalLink, Star, Globe, DollarSign, Building2, Calendar } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 
 interface CompanyCardProps {
@@ -43,7 +42,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
               )}
             </div>
             <CardTitle className="text-xl font-bold">{company.name}</CardTitle>
-            <CardDescription className="mt-1">{company.description}</CardDescription>
           </div>
           <Logo 
             src={company.logoUrl || company.logo} 
