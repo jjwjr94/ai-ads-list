@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 import { useSession } from '@/hooks/useSession';
+import { Link } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
@@ -83,6 +84,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         });
       }
     }
+  };
+
+  const getCategoryPath = (category: string): string => {
+    return `/${category.toLowerCase().replace(/_/g, '-')}`;
   };
 
   return (
@@ -160,7 +165,15 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                     {company.name}
                   </Button>
                 </TableCell>
-                <TableCell>{company.category}</TableCell>
+                <TableCell>
+                  <Link 
+                    to={getCategoryPath(company.category)}
+                    className="text-purple-600 hover:text-purple-800 flex items-center gap-1"
+                  >
+                    {company.category}
+                    <ExternalLink className="h-3 w-3" />
+                  </Link>
+                </TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 {session && (
                   <TableCell>
