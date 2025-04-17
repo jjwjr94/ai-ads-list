@@ -110,7 +110,7 @@ export const companiesAPI = {
    * @param company The company to create
    * @returns Promise resolving to the created Company object
    */
-  async create(company: Partial<Company>): Promise<Company> {
+  async create(company: Omit<Company, "id">): Promise<Company> {
     // Convert the company to the format expected by the database
     const dbCompany = mapCompanyToDbInsert(company);
     
@@ -146,7 +146,7 @@ export const companiesAPI = {
    */
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
     // Convert the updates to the format expected by the database
-    const dbUpdates = mapCompanyUpdateToDbUpdate(updates);
+    const dbUpdates = mapCompanyUpdateToDbUpdate(updates as Partial<Company>);
     
     const { error } = await supabase
       .from('companies')
