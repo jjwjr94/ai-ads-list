@@ -39,7 +39,7 @@ export interface Company {
  * Frontend representation of company details
  */
 export interface CompanyDetails {
-  summary: string;
+  summary?: string;  // Make summary optional
   highlighted: boolean;
   features: string[];
   pricing: string;

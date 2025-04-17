@@ -3,6 +3,7 @@ import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Image, Loader2, Trash2 } from 'lucide-react';
+import { Company } from '@/types/frontend.models';
 
 interface LogoUploaderProps {
   companyId: string;
@@ -17,7 +18,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
 }) => {
   const { uploadLogo, updateCompany } = useCompanyDatabase();
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentLogoUrl || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null | undefined>(currentLogoUrl);
   const { toast } = useToast();
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +64,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
     if (window.confirm('Are you sure you want to delete this company\'s logo?')) {
       try {
         await updateCompany(companyId, {
-          logo: '',
-          logoUrl: ''
+          logoUrl: ''  // Update to use logoUrl instead of logo
         });
         setPreviewUrl(null);
         onLogoUpdated('');

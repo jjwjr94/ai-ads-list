@@ -1,27 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
-import { Company } from '@/types/database';
+import { Company } from '@/types/frontend.models';
 import { findCompanyLogo } from '@/lib/logoFinder';
 
 interface LogoProps {
-  src: string;
+  src?: string;  // Make src optional
   alt: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
-  company?: Company; // Optional company object for auto-finding logos
+  company?: Company; 
 }
 
-/**
- * Enhanced Logo component for consistent logo display across the application
- * 
- * Features:
- * - Automatic logo finding using public/logos directory, LinkedIn image search and website checking
- * - Consistent sizing with predefined options
- * - Proper background and padding
- * - Fallback display when logo is missing
- * - Optimized for high-quality display
- * - Support for base64-encoded logos from Supabase
- */
 const Logo: React.FC<LogoProps> = ({ 
   src, 
   alt, 
@@ -38,7 +26,7 @@ const Logo: React.FC<LogoProps> = ({
   };
 
   // State for logo source and loading status
-  const [logoSrc, setLogoSrc] = useState<string | null>(src || null);
+  const [logoSrc, setLogoSrc] = useState<string | null | undefined>(src);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   
@@ -165,6 +153,20 @@ const Logo: React.FC<LogoProps> = ({
       }
     }
   }, [logoSrc, alt]);
+
+  // Update logo source logic to handle optional fields
+  useEffect(() => {
+    const checkLogoSource = () => {
+      if (company) {
+        const companyLogoSrc = company.logoUrl || company.logo || src;
+        setLogoSrc(companyLogoSrc);
+      } else {
+        setLogoSrc(src);
+      }
+    };
+    
+    checkLogoSource();
+  }, [company, src]);
 
   return (
     <div 
