@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -33,7 +32,6 @@ interface CompanyFormProps {
   onSave: () => void;
 }
 
-// Default empty company for new entries
 const emptyCompany: Company = {
   id: '',
   name: '',
@@ -61,34 +59,29 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const isEditing = !!company;
   const { addCompany, updateCompany } = useCompanyDatabase();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
   
-  // Initialize form with company data or empty values
   const form = useForm({
     defaultValues: company || emptyCompany
   });
 
-  // Update form values when company prop changes (including logo updates)
   useEffect(() => {
-    if (company) {
-      // Reset the entire form with updated company data
-      form.reset(company);
+    if (!isEditing) {
+      setTempId(uuidv4());
     }
-  }, [company, form]);
+  }, [isEditing]);
 
-  // Handle form submission
   const onSubmit = async (data: Company) => {
     setIsSubmitting(true);
     try {
       if (isEditing && company) {
-        // Update existing company
         await updateCompany(company.id, data);
         toast({
           title: "Company updated",
           description: "The company has been successfully updated.",
         });
       } else {
-        // Add new company with generated ID
         const newCompany = {
           ...data,
           id: uuidv4()
@@ -112,13 +105,11 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
     }
   };
 
-  // Add a new feature field
   const addFeature = () => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', [...currentFeatures, '']);
   };
 
-  // Remove a feature field
   const removeFeature = (index: number) => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', currentFeatures.filter((_, i) => i !== index));
@@ -127,95 +118,104 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Company Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Company name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Company name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Website */}
-          <FormField
-            control={form.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Category */}
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.values(Category).map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.values(Category).map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Founded Year */}
-          <FormField
-            control={form.control}
-            name="foundedYear"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Founded Year</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="2020" 
-                    {...field}
-                    value={field.value || ''}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Hidden Logo URL field to ensure it's included in form submission */}
-          <input 
-            type="hidden" 
-            {...form.register('logoUrl')} 
-          />
+              <FormField
+                control={form.control}
+                name="foundedYear"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Founded Year</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="2020" 
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <input 
+              type="hidden" 
+              {...form.register('logoUrl')} 
+            />
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium mb-4">Company Logo</h3>
+            <LogoUploader 
+              companyId={isEditing ? company.id : tempId}
+              currentLogoUrl={form.watch('logoUrl')}
+              onLogoUpdated={(logoUrl) => {
+                form.setValue('logoUrl', logoUrl);
+              }}
+            />
+          </div>
         </div>
 
-        {/* Description */}
         <FormField
           control={form.control}
           name="description"
@@ -234,7 +234,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           )}
         />
 
-        {/* Features */}
         <div className="space-y-2">
           <FormLabel>Features</FormLabel>
           <FormDescription>List the key features of this company</FormDescription>
@@ -273,7 +272,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           </Button>
         </div>
 
-        {/* Highlighted */}
         <FormField
           control={form.control}
           name="details.highlighted"
@@ -295,7 +293,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
           )}
         />
 
-        {/* Form Actions */}
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
