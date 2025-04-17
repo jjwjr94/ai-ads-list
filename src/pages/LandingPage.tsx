@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -18,19 +17,15 @@ const LandingPage = () => {
   const [featuredCompanies, setFeaturedCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch featured companies on component mount
   useEffect(() => {
     const fetchFeaturedCompanies = async () => {
       try {
         setIsLoading(true);
-        // Try to get highlighted companies first
         const highlighted = await supabaseAPI.companies.getHighlighted();
         if (highlighted && highlighted.length > 0) {
-          // Randomize the highlighted companies order
           const shuffledHighlighted = [...highlighted].sort(() => 0.5 - Math.random());
           setFeaturedCompanies(shuffledHighlighted);
         } else {
-          // Fallback to getting all companies and selecting a few random ones
           const allCompanies = await supabaseAPI.companies.getAll();
           const randomCompanies = [...allCompanies]
             .sort(() => 0.5 - Math.random())
@@ -49,7 +44,6 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
-      {/* Hero Section */}
       <section className="container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
         <div className="text-center max-w-3xl">
           <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
@@ -68,16 +62,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Companies Carousel */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-[#1A1F2C] mb-4">Featured AI Marketing Tools</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover top-rated AI tools that are transforming the marketing landscape
-            </p>
-          </div>
-
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-pulse text-gray-500">Loading featured tools...</div>
@@ -112,7 +98,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -156,7 +141,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Why Use AI Section */}
       <section className="py-16 bg-gradient-to-b from-[#f8f9fa] to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -207,7 +191,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-[#1A1F2C]">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
