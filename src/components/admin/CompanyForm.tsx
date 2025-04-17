@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -64,7 +63,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
   
-  // Initialize the form with either the existing company or a new one with a UUID
   const defaultValues = company || { ...emptyCompany, id: uuidv4() };
   
   const form = useForm({
@@ -74,7 +72,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   useEffect(() => {
     if (!isEditing) {
       setTempId(uuidv4());
-      // Pre-set the ID in the form 
       form.setValue('id', tempId);
     }
   }, [isEditing, form]);
@@ -82,12 +79,10 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const onSubmit = async (data: Company) => {
     setIsSubmitting(true);
     try {
-      // Ensure all required fields are set
       if (!data.name || !data.website || !data.category) {
         throw new Error('Please fill out all required fields (name, website, category)');
       }
 
-      // Ensure ID is set for new companies
       const companyData = isEditing ? data : { ...data, id: tempId || uuidv4() };
 
       if (isEditing && company) {
