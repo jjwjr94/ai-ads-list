@@ -73,24 +73,24 @@ export const Hero = () => {
   }, [carouselApi]);
 
   return (
-    <section className="relative px-6 py-16 overflow-hidden bg-white">
+    <section className="relative px-6 py-12 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[#F1F0FB]/50" />
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 mb-4">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 mb-3">
             <Wand2 className="w-4 h-4 mr-2 text-purple-600" />
             <span className="text-sm font-medium text-purple-600">AI-Powered Marketing Tools</span>
           </div>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-[#1A1F2C] sm:text-5xl md:text-6xl">
+          <h1 className="mb-3 text-4xl font-bold tracking-tight text-[#1A1F2C] sm:text-5xl md:text-6xl">
             Discover the Best 
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
               AI Ads & Marketing Tools
             </span>
           </h1>
-          <p className="max-w-2xl mx-auto mb-6 text-lg text-gray-600 sm:text-xl">
+          <p className="max-w-2xl mx-auto mb-4 text-lg text-gray-600 sm:text-xl">
             Explore cutting-edge solutions for AI ads and AI marketing to supercharge your team's efficiency, output and performance.
           </p>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-8">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-6">
             <GradientButton 
               onClick={handleExploreClick} 
               className="w-full sm:w-auto"
@@ -102,7 +102,7 @@ export const Hero = () => {
           
           {/* Company Carousel */}
           {displayCompanies.length > 0 && (
-            <div className="mt-6 px-4 md:px-10">
+            <div className="mt-4 px-4 md:px-10">
               <Carousel
                 opts={{
                   align: "center",
@@ -128,7 +128,7 @@ export const Hero = () => {
           
           {/* Show loading state or empty state if needed */}
           {displayCompanies.length === 0 && (
-            <div className="mt-6 text-gray-500">
+            <div className="mt-4 text-gray-500">
               {isLoading ? "Loading featured tools..." : "No featured tools available yet"}
             </div>
           )}
