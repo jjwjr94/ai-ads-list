@@ -6,26 +6,25 @@ import { ArrowRight, Search, Database, Lightbulb, CodeSquare, PieChart } from "l
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
-      {/* Hero Section */}
-      <section className="container mx-auto py-16 px-4">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-            <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
-              Discover the Best <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">AI Marketing Tools</span> for Your Business
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Explore our curated directory of AI-powered marketing solutions to transform your strategy, optimize campaigns, and drive better results.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/explore">
-                <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-lg text-lg">
-                  Explore Tools <ArrowRight className="ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+    {/* Hero Section */}
+<section className="container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
+  <div className="text-center max-w-3xl">
+    <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
+      Discover the Best <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">AI Marketing Tools</span> for Your Business
+    </h1>
+    <p className="text-xl text-gray-600 mb-8">
+      Explore our curated directory of AI-powered marketing solutions to transform your strategy, optimize campaigns, and drive better results.
+    </p>
+    <div className="flex justify-center gap-4 flex-wrap">
+      <Link to="/explore">
+        <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-lg text-lg">
+          Explore Tools <ArrowRight className="ml-2" />
+        </Button>
+      </Link>
+    </div>
+  </div>
+</section>
+
 
       {/* Categories Section */}
       <section className="bg-white py-16">
