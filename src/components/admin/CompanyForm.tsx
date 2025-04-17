@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { Company, Category } from '@/types/database';
-import { useCompanyDatabase } from '@/context/CompanyContext';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Loader2, X, PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -9,107 +15,104 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useForm } from "react-hook-form";
-import { PlusCircle, Save, X, Loader2 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
-import { v4 as uuidv4 } from 'uuid';
+} from '@/components/ui/select';
+import { Company, Category } from '@/types/frontend.models';
+import { useCompanyOperations } from '@/hooks/useCompanyOperations';
 
-interface CompanyFormProps {
-  company?: Company | null;
-  onCancel: () => void;
-  onSave: () => void;
-}
-
-// Default empty company for new entries
-const emptyCompany: Company = {
-  id: '',
+// Default empty company for new company form
+const defaultCompany: Partial<Company> = {
   name: '',
   website: '',
-  logoUrl: '',
-  category: Category.AI_NATIVE,
+  category: Category.STRATEGY_PLANNING,
   description: '',
-  features: [],
-  pricing: '',
+  logoUrl: '',
   targetAudience: '',
+  features: [''],
+  pricing: '',
   details: {
     summary: '',
     highlighted: false,
-    detailFeatures: [],
+    features: [],
     pricing: '',
     bestFor: ''
   }
 };
 
-export const CompanyForm: React.FC<CompanyFormProps> = ({ 
-  company = null, 
-  onCancel,
-  onSave
+// Form schema validation
+const formSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  website: z.string().url({ message: 'Please enter a valid URL' }),
+  category: z.string(),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters' }),
+  logoUrl: z.string().optional(),
+  targetAudience: z.string().optional(),
+  features: z.array(z.string()),
+  pricing: z.string().optional(),
+  foundedYear: z.number().optional(),
+  headquarters: z.string().optional(),
+  employeeCount: z.string().optional(),
+  details: z.object({
+    summary: z.string().optional(),
+    highlighted: z.boolean().default(false),
+    features: z.array(z.string()).optional(),
+    pricing: z.string().optional(),
+    bestFor: z.string().optional(),
+  }),
+});
+
+type CompanyFormProps = {
+  company?: Company;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  isEditing?: boolean;
+};
+
+export const CompanyForm: React.FC<CompanyFormProps> = ({
+  company,
+  onSuccess,
+  onCancel = () => {},
+  isEditing = false,
 }) => {
-  const isEditing = !!company;
-  const { addCompany, updateCompany } = useCompanyDatabase();
+  const { addCompany, updateCompany } = useCompanyOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  
-  // Initialize form with company data or empty values
-  const form = useForm({
-    defaultValues: company || emptyCompany
+
+  // Initialize form with company data or defaults
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: company || defaultCompany,
   });
 
-  // Handle form submission
-  const onSubmit = async (data: Company) => {
+  // Form submission handler
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      if (isEditing && company) {
-        // Update existing company
+      if (isEditing && company?.id) {
         await updateCompany(company.id, data);
-        toast({
-          title: "Company updated",
-          description: "The company has been successfully updated.",
-        });
       } else {
-        // Add new company with generated ID
-        const newCompany = {
-          ...data,
-          id: uuidv4()
-        };
-        await addCompany(newCompany);
-        toast({
-          title: "Company added",
-          description: "The new company has been successfully added.",
-        });
+        await addCompany(data as Company);
       }
-      onSave();
+      if (onSuccess) onSuccess();
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast({
-        title: "Error",
-        description: "An error occurred while saving the company.",
-        variant: "destructive",
-      });
+      console.error('Error saving company:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Add a new feature field
+  // Feature list management
   const addFeature = () => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', [...currentFeatures, '']);
   };
 
-  // Remove a feature field
   const removeFeature = (index: number) => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', currentFeatures.filter((_, i) => i !== index));
@@ -118,8 +121,9 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Company Name */}
+          {/* Name */}
           <FormField
             control={form.control}
             name="name"
@@ -133,7 +137,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
               </FormItem>
             )}
           />
-
           {/* Website */}
           <FormField
             control={form.control}
@@ -148,7 +151,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
               </FormItem>
             )}
           />
-
           {/* Category */}
           <FormField
             control={form.control}
@@ -177,7 +179,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
               </FormItem>
             )}
           />
-
           {/* Founded Year */}
           <FormField
             control={form.control}
@@ -199,7 +200,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             )}
           />
         </div>
-
         {/* Description */}
         <FormField
           control={form.control}
@@ -218,7 +218,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             </FormItem>
           )}
         />
-
         {/* Features */}
         <div className="space-y-2">
           <FormLabel>Features</FormLabel>
@@ -257,7 +256,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             Add Feature
           </Button>
         </div>
-
         {/* Highlighted */}
         <FormField
           control={form.control}
@@ -279,7 +277,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             </FormItem>
           )}
         />
-
         {/* Form Actions */}
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>

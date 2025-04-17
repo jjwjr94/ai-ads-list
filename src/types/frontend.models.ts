@@ -56,7 +56,10 @@ export interface AiNativeCriteria {
 }
 
 /**
- * Categories enum
+ * Categories enum - aligned with actual database values
+ * 
+ * Note: This enum has been updated to match exactly with the categories
+ * that exist in the Supabase database.
  */
 export enum Category {
   STRATEGY_PLANNING = "Strategy & Planning",
@@ -65,12 +68,7 @@ export enum Category {
   SEO_ORGANIC = "SEO & Organic Growth",
   DATA_ANALYTICS = "Data & Analytics",
   WEB_APP_DEVELOPMENT = "Web & App Development",
-  ACCOUNT_MANAGEMENT = "Account Management & Client Services",
-  SOCIAL_MEDIA = "Social Media & Community Management",
-  INFLUENCER_MARKETING = "Influencer & Partnership Marketing",
-  BRAND_MANAGEMENT = "Brand Management",
-  AD_FRAUD = "Ad Fraud Detection & Prevention",
-  AI_NATIVE = "AI-Native Agencies"
+  SOCIAL_MEDIA = "Social Media & Community Management"
 }
 
 /**
