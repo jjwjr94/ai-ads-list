@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import Explore from "./pages/Explore";
 import Database from "./pages/Database";
+import Admin from "./pages/Admin";
 import { CompanyProvider } from "./context/CompanyContext";
 import {
   StrategyPlanningPage,
@@ -50,6 +50,11 @@ const App = () => (
                     <Route path="/explore" element={<Explore />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/database" element={<Database />} />
+                    <Route path="/admin" element={
+                      <ProtectedRoute>
+                        <Admin />
+                      </ProtectedRoute>
+                    } />
                     
                     <Route path="/strategy-planning" element={<StrategyPlanningPage />} />
                     <Route path="/creative-content" element={<CreativeContentPage />} />
