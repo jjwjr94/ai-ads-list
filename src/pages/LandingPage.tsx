@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -23,32 +22,6 @@ const LandingPage = () => {
                   Explore Tools <ArrowRight className="ml-2" />
                 </Button>
               </Link>
-            </div>
-          </div>
-          <div className="lg:w-1/2">
-            <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="bg-[#f8f9fa] p-6 rounded-lg">
-                  <Search className="h-8 w-8 text-[#9b87f5] mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Find Tools</h3>
-                  <p className="text-gray-600">Discover AI tools for every marketing need</p>
-                </div>
-                <div className="bg-[#f8f9fa] p-6 rounded-lg">
-                  <Database className="h-8 w-8 text-[#9b87f5] mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Compare Options</h3>
-                  <p className="text-gray-600">Compare features and pricing across tools</p>
-                </div>
-                <div className="bg-[#f8f9fa] p-6 rounded-lg">
-                  <Lightbulb className="h-8 w-8 text-[#9b87f5] mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Get Insights</h3>
-                  <p className="text-gray-600">Learn industry best practices</p>
-                </div>
-                <div className="bg-[#f8f9fa] p-6 rounded-lg">
-                  <PieChart className="h-8 w-8 text-[#9b87f5] mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Track Results</h3>
-                  <p className="text-gray-600">Measure the impact of AI on your marketing</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

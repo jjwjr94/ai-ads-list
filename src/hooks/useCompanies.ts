@@ -45,9 +45,9 @@ export function useCompanies() {
         
         // Add each company to the database
         for (const company of initialCompanies) {
-          // Convert to CompanyCreate type to ensure proper initialization
+          // Convert to a format suitable for creation
           const companyCreate = {
-            ...company as any,
+            ...company,
             id: undefined // Remove ID to let Supabase generate one
           };
           await supabaseAPI.companies.create(companyCreate);

@@ -8,10 +8,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Company, 
-  Category, 
-  CompanyCreate,
-  CompanyUpdate
+  Company,
+  Category
 } from '../../types/database';
 import {
   mapDbCompanyToCompany,
@@ -67,8 +65,8 @@ export const companiesAPI = {
     // Type assertion to ensure compatibility
     const mappedCompanies = (data || []).map((item) => {
       // Ensure last_updated is string if it exists
-      if (item.last_updated && item.last_updated instanceof Date) {
-        item.last_updated = item.last_updated.toISOString();
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
       }
       return mapDbCompanyToCompany(item as DbRecord);
     });
@@ -98,8 +96,8 @@ export const companiesAPI = {
 
     if (data) {
       // Ensure last_updated is string if it exists
-      if (data.last_updated && data.last_updated instanceof Date) {
-        data.last_updated = data.last_updated.toISOString();
+      if (data.last_updated && typeof data.last_updated === 'object') {
+        data.last_updated = new Date(data.last_updated).toISOString();
       }
       return mapDbCompanyToCompany(data as DbRecord);
     }
@@ -112,7 +110,7 @@ export const companiesAPI = {
    * @param company The company to create
    * @returns Promise resolving to the created Company object
    */
-  async create(company: CompanyCreate): Promise<Company> {
+  async create(company: Partial<Company>): Promise<Company> {
     // Convert the company to the format expected by the database
     const dbCompany = mapCompanyToDbInsert(company);
     
@@ -133,8 +131,8 @@ export const companiesAPI = {
     }
 
     // Ensure last_updated is string if it exists
-    if (data.last_updated && data.last_updated instanceof Date) {
-      data.last_updated = data.last_updated.toISOString();
+    if (data.last_updated && typeof data.last_updated === 'object') {
+      data.last_updated = new Date(data.last_updated).toISOString();
     }
     
     return mapDbCompanyToCompany(data as DbRecord);
@@ -146,7 +144,7 @@ export const companiesAPI = {
    * @param updates The updates to apply
    * @returns Promise resolving to a boolean indicating success
    */
-  async update(id: string, updates: CompanyUpdate): Promise<boolean> {
+  async update(id: string, updates: Partial<Company>): Promise<boolean> {
     // Convert the updates to the format expected by the database
     const dbUpdates = mapCompanyUpdateToDbUpdate(updates);
     
@@ -202,8 +200,8 @@ export const companiesAPI = {
     // Type assertion to ensure compatibility
     const mappedCompanies = (data || []).map((item) => {
       // Ensure last_updated is string if it exists
-      if (item.last_updated && item.last_updated instanceof Date) {
-        item.last_updated = item.last_updated.toISOString();
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
       }
       return mapDbCompanyToCompany(item as DbRecord);
     });
@@ -230,8 +228,8 @@ export const companiesAPI = {
     // Type assertion to ensure compatibility
     const mappedCompanies = (data || []).map((item) => {
       // Ensure last_updated is string if it exists
-      if (item.last_updated && item.last_updated instanceof Date) {
-        item.last_updated = item.last_updated.toISOString();
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
       }
       return mapDbCompanyToCompany(item as DbRecord);
     });
@@ -259,8 +257,8 @@ export const companiesAPI = {
       // Type assertion to ensure compatibility
       const mappedCompanies = data.map((item) => {
         // Ensure last_updated is string if it exists
-        if (item.last_updated && item.last_updated instanceof Date) {
-          item.last_updated = item.last_updated.toISOString();
+        if (item.last_updated && typeof item.last_updated === 'object') {
+          item.last_updated = new Date(item.last_updated).toISOString();
         }
         return mapDbCompanyToCompany(item as DbRecord);
       });
@@ -283,8 +281,8 @@ export const companiesAPI = {
     // Type assertion to ensure compatibility
     const mappedRandomCompanies = (randomData || []).map((item) => {
       // Ensure last_updated is string if it exists
-      if (item.last_updated && item.last_updated instanceof Date) {
-        item.last_updated = item.last_updated.toISOString();
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
       }
       return mapDbCompanyToCompany(item as DbRecord);
     });
