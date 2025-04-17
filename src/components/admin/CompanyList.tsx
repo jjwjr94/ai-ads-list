@@ -12,10 +12,17 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 import { useSession } from '@/hooks/useSession';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import CompanyCard from '@/components/ui/company-card';
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
@@ -31,6 +38,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const { session } = useSession();
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -144,15 +152,13 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                   />
                 </TableCell>
                 <TableCell className="font-medium">
-                  <a 
-                    href={company.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center hover:text-purple-600 transition-colors"
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto font-medium hover:text-purple-600"
+                    onClick={() => setSelectedCompany(company as Company)}
                   >
                     {company.name}
-                    <ExternalLink className="ml-1 h-3 w-3" />
-                  </a>
+                  </Button>
                 </TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
@@ -179,6 +185,19 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
           )}
         </TableBody>
       </Table>
+
+      <Sheet open={!!selectedCompany} onOpenChange={() => setSelectedCompany(null)}>
+        <SheetContent className="w-[90%] sm:w-[600px]">
+          <SheetHeader>
+            <SheetTitle>Company Details</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6">
+            {selectedCompany && (
+              <CompanyCard company={selectedCompany} />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
