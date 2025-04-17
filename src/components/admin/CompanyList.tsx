@@ -87,34 +87,11 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   };
 
   const getCategoryPath = (category: string): string => {
-    switch(category) {
-      case "STRATEGY_PLANNING":
-        return "/strategy-planning";
-      case "CREATIVE_CONTENT":
-        return "/creative-content";
-      case "PERFORMANCE_MEDIA":
-        return "/performance-media";
-      case "SEO_ORGANIC":
-        return "/seo-organic";
-      case "DATA_ANALYTICS":
-        return "/data-analytics";
-      case "WEB_APP_DEVELOPMENT":
-        return "/web-app-development";
-      case "ACCOUNT_MANAGEMENT":
-        return "/account-management";
-      case "SOCIAL_MEDIA":
-        return "/social-media";
-      case "INFLUENCER_MARKETING":
-        return "/influencer-marketing";
-      case "BRAND_MANAGEMENT":
-        return "/brand-management";
-      case "AD_FRAUD":
-        return "/ad-fraud";
-      case "AI_NATIVE":
-        return "/ai-native";
-      default:
-        return "/";
-    }
+    return "/" + category
+      .toLowerCase()
+      .replace(/&/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/_/g, '-');
   };
 
   return (
