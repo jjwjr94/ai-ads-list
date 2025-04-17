@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Company } from '@/types/database';
+
+import React, { useState, useMemo } from 'react';
+import { Company } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
   Table,
@@ -12,24 +13,51 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import Logo from "@/components/ui/logo";
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
 }
 
+type SortField = 'name' | 'category';
+type SortDirection = 'asc' | 'desc';
+
 export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // Filter companies based on search term
-  const filteredCompanies = companies.filter(company => 
-    company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Handle sort toggle
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(current => current === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Filter and sort companies
+  const sortedAndFilteredCompanies = useMemo(() => {
+    const filtered = companies.filter(company => 
+      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return filtered.sort((a, b) => {
+      const aValue = a[sortField]?.toLowerCase() ?? '';
+      const bValue = b[sortField]?.toLowerCase() ?? '';
+      
+      if (sortDirection === 'asc') {
+        return aValue.localeCompare(bValue);
+      }
+      return bValue.localeCompare(aValue);
+    });
+  }, [companies, searchTerm, sortField, sortDirection]);
 
   // Handle company deletion
   const handleDeleteCompany = async (id: string) => {
@@ -51,27 +79,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     }
   };
 
-  // Handle data refresh
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      await refreshCompanies();
-      toast({
-        title: "Data refreshed",
-        description: "Company data has been refreshed.",
-      });
-    } catch (error) {
-      console.error('Error refreshing data:', error);
-      toast({
-        title: "Error",
-        description: "An error occurred while refreshing data.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -88,10 +95,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <Button 
           variant="outline" 
           size="icon" 
-          onClick={handleRefresh}
-          disabled={isRefreshing || isLoading}
+          onClick={refreshCompanies}
+          disabled={isLoading}
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
 
@@ -99,22 +106,59 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <TableCaption>List of AI marketing companies</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead className="w-[60px]">Logo</TableHead>
+            <TableHead>
+              <Button
+                variant="ghost"
+                onClick={() => toggleSort('name')}
+                className="flex items-center gap-2 hover:bg-transparent"
+              >
+                Name
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>
+              <Button
+                variant="ghost"
+                onClick={() => toggleSort('category')}
+                className="flex items-center gap-2 hover:bg-transparent"
+              >
+                Category
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </TableHead>
             <TableHead>Description</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredCompanies.length > 0 ? (
-            filteredCompanies.map((company) => (
+          {sortedAndFilteredCompanies.length > 0 ? (
+            sortedAndFilteredCompanies.map((company) => (
               <TableRow key={company.id}>
-                <TableCell className="font-medium">{company.name}</TableCell>
+                <TableCell>
+                  <Logo 
+                    src={company.logoUrl} 
+                    alt={company.name}
+                    size="sm"
+                    company={company as Company}
+                  />
+                </TableCell>
+                <TableCell className="font-medium">
+                  <a 
+                    href={company.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center hover:text-purple-600 transition-colors"
+                  >
+                    {company.name}
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => onEditCompany(company)}>
+                    <Button variant="ghost" size="icon" onClick={() => onEditCompany(company as Company)}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDeleteCompany(company.id)}>
@@ -126,7 +170,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
+              <TableCell colSpan={5} className="text-center">
                 {isLoading ? 'Loading companies...' : 'No companies found'}
               </TableCell>
             </TableRow>
@@ -135,6 +179,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
       </Table>
     </div>
   );
-};
+}
 
 export default CompanyList;

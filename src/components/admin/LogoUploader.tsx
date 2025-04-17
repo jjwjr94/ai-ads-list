@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Image, Loader2 } from 'lucide-react';
+import { Upload, Image, Loader2, Trash2 } from 'lucide-react';
+import { Company } from '@/types/frontend.models';
 
 interface LogoUploaderProps {
   companyId: string;
@@ -15,17 +16,15 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
   currentLogoUrl,
   onLogoUpdated
 }) => {
-  const { uploadLogo } = useCompanyDatabase();
+  const { uploadLogo, updateCompany } = useCompanyDatabase();
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentLogoUrl || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null | undefined>(currentLogoUrl);
   const { toast } = useToast();
   
-  // Handle file selection and upload
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Invalid file type",
@@ -35,14 +34,12 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       return;
     }
     
-    // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
       setPreviewUrl(e.target?.result as string);
     };
     reader.readAsDataURL(file);
     
-    // Upload logo
     setIsUploading(true);
     try {
       const logoUrl = await uploadLogo(companyId, file, file.name);
@@ -62,7 +59,30 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       setIsUploading(false);
     }
   };
-  
+
+  const handleDeleteLogo = async () => {
+    if (window.confirm('Are you sure you want to delete this company\'s logo?')) {
+      try {
+        await updateCompany(companyId, {
+          logoUrl: ''  // Update to use logoUrl instead of logo
+        });
+        setPreviewUrl(null);
+        onLogoUpdated('');
+        toast({
+          title: "Logo deleted",
+          description: "The company logo has been successfully removed.",
+        });
+      } catch (error) {
+        console.error('Error deleting logo:', error);
+        toast({
+          title: "Error",
+          description: "An error occurred while deleting the logo.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center justify-center border rounded-md p-6 bg-muted/50">
@@ -98,6 +118,18 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
               </>
             )}
           </Button>
+
+          {previewUrl && (
+            <Button
+              variant="outline"
+              onClick={handleDeleteLogo}
+              disabled={isUploading}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Logo
+            </Button>
+          )}
+
           <input
             id="logo-upload"
             type="file"

@@ -1,7 +1,10 @@
+
 import { Category } from '@/types/frontend.models';
 import { DbCategory } from '@/types/database.models';
 import { supabase } from './supabaseClient';
 import { Company, CompanyCreate, CompanyUpdate } from '@/types/frontend.models';
+
+
 
 /**
  * Helper function to map database record to frontend Company object
@@ -38,6 +41,7 @@ export const mapDbRecordToCompany = (record: any): Company => {
   };
 };
 
+
 /**
  * Helper function to map frontend Company to database record for insertion
  */
@@ -69,6 +73,47 @@ export const mapCompanyToDbRecord = (company: CompanyCreate) => {
   return dbRecord;
 };
 
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Company as DatabaseCompany,
+  Category
+} from '../../types/database';
+
+import { Company, CompanyCreate } from '../../types/frontend.models';
+
+import {
+  mapDbCompanyToCompany,
+  mapCompanyToDbInsert,
+  mapCompanyUpdateToDbUpdate
+} from '../../types/mappers';
+import { v4 as uuidv4 } from 'uuid';
+import { Database } from '@/integrations/supabase/types';
+
+// Define types for database records
+interface DbRecord {
+  id: string;
+  name: string;
+  website: string;
+  category: string;
+  description: string;
+  features: string[];
+  pricing: string;
+  target_audience?: string;
+  logo_url?: string;
+  details?: any;
+  linkedin_url?: string;
+  founded_year?: number;
+  headquarters?: string;
+  employee_count?: string;
+  funding_stage?: string;
+  last_updated?: string; // Ensure this is string type
+  has_dot_ai_domain?: boolean;
+  founded_after_2020?: boolean | null;
+  series_a_or_earlier?: boolean | null;
+  [key: string]: any;
+}
+
+
 /**
  * Companies API for interacting with the Supabase database
  */
@@ -81,12 +126,23 @@ export const companiesAPI = {
       .from('companies')
       .select('*');
 
+    
     if (error) {
       console.error('Error fetching companies:', error);
       return [];
     }
 
     return data.map(mapDbRecordToCompany);
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
   },
 
   /**
@@ -105,6 +161,15 @@ export const companiesAPI = {
     }
 
     return mapDbRecordToCompany(data);
+    if (data) {
+      // Ensure last_updated is string if it exists
+      if (data.last_updated && typeof data.last_updated === 'object') {
+        data.last_updated = new Date(data.last_updated).toISOString();
+      }
+      return mapDbCompanyToCompany(data as DbRecord);
+    }
+    
+    return null;
   },
 
   /**
@@ -129,10 +194,30 @@ export const companiesAPI = {
    */
   async add(company: CompanyCreate): Promise<Company | null> {
     const dbRecord = mapCompanyToDbRecord(company);
+  async create(company: CompanyCreate): Promise<Company> {
+    // Convert the company to the format expected by the database
+    // Ensure the company has required fields
+    if (!company.name || !company.website || !company.category) {
+      throw new Error('Missing required fields for company');
+    }
 
+    // Generate a new ID if one doesn't exist
+    const companyWithId: Company = { 
+      ...company as any, 
+      id: company.id || uuidv4() 
+    };
+    
+    // Map to database format
+    const dbCompany = mapCompanyToDbInsert(companyWithId);
+    
+    // Ensure the category is cast to the correct enum type
     const { data, error } = await supabase
       .from('companies')
       .insert([dbRecord]) // Use array to satisfy TypeScript
+      .insert({
+        ...dbCompany,
+        category: dbCompany.category as Database["public"]["Enums"]["company_category"]
+      })
       .select()
       .single();
 
@@ -142,6 +227,12 @@ export const companiesAPI = {
     }
 
     return mapDbRecordToCompany(data);
+    // Ensure last_updated is string if it exists
+    if (data.last_updated && typeof data.last_updated === 'object') {
+      data.last_updated = new Date(data.last_updated).toISOString();
+    }
+    
+    return mapDbCompanyToCompany(data as DbRecord);
   },
 
   /**
@@ -207,6 +298,20 @@ export const companiesAPI = {
       .select()
       .single();
 
+  async update(id: string, updates: Partial<Company>): Promise<boolean> {
+    // Convert the updates to the format expected by the database
+    const dbUpdates = mapCompanyUpdateToDbUpdate(updates as any);
+    
+    // Ensure the category is cast if it exists
+    if (dbUpdates.category) {
+      dbUpdates.category = dbUpdates.category as Database["public"]["Enums"]["company_category"];
+    }
+    
+    const { error } = await supabase
+      .from('companies')
+      .update(dbUpdates as any)
+      .eq('id', id);
+    
     if (error) {
       console.error(`Error updating company with ID ${id}:`, error);
       return null;
@@ -230,6 +335,70 @@ export const companiesAPI = {
     }
 
     return true;
+    
+    if (error) {
+      console.error('Error deleting company:', error);
+      throw error;
+    }
+    
+    return true;
+  },
+
+  /**
+   * Get companies by category
+   * @param category The category to filter by
+   * @returns Promise resolving to an array of Company objects
+   */
+  async getByCategory(category: Category): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('category', category)
+      .order('name', { ascending: true });
+    
+    if (error) {
+      console.error('Error fetching companies by category:', error);
+      throw error;
+    }
+
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
+  },
+
+  /**
+   * Search for companies
+   * @param query The search query
+   * @returns Promise resolving to an array of Company objects
+   */
+  async search(query: string): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+    
+    if (error) {
+      console.error('Error searching companies:', error);
+      throw error;
+    }
+
+    // Type assertion to ensure compatibility
+    const mappedCompanies = (data || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    return mappedCompanies;
   },
 
   /**
@@ -247,5 +416,84 @@ export const companiesAPI = {
     }
 
     return data.map(mapDbRecordToCompany);
+  async getHighlighted(): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .filter('details->highlighted', 'eq', true);
+    
+    if (error) {
+      console.error('Error fetching highlighted companies:', error);
+      throw error;
+    }
+
+    if (data && data.length > 0) {
+      // Type assertion to ensure compatibility
+      const mappedCompanies = data.map((item) => {
+        // Ensure last_updated is string if it exists
+        if (item.last_updated && typeof item.last_updated === 'object') {
+          item.last_updated = new Date(item.last_updated).toISOString();
+        }
+        return mapDbCompanyToCompany(item as DbRecord);
+      });
+      
+      // Randomize the order of highlighted companies
+      return mappedCompanies.sort(() => 0.5 - Math.random());
+    }
+    
+    // If no highlighted companies, get random companies as fallback
+    const { data: randomData, error: randomError } = await supabase
+      .from('companies')
+      .select('*')
+      .limit(6);
+    
+    if (randomError) {
+      console.error('Error fetching random companies:', randomError);
+      throw randomError;
+    }
+
+    // Type assertion to ensure compatibility
+    const mappedRandomCompanies = (randomData || []).map((item) => {
+      // Ensure last_updated is string if it exists
+      if (item.last_updated && typeof item.last_updated === 'object') {
+        item.last_updated = new Date(item.last_updated).toISOString();
+      }
+      return mapDbCompanyToCompany(item as DbRecord);
+    });
+    
+    // Return random companies in a random order
+    return mappedRandomCompanies.sort(() => 0.5 - Math.random());
+  },
+
+  /**
+   * Upload a company logo
+   * @param companyId The ID of the company
+   * @param file The logo file
+   * @param fileName The name of the file
+   * @returns Promise resolving to the logo URL
+   */
+  async uploadLogo(companyId: string, file: File, fileName: string): Promise<string> {
+    const fileExt = fileName.split('.').pop();
+    const filePath = `${companyId}/logo.${fileExt}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('company-logos')
+      .upload(filePath, file, { upsert: true });
+    
+    if (uploadError) {
+      console.error('Error uploading logo:', uploadError);
+      throw new Error(`Failed to upload logo: ${uploadError.message}`);
+    }
+    
+    const { data } = supabase.storage
+      .from('company-logos')
+      .getPublicUrl(filePath);
+    
+    const logoUrl = data.publicUrl;
+    
+    // Update the company with the new logo URL
+    await this.update(companyId, { logoUrl });
+    
+    return logoUrl;
   }
 };

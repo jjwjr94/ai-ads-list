@@ -56,37 +56,37 @@ export const Explore = () => {
     { 
       title: Category.STRATEGY_PLANNING, 
       path: '/strategy-planning',
-      description: 'AI tools for strategic planning and decision-making',
+      description: 'AI marketing strategy, planning and decision-making',
       count: categoryCounts[Category.STRATEGY_PLANNING] || 0
     },
     { 
       title: Category.CREATIVE_CONTENT, 
       path: '/creative-content',
-      description: 'AI-powered content creation and creative tools',
+      description: 'AI ad generators, ad creative AI, AI content creation and similar tools',
       count: categoryCounts[Category.CREATIVE_CONTENT] || 0
     },
     { 
       title: Category.PERFORMANCE_MEDIA, 
       path: '/performance-media',
-      description: 'AI solutions for media buying and campaign optimization',
+      description: 'AI media buying and campaign optimization',
       count: categoryCounts[Category.PERFORMANCE_MEDIA] || 0
     },
     { 
       title: Category.SEO_ORGANIC, 
       path: '/seo-organic',
-      description: 'AI tools for SEO and organic growth strategies',
+      description: 'Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO tools',
       count: categoryCounts[Category.SEO_ORGANIC] || 0
     },
     { 
       title: Category.DATA_ANALYTICS, 
       path: '/data-analytics',
-      description: 'AI-powered data analysis and visualization tools',
+      description: 'AI data analysis and visualization tools',
       count: categoryCounts[Category.DATA_ANALYTICS] || 0
     },
     { 
       title: Category.WEB_APP_DEVELOPMENT, 
       path: '/web-app-development',
-      description: 'AI solutions for web and app development',
+      description: 'AI website builders, AI website generators',
       count: categoryCounts[Category.WEB_APP_DEVELOPMENT] || 0
     },
     { 
@@ -98,25 +98,25 @@ export const Explore = () => {
     { 
       title: Category.SOCIAL_MEDIA, 
       path: '/social-media',
-      description: 'AI solutions for social media and community management',
+      description: 'AI-powered social media and community management',
       count: categoryCounts[Category.SOCIAL_MEDIA] || 0
     },
     { 
       title: Category.INFLUENCER_MARKETING, 
       path: '/influencer-marketing',
-      description: 'AI tools for influencer discovery and campaign management',
+      description: 'UGC video ads AI, AI influencers discovery and campaign management',
       count: categoryCounts[Category.INFLUENCER_MARKETING] || 0
     },
     { 
       title: Category.BRAND_MANAGEMENT, 
       path: '/brand-management',
-      description: 'AI solutions for brand management and asset organization',
+      description: 'AI-powered brand management and asset organization',
       count: categoryCounts[Category.BRAND_MANAGEMENT] || 0
     },
     { 
       title: Category.AD_FRAUD, 
       path: '/ad-fraud',
-      description: 'AI tools for ad fraud detection and prevention',
+      description: 'AI-powered ad fraud detection and prevention',
       count: categoryCounts[Category.AD_FRAUD] || 0
     },
     { 

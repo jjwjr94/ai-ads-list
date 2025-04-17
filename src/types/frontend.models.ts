@@ -9,40 +9,40 @@
  * Frontend representation of a company
  */
 export interface Company {
-  // Primary fields
+  // Required fields
   id: string;
   name: string;
   website: string;
-  category: Category;
-  description: string;
-  
-  // Required fields with camelCase naming (frontend convention)
-  logoUrl: string;
-  targetAudience: string;
-  features: string[];
-  pricing: string;
-  details: CompanyDetails;
   
   // Optional fields
+  category?: Category;
+  description?: string;
+  logoUrl?: string;
+  targetAudience?: string;
+  features?: string[];
+  pricing?: string;
+  details: CompanyDetails;
+  
+  // Optional metadata
+  logo?: string;
   linkedinUrl?: string;
   foundedYear?: number;
   headquarters?: string;
   employeeCount?: string;
   fundingStage?: string;
   lastUpdated?: Date;
-  
-  // AI Native criteria
   aiNativeCriteria?: AiNativeCriteria;
+  url?: string;
 }
 
 /**
  * Frontend representation of company details
  */
 export interface CompanyDetails {
-  summary: string;
-  highlighted: boolean;
-  features: string[];
-  pricing: string;
+  summary?: string;
+  highlighted?: boolean;
+  features?: string[];
+  pricing: string | null; // Nullable to match database model
   bestFor: string;
 }
 

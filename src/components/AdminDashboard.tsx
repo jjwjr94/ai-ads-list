@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Company } from '@/types/database';
+import { Company } from '@/types/frontend.models';
 import {
   Card,
   CardContent,
@@ -17,55 +18,40 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from 'lucide-react';
 import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
-import LogoUploader from './admin/LogoUploader';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('companies');
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isAddingCompany, setIsAddingCompany] = useState(false);
   
-  // Handle editing a company
   const handleEditCompany = (company: Company) => {
     setEditingCompany(company);
     setIsAddingCompany(false);
     setActiveTab('edit');
   };
   
-  // Handle adding a new company
   const handleAddCompany = () => {
     setEditingCompany(null);
     setIsAddingCompany(true);
     setActiveTab('edit');
   };
   
-  // Handle canceling edit/add
   const handleCancel = () => {
     setEditingCompany(null);
     setIsAddingCompany(false);
     setActiveTab('companies');
   };
   
-  // Handle save completion
   const handleSaveComplete = () => {
     setEditingCompany(null);
     setIsAddingCompany(false);
     setActiveTab('companies');
   };
   
-  // Handle logo update
-  const handleLogoUpdated = (logoUrl: string) => {
-    if (editingCompany) {
-      setEditingCompany({
-        ...editingCompany,
-        logoUrl
-      });
-    }
-  };
-  
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold">Companies Database</h1>
         {activeTab === 'companies' && (
           <Button onClick={handleAddCompany}>
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -90,7 +76,7 @@ export const AdminDashboard: React.FC = () => {
             <CardHeader>
               <CardTitle>Companies</CardTitle>
               <CardDescription>
-                Manage AI marketing companies in the database.
+                Find AI companies to help my ads and marketing
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -110,26 +96,11 @@ export const AdminDashboard: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2">
-                  <CompanyForm 
-                    company={editingCompany} 
-                    onCancel={handleCancel}
-                    onSave={handleSaveComplete}
-                  />
-                </div>
-                
-                {editingCompany && (
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Company Logo</h3>
-                    <LogoUploader 
-                      companyId={editingCompany.id}
-                      currentLogoUrl={editingCompany.logoUrl}
-                      onLogoUpdated={handleLogoUpdated}
-                    />
-                  </div>
-                )}
-              </div>
+              <CompanyForm 
+                company={editingCompany} 
+                onCancel={handleCancel}
+                onSave={handleSaveComplete}
+              />
             </CardContent>
           </Card>
         </TabsContent>

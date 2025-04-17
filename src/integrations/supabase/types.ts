@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       companies: {
         Row: {
-          category: Database["public"]["Enums"]["company_category"]
+          category: Database["public"]["Enums"]["company_category"] | null
           created_at: string | null
           description: string | null
           details: Json | null
@@ -34,7 +34,7 @@ export type Database = {
           website: string
         }
         Insert: {
-          category: Database["public"]["Enums"]["company_category"]
+          category?: Database["public"]["Enums"]["company_category"] | null
           created_at?: string | null
           description?: string | null
           details?: Json | null
@@ -57,7 +57,7 @@ export type Database = {
           website: string
         }
         Update: {
-          category?: Database["public"]["Enums"]["company_category"]
+          category?: Database["public"]["Enums"]["company_category"] | null
           created_at?: string | null
           description?: string | null
           details?: Json | null
