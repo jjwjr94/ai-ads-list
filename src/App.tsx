@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,7 +39,7 @@ const App = () => (
           <div className="flex flex-col min-h-screen">
             <Header />
             <SidebarProvider defaultOpen={false}>
-              <div className="flex w-full min-h-screen pt-12">
+              <div className="flex w-full min-h-screen pt-12"> {/* Keep padding-top */}
                 <AppSidebar />
                 <main className="flex-1 p-4 pt-2">
                   <SidebarTrigger className="mb-4" />
@@ -46,8 +47,8 @@ const App = () => (
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/explore" element={<Explore />} />
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/auth" element={<Auth />} />
                     
+                    {/* Category Pages */}
                     <Route path="/strategy-planning" element={<StrategyPlanningPage />} />
                     <Route path="/creative-content" element={<CreativeContentPage />} />
                     <Route path="/performance-media" element={<PerformanceMediaPage />} />
