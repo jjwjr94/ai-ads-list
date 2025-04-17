@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -50,7 +49,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
       {/* Hero Section */}
-      <section className="container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
+      <section className="container mx-auto py-12 px-4 flex items-center justify-center min-h-[60vh]">
         <div className="text-center max-w-3xl">
           <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
             Discover the Best <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">AI Marketing Tools</span> for Your Business
@@ -58,26 +57,15 @@ const LandingPage = () => {
           <p className="text-xl text-gray-600 mb-8">
             Explore our curated directory of AI-powered marketing solutions to transform your strategy, optimize campaigns, and drive better results.
           </p>
-          <div className="flex justify-center gap-4 flex-wrap">
+          <div className="flex justify-center gap-4 flex-wrap mb-8">
             <Link to="/explore">
               <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-lg text-lg">
                 Explore Tools <ArrowRight className="ml-2" />
               </Button>
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* Featured Companies Carousel */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-[#1A1F2C] mb-4">Featured AI Marketing Tools</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover top-rated AI tools that are transforming the marketing landscape
-            </p>
-          </div>
-
+          {/* Featured Companies Carousel */}
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-pulse text-gray-500">Loading featured tools...</div>
