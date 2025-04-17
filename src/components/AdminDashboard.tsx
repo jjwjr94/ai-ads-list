@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Company } from '@/types/database';
+import { Company } from '@/types/frontend.models';
 import {
   Card,
   CardContent,
@@ -17,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from 'lucide-react';
 import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
-import LogoUploader from './admin/LogoUploader';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('companies');
@@ -50,16 +50,6 @@ export const AdminDashboard: React.FC = () => {
     setEditingCompany(null);
     setIsAddingCompany(false);
     setActiveTab('companies');
-  };
-  
-  // Handle logo update
-  const handleLogoUpdated = (logoUrl: string) => {
-    if (editingCompany) {
-      setEditingCompany({
-        ...editingCompany,
-        logoUrl
-      });
-    }
   };
   
   return (
@@ -110,26 +100,11 @@ export const AdminDashboard: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2">
-                  <CompanyForm 
-                    company={editingCompany} 
-                    onCancel={handleCancel}
-                    onSave={handleSaveComplete}
-                  />
-                </div>
-                
-                {editingCompany && (
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Company Logo</h3>
-                    <LogoUploader 
-                      companyId={editingCompany.id}
-                      currentLogoUrl={editingCompany.logoUrl}
-                      onLogoUpdated={handleLogoUpdated}
-                    />
-                  </div>
-                )}
-              </div>
+              <CompanyForm 
+                company={editingCompany} 
+                onCancel={handleCancel}
+                onSave={handleSaveComplete}
+              />
             </CardContent>
           </Card>
         </TabsContent>
