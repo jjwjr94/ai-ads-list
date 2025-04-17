@@ -1,3 +1,4 @@
+
 // Database structure for AI marketing companies
 
 // Break the circular reference by separating the details into its own interface

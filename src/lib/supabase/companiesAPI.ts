@@ -1,3 +1,4 @@
+
 /**
  * Companies API
  * 
@@ -110,8 +111,12 @@ export const companiesAPI = {
    */
   async create(company: Company): Promise<Company> {
     try {
+      console.log('Creating company with data:', JSON.stringify(company, null, 2));
+      
       // Convert the company to the format expected by the database
       const dbCompany = mapCompanyToDbInsert(company);
+      
+      console.log('Converted to database format:', JSON.stringify(dbCompany, null, 2));
       
       // Ensure all required fields
       if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
@@ -121,7 +126,7 @@ export const companiesAPI = {
       // Use the ID provided by the client (already generated with uuidv4)
       const { data, error } = await supabase
         .from('companies')
-        .insert(dbCompany as any)
+        .insert(dbCompany)
         .select()
         .single();
 
@@ -129,6 +134,8 @@ export const companiesAPI = {
         console.error('Error creating company:', error);
         throw error;
       }
+
+      console.log('Company created successfully:', data);
 
       // Ensure last_updated is string if it exists
       if (data.last_updated && typeof data.last_updated === 'object') {

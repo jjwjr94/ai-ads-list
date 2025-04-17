@@ -38,12 +38,15 @@ export const AdminDashboard: React.FC = () => {
   // Handle adding a new company
   const handleAddCompany = () => {
     // Create a temporary company with a generated ID for the logo uploader
-    const newCompany = {
-      id: uuidv4(),
+    const newCompanyId = uuidv4();
+    console.log('Creating new company with ID:', newCompanyId);
+    
+    const newCompany: Company = {
+      id: newCompanyId,
       name: '',
       website: '',
       logoUrl: '',
-      category: Category.AI_NATIVE, // Fix: Use the enum value instead of string literal
+      category: Category.AI_NATIVE, // Using the enum value instead of string literal
       description: '',
       features: [],
       pricing: '',
@@ -55,7 +58,7 @@ export const AdminDashboard: React.FC = () => {
         pricing: '',
         bestFor: ''
       }
-    } as Company;
+    };
     
     setEditingCompany(newCompany);
     setIsAddingCompany(true);

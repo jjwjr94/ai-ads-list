@@ -33,7 +33,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
   const details: CompanyDetails = {
     summary: dbCompany.details?.summary || '',
     highlighted: dbCompany.details?.highlighted || false,
-    features: dbCompany.details?.features || [], // Map the features array correctly
+    features: dbCompany.details?.features || [], // Map the database features to frontend features
     pricing: dbCompany.details?.pricing || '',
     bestFor: dbCompany.details?.bestFor || ''
   };
@@ -61,7 +61,10 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
     targetAudience: dbCompany.target_audience || '',
     features: dbCompany.features || [],
     pricing: dbCompany.pricing || '',
-    details,
+    details: {
+      ...details,
+      detailFeatures: dbCompany.details?.features || [] // Map database features to detailFeatures
+    },
     linkedinUrl: dbCompany.linkedin_url,
     foundedYear: dbCompany.founded_year,
     headquarters: dbCompany.headquarters,
@@ -92,7 +95,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     details: {
       summary: company.details.summary,
       highlighted: company.details.highlighted,
-      features: company.details.detailFeatures || [], // Map detailFeatures to features
+      features: company.details.detailFeatures || [], // Map detailFeatures to database features
       pricing: company.details.pricing,
       bestFor: company.details.bestFor
     },
