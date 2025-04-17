@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ImageOff } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 
@@ -24,12 +25,13 @@ type SortField = 'name' | 'category';
 type SortDirection = 'asc' | 'desc';
 
 export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
-  const { companies, deleteCompany, refreshCompanies, isLoading, updateCompany } = useCompanyDatabase();
+  const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
+  // Handle sort toggle
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(current => current === 'asc' ? 'desc' : 'asc');
@@ -39,6 +41,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     }
   };
 
+  // Filter and sort companies
   const sortedAndFilteredCompanies = useMemo(() => {
     const filtered = companies.filter(company => 
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,6 +59,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     });
   }, [companies, searchTerm, sortField, sortDirection]);
 
+  // Handle company deletion
   const handleDeleteCompany = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
       try {
@@ -69,28 +73,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         toast({
           title: "Error",
           description: "An error occurred while deleting the company.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleDeleteLogo = async (company: Company) => {
-    if (window.confirm('Are you sure you want to delete this company\'s logo?')) {
-      try {
-        await updateCompany(company.id, { 
-          logo: '',
-          logoUrl: '' 
-        });
-        toast({
-          title: "Logo deleted",
-          description: "The company logo has been successfully removed.",
-        });
-      } catch (error) {
-        console.error('Error deleting logo:', error);
-        toast({
-          title: "Error",
-          description: "An error occurred while deleting the logo.",
           variant: "destructive",
         });
       }
@@ -124,7 +106,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <TableCaption>List of AI marketing companies</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Logo</TableHead>
+            <TableHead className="w-[60px]">Logo</TableHead>
             <TableHead>
               <Button
                 variant="ghost"
@@ -146,7 +128,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               </Button>
             </TableHead>
             <TableHead>Description</TableHead>
-            <TableHead className="w-[130px]">Actions</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -154,24 +136,12 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
             sortedAndFilteredCompanies.map((company) => (
               <TableRow key={company.id}>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Logo 
-                      src={company.logoUrl || company.logo || ''} 
-                      alt={company.name}
-                      size="sm"
-                      company={company}
-                    />
-                    {(company.logoUrl || company.logo) && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteLogo(company)}
-                        className="h-8 w-8"
-                      >
-                        <ImageOff className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
+                  <Logo 
+                    src={company.logoUrl || company.logo || ''} 
+                    alt={company.name}
+                    size="sm"
+                    company={company}
+                  />
                 </TableCell>
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell>{company.category}</TableCell>
