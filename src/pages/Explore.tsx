@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Category } from '@/types/frontend.models';
 import { SearchBar } from '@/components/SearchBar';
+import { SearchDropdown } from '@/components/SearchDropdown';
 import { 
   Loader2, Database, BarChart, PenTool, LineChart, Globe, Code, 
   Users, MessageSquare, Briefcase, Users2, Shield, Layout 
@@ -171,8 +172,13 @@ export const Explore = () => {
         <p className="mt-4 text-lg text-gray-600">
           Discover AI-powered tools across all marketing functions
         </p>
-        <div className="mt-8">
+        <div className="mt-8 relative">
           <SearchBar onSearch={handleSearch} />
+          <SearchDropdown 
+            companies={companies}
+            categoryCards={categoryCards}
+            searchQuery={searchQuery}
+          />
         </div>
       </div>
       {isLoading && companies.length === 0 ? (
