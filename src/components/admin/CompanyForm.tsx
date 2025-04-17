@@ -37,8 +37,8 @@ const emptyCompany: Company = {
   id: '',
   name: '',
   website: '',
+  category: undefined,
   logoUrl: '',
-  category: Category.AI_NATIVE,
   description: '',
   features: [],
   pricing: '',
@@ -79,8 +79,8 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const onSubmit = async (data: Company) => {
     setIsSubmitting(true);
     try {
-      if (!data.name || !data.website || !data.category) {
-        throw new Error('Please fill out all required fields (name, website, category)');
+      if (!data.name || !data.website) {
+        throw new Error('Please fill out all required fields (name and website)');
       }
 
       const companyData = isEditing ? data : { ...data, id: tempId || uuidv4() };
@@ -160,11 +160,10 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category*</FormLabel>
+                    <FormLabel>Category</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
-                      required
                     >
                       <FormControl>
                         <SelectTrigger>

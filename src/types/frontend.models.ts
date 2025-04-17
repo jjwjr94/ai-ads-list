@@ -1,4 +1,3 @@
-
 /**
  * Frontend Models
  * 
@@ -10,33 +9,29 @@
  * Frontend representation of a company
  */
 export interface Company {
-  // Primary fields
+  // Required fields
   id: string;
   name: string;
   website: string;
-  category: Category;
-  description: string;
-  
-  // Required fields with camelCase naming (frontend convention)
-  logoUrl: string;
-  targetAudience: string;
-  features: string[];
-  pricing: string;
-  details: CompanyDetails;
   
   // Optional fields
-  logo?: string; // Adding logo for backward compatibility
+  category?: Category;
+  description?: string;
+  logoUrl?: string;
+  targetAudience?: string;
+  features?: string[];
+  pricing?: string;
+  details: CompanyDetails;
+  
+  // Optional metadata
+  logo?: string;
   linkedinUrl?: string;
   foundedYear?: number;
   headquarters?: string;
   employeeCount?: string;
   fundingStage?: string;
   lastUpdated?: Date;
-  
-  // AI Native criteria
   aiNativeCriteria?: AiNativeCriteria;
-  
-  // Backward compatibility
   url?: string;
 }
 
