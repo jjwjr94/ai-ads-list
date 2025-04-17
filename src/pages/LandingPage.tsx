@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search, Database, Lightbulb, CodeSquare, PieChart } from "lucide-react";
 import { supabaseAPI } from '../lib/supabase';
-import { Company } from '../types/database';
+import { Company, Category } from '../types/database';
 import CompanyCard from '@/components/ui/company-card';
 import {
   Carousel,
@@ -114,12 +113,48 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: "SEO & Organic", icon: CodeSquare, path: "/seo-organic", color: "bg-[#E5DEFF]" },
-              { title: "Content Creation", icon: Lightbulb, path: "/creative-content", color: "bg-[#FDE1D3]" },
-              { title: "Social Media", icon: Search, path: "/social-media", color: "bg-[#D3E4FD]" },
-              { title: "Analytics", icon: PieChart, path: "/data-analytics", color: "bg-[#F2FCE2]" },
-              { title: "Web Development", icon: CodeSquare, path: "/web-app-development", color: "bg-[#FFDEE2]" },
-              { title: "Strategy Planning", icon: Database, path: "/strategy-planning", color: "bg-[#FEF7CD]" }
+              { 
+                title: Category.SEO_ORGANIC,
+                icon: CodeSquare,
+                path: "/seo-organic",
+                color: "bg-[#E5DEFF]",
+                description: "Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO tools"
+              },
+              { 
+                title: Category.CREATIVE_CONTENT,
+                icon: Lightbulb,
+                path: "/creative-content",
+                color: "bg-[#FDE1D3]",
+                description: "AI ad generators, ad creative AI, AI content creation and similar tools"
+              },
+              { 
+                title: Category.SOCIAL_MEDIA,
+                icon: Search,
+                path: "/social-media",
+                color: "bg-[#D3E4FD]",
+                description: "AI-powered social media and community management"
+              },
+              { 
+                title: Category.DATA_ANALYTICS,
+                icon: PieChart,
+                path: "/data-analytics",
+                color: "bg-[#F2FCE2]",
+                description: "AI data analysis and visualization tools"
+              },
+              { 
+                title: Category.WEB_APP_DEVELOPMENT,
+                icon: CodeSquare,
+                path: "/web-app-development",
+                color: "bg-[#FFDEE2]",
+                description: "AI website builders, AI website generators"
+              },
+              { 
+                title: Category.STRATEGY_PLANNING,
+                icon: Database,
+                path: "/strategy-planning",
+                color: "bg-[#FEF7CD]",
+                description: "AI marketing strategy, planning and decision-making"
+              }
             ].map((category, index) => (
               <Link to={category.path} key={index} className="group">
                 <div className={`${category.color} rounded-lg p-8 transition-transform transform hover:scale-105`}>
@@ -127,7 +162,7 @@ const LandingPage = () => {
                   <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
                     {category.title}
                   </h3>
-                  <p className="text-gray-600 mb-4">Discover AI tools for {category.title.toLowerCase()}</p>
+                  <p className="text-gray-600 mb-4">{category.description}</p>
                   <span className="text-[#9b87f5] font-medium flex items-center">
                     Explore Category <ArrowRight className="ml-1 h-4 w-4" />
                   </span>
