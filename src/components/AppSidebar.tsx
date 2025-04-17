@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Home, Search, Settings } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { LayoutDashboard, Search, Database } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,28 +8,31 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Logo from '@/components/ui/logo';
 
 const menuItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Explore", url: "/explore", icon: Search },
-  { title: "Settings", url: "/settings", icon: Settings },
+  {
+    title: "Home",
+    icon: LayoutDashboard,
+    path: "/",
+  },
+  {
+    title: "Explore",
+    icon: Search,
+    path: "/explore",
+  },
+  {
+    title: "Admin",
+    icon: Database,
+    path: "/admin",
+  },
 ];
 
 export function AppSidebar() {
   return (
-    <Sidebar>
-      <div className="flex items-center justify-center p-4 border-b">
-        <Logo 
-          src="/logos/a-logo.png" 
-          alt="App Logo" 
-          size="lg" 
-          className="w-16 h-16"
-        />
-      </div>
+    <Sidebar collapsible="icon" variant="floating">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -37,11 +40,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="mr-2" />
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.path}>
+                      <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
