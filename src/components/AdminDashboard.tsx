@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Company } from '@/types/frontend.models';
 import {
@@ -75,7 +76,7 @@ export const AdminDashboard: React.FC = () => {
             <CardHeader>
               <CardTitle>Companies</CardTitle>
               <CardDescription>
-                Manage AI marketing companies in the database.
+                Find AI companies to help my ads and marketing
               </CardDescription>
             </CardHeader>
             <CardContent>
