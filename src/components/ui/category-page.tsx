@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -76,8 +77,8 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
+      // Only call refreshCompanies(), which should internally fetch and update companies
       await refreshCompanies();
-      await fetchCompanies();
       toast({
         title: 'Success',
         description: 'Companies list has been refreshed.',
