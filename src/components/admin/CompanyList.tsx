@@ -140,7 +140,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                     src={company.logoUrl} 
                     alt={company.name}
                     size="sm"
-                    company={company}
+                    company={company as Company}
                   />
                 </TableCell>
                 <TableCell className="font-medium">{company.name}</TableCell>
@@ -148,7 +148,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => onEditCompany(company)}>
+                    <Button variant="ghost" size="icon" onClick={() => onEditCompany(company as Company)}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDeleteCompany(company.id)}>
@@ -169,6 +169,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
       </Table>
     </div>
   );
-};
+}
 
 export default CompanyList;

@@ -11,7 +11,7 @@ import {
   Database 
 } from "lucide-react";
 import { supabaseAPI } from '../lib/supabase';
-import { Company, Category } from '../types/database';
+import { Company, Category } from '../types/frontend.models';
 import CompanyCard from '@/components/ui/company-card';
 import {
   Carousel,
@@ -32,13 +32,13 @@ const LandingPage = () => {
         const highlighted = await supabaseAPI.companies.getHighlighted();
         if (highlighted && highlighted.length > 0) {
           const shuffledHighlighted = [...highlighted].sort(() => 0.5 - Math.random());
-          setFeaturedCompanies(shuffledHighlighted);
+          setFeaturedCompanies(shuffledHighlighted as Company[]);
         } else {
           const allCompanies = await supabaseAPI.companies.getAll();
           const randomCompanies = [...allCompanies]
             .sort(() => 0.5 - Math.random())
             .slice(0, Math.min(6, allCompanies.length));
-          setFeaturedCompanies(randomCompanies);
+          setFeaturedCompanies(randomCompanies as Company[]);
         }
       } catch (error) {
         console.error('Error fetching featured companies:', error);

@@ -1,3 +1,4 @@
+
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -31,17 +32,17 @@ export const Hero = () => {
         
         if (highlighted && highlighted.length >= 3) {
           console.log(`Found ${highlighted.length} highlighted companies for carousel`);
-          setDisplayCompanies(highlighted);
+          setDisplayCompanies(highlighted as Company[]);
         } else if (companies.length > 0) {
           console.log("Not enough highlighted companies, selecting random ones");
           const shuffled = [...companies].sort(() => 0.5 - Math.random());
-          setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)));
+          setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)) as Company[]);
         }
       } catch (error) {
         console.error("Error fetching companies for carousel:", error);
         if (companies.length > 0) {
           const shuffled = [...companies].sort(() => 0.5 - Math.random());
-          setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)));
+          setDisplayCompanies(shuffled.slice(0, Math.min(6, companies.length)) as Company[]);
         }
       }
     };
