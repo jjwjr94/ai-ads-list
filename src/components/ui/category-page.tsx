@@ -95,20 +95,18 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     }
   };
 
-  useEffect(() => {
-    fetchCompanies();
-    
-    const intervalId = setInterval(() => {
-      if (!loading && !isRefreshing) {
-        console.log(`Auto-refreshing ${category} data`);
-        fetchCompanies();
-      }
-    }, 300000);
+useEffect(() => {
+  fetchCompanies();
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [category, fetchCompanies, loading, isRefreshing]);
+  const intervalId = setInterval(() => {
+    if (!loading && !isRefreshing) {
+      console.log(`Auto-refreshing ${category} data`);
+      fetchCompanies();
+    }
+  }, 300000); // every 5 minutes
+
+  return () => clearInterval(intervalId);
+}, [category, fetchCompanies]);
 
   const filteredCompanies = companies.filter(company => {
     const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
