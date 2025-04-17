@@ -54,7 +54,7 @@ export function Header() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/auth">
+                  <Link to="/admin">
                     <Button variant="ghost" size="icon">
                       <ShieldCheck className="h-5 w-5" />
                     </Button>
