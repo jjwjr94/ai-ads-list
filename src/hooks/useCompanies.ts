@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { Company } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -10,7 +9,7 @@ export function useCompanies() {
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const lastFetchTime = useRef<number>(0);
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
   // Function to load companies from Supabase with caching
   const loadCompanies = async (force = false) => {
@@ -62,7 +61,7 @@ export function useCompanies() {
       }
       
       // Update last fetch time
-      lastFetchTime.current = Date.now();
+      lastFetchTime.current = now;
       setError(null);
     } catch (err) {
       console.error('Error loading companies:', err);
@@ -73,9 +72,10 @@ export function useCompanies() {
     }
   };
 
-  // Function to refresh companies - only when explicitly requested
+  // Function to refresh companies - clears cache and forces refresh
   const refreshCompanies = useCallback(async () => {
     console.log('Manually refreshing companies data at:', new Date().toISOString());
+    lastFetchTime.current = 0; // Clear cache by resetting last fetch time
     await loadCompanies(true); // Force refresh
     return Promise.resolve();
   }, []);
