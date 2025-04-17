@@ -56,7 +56,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
     name: dbCompany.name,
     website: dbCompany.website,
     category: dbCompany.category as Category,
-    description: dbCompany.description,
+    description: dbCompany.description || '',
     logoUrl: dbCompany.logo_url || '',
     targetAudience: dbCompany.target_audience || '',
     features: dbCompany.features || [],
@@ -77,7 +77,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @param company The frontend Company object
  * @returns A database company record suitable for insertion
  */
-export function mapCompanyToDbInsert(company: CompanyCreate | Company): DbInsertParams {
+export function mapCompanyToDbInsert(company: Company): DbInsertParams {
   // Create the database company record
   const dbCompany: DbInsertParams = {
     id: company.id, // Keep ID for database insertion

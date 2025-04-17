@@ -1,6 +1,9 @@
+
 import { useCallback } from 'react';
 import { Company, Category } from '../types/database';
+import { CompanyCreate } from '../types/frontend.models';
 import { supabaseAPI } from '../lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 export function useCompanyOperations(
   refreshCompanies: () => Promise<void>,
@@ -29,20 +32,20 @@ export function useCompanyOperations(
   }, []);
 
   // Add a new company with optimistic update
-  const addCompany = useCallback(async (company: any) => {
+  const addCompany = useCallback(async (company: CompanyCreate) => {
     try {
-      // Apply optimistic update
-      optimisticAddCompany(company);
-      
-      // Create a proper company object for the database
-      // Making sure to include the ID
-      const companyCreate = {
+      // Generate an ID for the company for optimistic updates
+      const generatedId = uuidv4();
+      const companyWithId = {
         ...company,
-        // Keep ID for Supabase insertion - don't remove it
+        id: company.id || generatedId
       };
       
+      // Apply optimistic update with the full company object including ID
+      optimisticAddCompany(companyWithId as Company);
+      
       // Perform actual API call
-      const newCompany = await supabaseAPI.companies.create(companyCreate);
+      const newCompany = await supabaseAPI.companies.create(companyWithId);
       
       // No need to refresh all companies since we've already updated locally
       return newCompany;

@@ -8,9 +8,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Company,
+  Company as DatabaseCompany,
   Category
 } from '../../types/database';
+
+import { Company, CompanyCreate } from '../../types/frontend.models';
+
 import {
   mapDbCompanyToCompany,
   mapCompanyToDbInsert,
@@ -109,20 +112,29 @@ export const companiesAPI = {
    * @param company The company to create
    * @returns Promise resolving to the created Company object
    */
-  async create(company: Omit<Company, "id"> | Company): Promise<Company> {
+  async create(company: CompanyCreate): Promise<Company> {
     // Convert the company to the format expected by the database
     // Ensure the company has required fields
     if (!company.name || !company.website || !company.category) {
       throw new Error('Missing required fields for company');
     }
 
-    // Make sure we have an ID for the company
-    const companyWithId = company.id ? company : { ...company, id: uuidv4() };
+    // Generate a new ID if one doesn't exist
+    const companyWithId: Company = { 
+      ...company as any, 
+      id: company.id || uuidv4() 
+    };
+    
+    // Map to database format
     const dbCompany = mapCompanyToDbInsert(companyWithId);
     
+    // Ensure the category is cast to the correct enum type
     const { data, error } = await supabase
       .from('companies')
-      .insert(dbCompany)
+      .insert({
+        ...dbCompany,
+        category: dbCompany.category as Database["public"]["Enums"]["company_category"]
+      })
       .select()
       .single();
 
@@ -148,6 +160,11 @@ export const companiesAPI = {
   async update(id: string, updates: Partial<Company>): Promise<boolean> {
     // Convert the updates to the format expected by the database
     const dbUpdates = mapCompanyUpdateToDbUpdate(updates as any);
+    
+    // Ensure the category is cast if it exists
+    if (dbUpdates.category) {
+      dbUpdates.category = dbUpdates.category as Database["public"]["Enums"]["company_category"];
+    }
     
     const { error } = await supabase
       .from('companies')
