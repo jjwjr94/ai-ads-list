@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Company } from '@/types/database';
+import { Company } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
   Table,
@@ -137,7 +137,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
               <TableRow key={company.id}>
                 <TableCell>
                   <Logo 
-                    src={company.logoUrl || company.logo || ''} 
+                    src={company.logoUrl} 
                     alt={company.name}
                     size="sm"
                     company={company}

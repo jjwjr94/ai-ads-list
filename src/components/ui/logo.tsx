@@ -3,7 +3,7 @@ import { Company } from '@/types/frontend.models';
 import { findCompanyLogo } from '@/lib/logoFinder';
 
 interface LogoProps {
-  src?: string;  // Make src optional
+  src?: string;
   alt: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -83,11 +83,11 @@ const Logo: React.FC<LogoProps> = ({
     checkPublicLogo();
   }, [company, src, logoSrc]);
 
-  // Use company.logo or company.logoUrl if available, and src is not provided
+  // Use company.logoUrl if available, and src is not provided
   useEffect(() => {
-    if (!src && company && (company.logo || company.logoUrl)) {
+    if (!src && company && company.logoUrl) {
       // Check if the logo is a base64 string 
-      const logoUrl = company.logo || company.logoUrl || null;
+      const logoUrl = company.logoUrl || null;
       
       if (logoUrl) {
         if (isBase64Image(logoUrl)) {
@@ -158,7 +158,7 @@ const Logo: React.FC<LogoProps> = ({
   useEffect(() => {
     const checkLogoSource = () => {
       if (company) {
-        const companyLogoSrc = company.logoUrl || company.logo || src;
+        const companyLogoSrc = company.logoUrl || src;
         setLogoSrc(companyLogoSrc);
       } else {
         setLogoSrc(src);

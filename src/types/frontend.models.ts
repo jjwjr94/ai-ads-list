@@ -1,3 +1,4 @@
+
 /**
  * Frontend Models
  * 
@@ -24,6 +25,7 @@ export interface Company {
   details: CompanyDetails;
   
   // Optional fields
+  logo?: string; // Adding logo for backward compatibility
   linkedinUrl?: string;
   foundedYear?: number;
   headquarters?: string;
@@ -33,15 +35,18 @@ export interface Company {
   
   // AI Native criteria
   aiNativeCriteria?: AiNativeCriteria;
+  
+  // Backward compatibility
+  url?: string;
 }
 
 /**
  * Frontend representation of company details
  */
 export interface CompanyDetails {
-  summary?: string;  // Make summary optional
+  summary?: string;
   highlighted: boolean;
-  features: string[];
+  features?: string[]; // Make features optional to match database model
   pricing: string;
   bestFor: string;
 }

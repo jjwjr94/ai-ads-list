@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Company } from '@/types/database';
+import { Company } from '@/types/frontend.models';
 import {
   Card,
   CardContent,
@@ -44,7 +44,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <CardTitle className="text-xl font-bold">{company.name}</CardTitle>
           </div>
           <Logo 
-            src={company.logoUrl || company.logo} 
+            src={company.logoUrl} 
             alt={`${company.name} logo`}
             size="lg"
             className="ml-4"
