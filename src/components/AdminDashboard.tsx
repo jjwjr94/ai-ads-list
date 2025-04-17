@@ -52,7 +52,7 @@ export const AdminDashboard: React.FC = () => {
       pricing: '',
       targetAudience: '',
       details: {
-        summary: '',
+        summary: '', // Ensure a default empty string for required field
         highlighted: false,
         features: [],
         pricing: '',

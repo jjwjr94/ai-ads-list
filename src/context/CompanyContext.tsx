@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Company, Category } from '@/types/database';
+import { Company, Category } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useCompanyOperations } from '@/hooks/useCompanyOperations';
