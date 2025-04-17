@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Database } from "lucide-react";
+import { LayoutDashboard, Database, FolderTree } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -50,6 +50,16 @@ export function AppSidebar() {
                   <Link to="/" className="hover:bg-gray-100">
                     <LayoutDashboard />
                     <span>Home</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Categories menu item */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Categories">
+                  <Link to="#" className="hover:bg-gray-100">
+                    <FolderTree />
+                    <span>Categories</span>
                   </Link>
                 </SidebarMenuButton>
                 
