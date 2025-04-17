@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { Company } from '@/types/frontend.models';
+import { Company, CompanyCreate } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { initialCompanies } from '@/data/initialCompanies';
 
@@ -46,19 +46,28 @@ export function useCompanies() {
         // Add each company to the database
         for (const company of initialCompanies) {
           // Convert to a format suitable for creation
-          const companyCreate = {
+          const companyCreate: CompanyCreate = {
             ...company,
-            id: undefined // Remove ID to let Supabase generate one
+            // Ensure details has the correct structure with required fields
+            details: {
+              ...company.details,
+              pricing: company.details?.pricing || '',
+              bestFor: company.details?.bestFor || '',
+              summary: company.details?.summary || '',
+              highlighted: company.details?.highlighted || false,
+              features: company.details?.features || []
+            }
           };
-          await supabaseAPI.companies.add(companyCreate);
+          
+          await supabaseAPI.companies.add(companyCreate as any);
         }
         
         // Get the updated list
         const updatedCompanies = await supabaseAPI.companies.getAll();
-        setCompanies(updatedCompanies);
+        setCompanies(updatedCompanies as any);
       } else {
         console.log(`Setting ${allCompanies.length} companies from database`);
-        setCompanies(allCompanies);
+        setCompanies(allCompanies as any);
       }
       
       // Update last fetch time
@@ -80,6 +89,23 @@ export function useCompanies() {
     await loadCompanies(true); // Force refresh
     return Promise.resolve();
   }, [loadCompanies]);
+  
+  // Optimistic update helpers
+  const optimisticAddCompany = useCallback((company: Company) => {
+    setCompanies(prevCompanies => [...prevCompanies as any, company]);
+  }, []);
+  
+  const optimisticUpdateCompany = useCallback((id: string, updates: Partial<Company>) => {
+    setCompanies(prevCompanies => 
+      prevCompanies.map(company => 
+        company.id === id ? { ...company, ...updates } : company
+      ) as any
+    );
+  }, []);
+  
+  const optimisticDeleteCompany = useCallback((id: string) => {
+    setCompanies(prevCompanies => prevCompanies.filter(company => company.id !== id) as any);
+  }, []);
   
   // Get highlighted companies for the homepage
   const getHighlightedCompanies = useCallback(async () => {
@@ -106,23 +132,6 @@ export function useCompanies() {
       return [];
     }
   }, [companies]);
-  
-  // Optimistic update helpers
-  const optimisticAddCompany = useCallback((company: Company) => {
-    setCompanies(prevCompanies => [...prevCompanies, company]);
-  }, []);
-  
-  const optimisticUpdateCompany = useCallback((id: string, updates: Partial<Company>) => {
-    setCompanies(prevCompanies => 
-      prevCompanies.map(company => 
-        company.id === id ? { ...company, ...updates } : company
-      )
-    );
-  }, []);
-  
-  const optimisticDeleteCompany = useCallback((id: string) => {
-    setCompanies(prevCompanies => prevCompanies.filter(company => company.id !== id));
-  }, []);
   
   return {
     companies,

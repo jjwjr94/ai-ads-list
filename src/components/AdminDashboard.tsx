@@ -100,6 +100,7 @@ export const AdminDashboard: React.FC = () => {
                 company={editingCompany || undefined} 
                 onCancel={handleCancel}
                 onSuccess={handleSaveComplete}
+                isEditing={!!editingCompany}
               />
             </CardContent>
           </Card>

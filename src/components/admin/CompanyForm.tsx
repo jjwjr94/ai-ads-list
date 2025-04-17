@@ -28,8 +28,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { Company, Category } from '@/types/frontend.models';
-import { useCompanyOperations } from '@/hooks/useCompanyOperations';
+import { Company, Category, CompanyCreate } from '@/types/frontend.models';
+import { useCompanyDatabase } from '@/context/CompanyContext';
 import LogoUploader from './LogoUploader';
 
 // Default empty company for new company form
@@ -94,7 +94,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   onCancel = () => {},
   isEditing = false,
 }) => {
-  const { addCompany, updateCompany } = useCompanyOperations();
+  const { addCompany, updateCompany } = useCompanyDatabase();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
@@ -113,7 +113,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
     }
   }, [isEditing, form, tempId]);
 
-  const onSubmit = async (data: Company) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
       if (!data.name || !data.website) {

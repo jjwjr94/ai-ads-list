@@ -11,7 +11,8 @@ import {
   DbCompany, 
   DbCompanyDetails,
   DbInsertParams,
-  DbUpdateParams
+  DbUpdateParams,
+  DbCategory
 } from './database.models';
 
 import {
@@ -83,7 +84,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     id: company.id, // Keep ID for database insertion
     name: company.name,
     website: company.website,
-    category: company.category as unknown as any,
+    category: company.category as unknown as DbCategory,
     description: company.description || '',
     logo_url: company.logoUrl || '',
     target_audience: company.targetAudience || '',
@@ -125,7 +126,7 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   // Map basic fields
   if (companyUpdate.name !== undefined) dbUpdate.name = companyUpdate.name;
   if (companyUpdate.website !== undefined) dbUpdate.website = companyUpdate.website;
-  if (companyUpdate.category !== undefined) dbUpdate.category = companyUpdate.category as unknown as any;
+  if (companyUpdate.category !== undefined) dbUpdate.category = companyUpdate.category as unknown as DbCategory;
   if (companyUpdate.description !== undefined) dbUpdate.description = companyUpdate.description;
   if (companyUpdate.logoUrl !== undefined) dbUpdate.logo_url = companyUpdate.logoUrl;
   if (companyUpdate.targetAudience !== undefined) dbUpdate.target_audience = companyUpdate.targetAudience;

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Category, Company } from '@/types/database';
+import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Logo from '@/components/ui/logo';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface CategoryPageProps {
   category: Category;
@@ -13,7 +13,7 @@ interface CategoryPageProps {
 
 export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const { getCompaniesByCategory, isLoading, error } = useCompanyDatabase();
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -171,7 +171,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                         Key Features:
                       </div>
                       <ul className="pl-6 text-sm text-gray-600 list-disc">
-                        {(company.details.detailFeatures || company.features || []).map((feature, idx) => (
+                        {(company.details.features || company.features || []).map((feature, idx) => (
                           <li key={idx}>{feature}</li>
                         ))}
                       </ul>
