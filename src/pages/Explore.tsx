@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Category } from '@/types/frontend.models';
@@ -11,14 +11,21 @@ import {
 export const Explore = () => {
   const { companies, isLoading, loadCompanies } = useCompanies();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
+  // Load companies once on component mount
   useEffect(() => {
-    // Load companies on mount if needed
-    if (companies.length === 0) {
-      loadCompanies();
-    }
-  }, [companies.length, loadCompanies]);
+    const initializeData = async () => {
+      if (!isInitialized) {
+        await loadCompanies();
+        setIsInitialized(true);
+      }
+    };
 
+    initializeData();
+  }, [isInitialized, loadCompanies]);
+
+  // Update category counts whenever companies data changes
   useEffect(() => {
     if (companies.length > 0) {
       const counts: Record<string, number> = {};

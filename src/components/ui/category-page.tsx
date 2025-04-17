@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,29 +19,44 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        setLoading(true);
-        await refreshCompanies();
-        const fetchedCompanies = await getCompaniesByCategory(category);
-        
-        console.log(`Found ${fetchedCompanies.length} ${category} companies`);
-        setCompanies(fetchedCompanies);
-      } catch (err) {
-        console.error(`Error fetching ${category} companies:`, err);
-        toast({
-          title: 'Error',
-          description: `Failed to fetch ${category} companies. Please try again.`,
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompanies();
+  const fetchCompanies = useCallback(async () => {
+    try {
+      setLoading(true);
+      // Refresh companies data before fetching by category
+      await refreshCompanies();
+      const fetchedCompanies = await getCompaniesByCategory(category);
+      
+      console.log(`Found ${fetchedCompanies.length} ${category} companies`);
+      setCompanies(fetchedCompanies);
+    } catch (err) {
+      console.error(`Error fetching ${category} companies:`, err);
+      toast({
+        title: 'Error',
+        description: `Failed to fetch ${category} companies. Please try again.`,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   }, [category, getCompaniesByCategory, refreshCompanies, toast]);
+
+  // Load category data on initial render
+  useEffect(() => {
+    fetchCompanies();
+    
+    // Set up interval to periodically refresh data
+    const intervalId = setInterval(() => {
+      // Only refresh if we're not already loading
+      if (!loading) {
+        console.log(`Refreshing ${category} data`);
+        fetchCompanies();
+      }
+    }, 300000); // Refresh every 5 minutes
+    
+    return () => {
+      clearInterval(intervalId); // Cleanup interval on component unmount
+    };
+  }, [category, fetchCompanies, loading]);
 
   const filteredCompanies = filter === "highlighted" 
     ? companies.filter(company => company.details?.highlighted) 
@@ -121,6 +137,12 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
       ) : companies.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500">No tools found in this category. Please check back later or try another category.</p>
+          <button 
+            onClick={fetchCompanies}
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+          >
+            Retry Loading
+          </button>
         </div>
       ) : filteredCompanies.length === 0 ? (
         <div className="text-center py-12">
