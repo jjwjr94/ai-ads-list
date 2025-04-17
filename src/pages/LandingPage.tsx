@@ -62,7 +62,7 @@ const LandingPage = () => {
             Tools for Your Business
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Explore our curated directory of AI-powered marketing solutions to transform your strategy, optimize campaigns, and drive better results.
+              AI Ads and AI Marketing tools that make it easy for anyone to create ads and content, launch campaigns, and measure results.
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link to="/explore">
