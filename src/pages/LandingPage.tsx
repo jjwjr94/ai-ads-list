@@ -54,7 +54,7 @@ const LandingPage = () => {
             Tools for Your Business
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Explore our curated directory of AI-powered marketing solutions to transform your strategy, optimize campaigns, and drive better results.
+            Vibe marketing tools that make it easy for anyone to launch ads & marketing campaigns, measure results and drive bottomline impact.
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link to="/explore">
