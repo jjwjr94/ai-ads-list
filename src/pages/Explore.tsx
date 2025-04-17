@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Category } from '@/types/frontend.models';
+import { SearchBar } from '@/components/SearchBar';
 import { 
   Loader2, Database, BarChart, PenTool, LineChart, Globe, Code, 
   Users, MessageSquare, Briefcase, Users2, Shield, Layout 
@@ -12,6 +12,8 @@ export const Explore = () => {
   const { companies, isLoading, loadCompanies } = useCompanies();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredCards, setFilteredCards] = useState(categoryCards);
 
   // Load companies once on component mount
   useEffect(() => {
@@ -142,6 +144,20 @@ export const Explore = () => {
     }
   ];
 
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) {
+      setFilteredCards(categoryCards);
+      return;
+    }
+
+    const filtered = categoryCards.filter(card => 
+      card.title.toLowerCase().includes(query.toLowerCase()) ||
+      card.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCards(filtered);
+  }, [categoryCards]);
+
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="text-center mb-12">
@@ -151,6 +167,9 @@ export const Explore = () => {
         <p className="mt-4 text-lg text-gray-600">
           Discover AI-powered tools across all marketing functions
         </p>
+        <div className="mt-8">
+          <SearchBar onSearch={handleSearch} />
+        </div>
       </div>
       {isLoading && companies.length === 0 ? (
         <div className="flex justify-center items-center py-12">
@@ -159,7 +178,7 @@ export const Explore = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoryCards.map((category) => {
+          {filteredCards.map((category) => {
             const IconComponent = getCategoryIcon(category.title);
             return (
               <Link 
