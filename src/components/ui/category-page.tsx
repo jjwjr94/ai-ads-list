@@ -1,10 +1,12 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, DollarSign, Building2, Star, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
+import { Link } from "react-router-dom";
 import Logo from '@/components/ui/logo';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,13 +18,13 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const { getCompaniesByCategory, isLoading, refreshCompanies } = useCompanyDatabase();
   const [companies, setCompanies] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  
+
   const fetchCompanies = useCallback(async () => {
     try {
       setLoading(true);
-      // Refresh companies data before fetching by category
       await refreshCompanies();
       const fetchedCompanies = await getCompaniesByCategory(category);
       
@@ -40,56 +42,46 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     }
   }, [category, getCompaniesByCategory, refreshCompanies, toast]);
 
-  // Load category data on initial render
   useEffect(() => {
     fetchCompanies();
     
-    // Set up interval to periodically refresh data
     const intervalId = setInterval(() => {
-      // Only refresh if we're not already loading
       if (!loading) {
         console.log(`Refreshing ${category} data`);
         fetchCompanies();
       }
-    }, 300000); // Refresh every 5 minutes
-    
+    }, 300000);
+
     return () => {
-      clearInterval(intervalId); // Cleanup interval on component unmount
+      clearInterval(intervalId);
     };
   }, [category, fetchCompanies, loading]);
 
-  const filteredCompanies = filter === "highlighted" 
-    ? companies.filter(company => company.details?.highlighted) 
-    : companies;
+  const filteredCompanies = companies.filter(company => {
+    const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
+    const matchesSearch = searchQuery.toLowerCase().trim() === "" || 
+      company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      company.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      company.features?.some((feature: string) => 
+        feature.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    return matchesFilter && matchesSearch;
+  });
 
-  const SkeletonCard = () => (
-    <Card className="flex flex-col h-full">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <div className="space-y-2">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-4 w-60" />
-        </div>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          
-          <div className="space-y-2 pt-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-full" />
-          </div>
-          
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-40" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const categoryLinks = [
+    { title: Category.STRATEGY_PLANNING, path: '/strategy-planning' },
+    { title: Category.CREATIVE_CONTENT, path: '/creative-content' },
+    { title: Category.PERFORMANCE_MEDIA, path: '/performance-media' },
+    { title: Category.SEO_ORGANIC, path: '/seo-organic' },
+    { title: Category.DATA_ANALYTICS, path: '/data-analytics' },
+    { title: Category.WEB_APP_DEVELOPMENT, path: '/web-app-development' },
+    { title: Category.ACCOUNT_MANAGEMENT, path: '/account-management' },
+    { title: Category.SOCIAL_MEDIA, path: '/social-media' },
+    { title: Category.INFLUENCER_MARKETING, path: '/influencer-marketing' },
+    { title: Category.BRAND_MANAGEMENT, path: '/brand-management' },
+    { title: Category.AD_FRAUD, path: '/ad-fraud' },
+    { title: Category.AI_NATIVE, path: '/ai-native' }
+  ];
 
   const formatCategoryTitle = (categoryString: string): string => {
     return categoryString.replace(/_/g, ' ');
@@ -109,6 +101,39 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
         <p className="mt-4 text-lg text-gray-600">
           Discover AI-powered tools for {categoryTitle.toLowerCase()}
         </p>
+
+        <div className="mt-6 max-w-md mx-auto">
+          <Input
+            type="text"
+            placeholder="Search tools in this category..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full"
+          />
+        </div>
+        
+        <div className="mt-8 mb-8">
+          <NavigationMenu className="justify-center">
+            <NavigationMenuList className="flex flex-wrap justify-center gap-2">
+              {categoryLinks.map((link) => (
+                <NavigationMenuItem key={link.path}>
+                  <NavigationMenuLink
+                    asChild
+                    className={`block px-3 py-2 rounded-md text-sm ${
+                      link.path === `/${category.toLowerCase().replace(/_/g, '-')}` 
+                        ? 'bg-purple-100 text-purple-800'
+                        : 'hover:bg-gray-100'
+                    }`}
+                  >
+                    <Link to={link.path}>
+                      {formatCategoryTitle(link.title)}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
         
         <div className="mt-6 flex justify-center gap-4">
           <button 
