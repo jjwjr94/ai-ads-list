@@ -1,85 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useCompanyDatabase } from '@/context/CompanyContext';
-import { Category } from '@/types/database';
+import { useCompanies } from '@/hooks/useCompanies';
+import { Category } from '@/types/frontend.models';
 import { 
-  CodeSquare,
-  Lightbulb,
-  PieChart,
-  Database,
-  LayoutDashboard,
-  UserRound,
-  MessageSquare,
-  Users,
-  BuildingIcon,
-  Shield,
-  Layout
+  Loader2, Database, BarChart, PenTool, LineChart, Globe, Code, 
+  Users, MessageSquare, Briefcase, Users2, Shield, Layout 
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
-import { Loader2 } from 'lucide-react';
 
-const Explore = () => {
-  const { getCompaniesByCategory } = useCompanyDatabase();
+export const Explore = () => {
+  const { companies, isLoading } = useCompanies();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchCategoryCounts = async () => {
-      try {
-        setIsLoading(true);
-        console.log('Fetching category counts from Supabase...');
-        const counts: Record<string, number> = {};
-        
-        for (const category of Object.values(Category)) {
-          try {
-            let companies = await getCompaniesByCategory(category);
-            counts[category] = companies.length;
-            console.log(`${category}: ${companies.length} tools`);
-          } catch (err) {
-            console.error(`Error fetching counts for ${category}:`, err);
-            counts[category] = 0;
-          }
-        }
-        
-        setCategoryCounts(counts);
-      } catch (error) {
-        console.error('Error fetching category counts:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch category data. Please try again.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (companies.length > 0) {
+      const counts: Record<string, number> = {};
+      companies.forEach(company => {
+        counts[company.category] = (counts[company.category] || 0) + 1;
+      });
+      setCategoryCounts(counts);
+    }
+  }, [companies]);
 
-    fetchCategoryCounts();
-  }, [getCompaniesByCategory]);
-
-  const getCategoryIcon = (category: string) => {
-    switch(category) {
+  const getCategoryIcon = (category: Category) => {
+    switch (category) {
       case Category.STRATEGY_PLANNING:
-        return LayoutDashboard;
+        return BarChart;
       case Category.CREATIVE_CONTENT:
-        return Lightbulb;
+        return PenTool;
       case Category.PERFORMANCE_MEDIA:
-        return PieChart;
+        return LineChart;
       case Category.SEO_ORGANIC:
-        return CodeSquare;
+        return Globe;
       case Category.DATA_ANALYTICS:
-        return Database;
+        return LineChart;
       case Category.WEB_APP_DEVELOPMENT:
-        return CodeSquare;
+        return Code;
       case Category.ACCOUNT_MANAGEMENT:
-        return UserRound;
+        return Briefcase;
       case Category.SOCIAL_MEDIA:
         return MessageSquare;
       case Category.INFLUENCER_MARKETING:
-        return Users;
+        return Users2;
       case Category.BRAND_MANAGEMENT:
-        return BuildingIcon;
+        return Users;
       case Category.AD_FRAUD:
         return Shield;
       case Category.AI_NATIVE:
@@ -174,7 +137,6 @@ const Explore = () => {
           Discover AI-powered tools across all marketing functions
         </p>
       </div>
-
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 text-[#9b87f5] animate-spin" />

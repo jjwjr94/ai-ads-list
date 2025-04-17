@@ -1,5 +1,4 @@
-
-import { Category } from '@/types/database';
+import { Category } from '@/types/frontend.models';
 import { CategoryPage } from '@/components/ui/category-page';
 
 export const StrategyPlanningPage = () => <CategoryPage category={Category.STRATEGY_PLANNING} />;
