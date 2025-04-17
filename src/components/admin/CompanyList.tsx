@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Company } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import {
@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CompanyListProps {
   onEditCompany: (company: Company) => void;
@@ -25,11 +27,41 @@ type SortField = 'name' | 'category';
 type SortDirection = 'asc' | 'desc';
 
 export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
-  const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
+  const { deleteCompany } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const queryClient = useQueryClient();
+
+  // Use React Query for data fetching with caching
+  const { data: companies = [], isLoading, refetch } = useQuery({
+    queryKey: ['companies'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    cacheTime: 10 * 60 * 1000, // Keep data in cache for 10 minutes
+  });
+
+  // Handle refresh with cache clearing
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['companies'] });
+    refetch();
+    toast({
+      title: "Data refreshed",
+      description: "The company list has been updated with the latest data.",
+    });
+  };
 
   // Handle sort toggle
   const toggleSort = (field: SortField) => {
@@ -42,10 +74,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   };
 
   // Filter and sort companies
-  const sortedAndFilteredCompanies = useMemo(() => {
+  const sortedAndFilteredCompanies = React.useMemo(() => {
     const filtered = companies.filter(company => 
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.description.toLowerCase().includes(searchTerm.toLowerCase())
+      company.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return filtered.sort((a, b) => {
@@ -64,6 +96,7 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     if (window.confirm('Are you sure you want to delete this company?')) {
       try {
         await deleteCompany(id);
+        queryClient.invalidateQueries({ queryKey: ['companies'] });
         toast({
           title: "Company deleted",
           description: "The company has been successfully deleted.",
@@ -95,10 +128,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <Button 
           variant="outline" 
           size="icon" 
-          onClick={refreshCompanies}
+          onClick={handleRefresh}
           disabled={isLoading}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
 
