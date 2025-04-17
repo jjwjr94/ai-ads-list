@@ -20,6 +20,7 @@ import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
 import LogoUploader from './admin/LogoUploader';
 import { useQueryClient } from '@tanstack/react-query';
+import { v4 as uuidv4 } from 'uuid';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('companies');
@@ -36,7 +37,27 @@ export const AdminDashboard: React.FC = () => {
   
   // Handle adding a new company
   const handleAddCompany = () => {
-    setEditingCompany(null);
+    // Create a temporary company with a generated ID for the logo uploader
+    const newCompany = {
+      id: uuidv4(),
+      name: '',
+      website: '',
+      logoUrl: '',
+      category: 'AI_NATIVE',
+      description: '',
+      features: [],
+      pricing: '',
+      targetAudience: '',
+      details: {
+        summary: '',
+        highlighted: false,
+        detailFeatures: [],
+        pricing: '',
+        bestFor: ''
+      }
+    } as Company;
+    
+    setEditingCompany(newCompany);
     setIsAddingCompany(true);
     setActiveTab('edit');
   };

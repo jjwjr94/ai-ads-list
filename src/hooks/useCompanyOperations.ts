@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { Company, Category } from '../types/database';
 import { supabaseAPI } from '../lib/supabase';
@@ -30,15 +29,14 @@ export function useCompanyOperations(
   }, []);
 
   // Add a new company with optimistic update
-  const addCompany = useCallback(async (company: any) => {
+  const addCompany = useCallback(async (company: Company) => {
     try {
       // Apply optimistic update
       optimisticAddCompany(company);
       
-      // Convert to proper type for creation
+      // Keep the pre-assigned ID when creating a new company
       const companyCreate = {
-        ...company,
-        id: undefined // Remove ID to let the API/database handle it
+        ...company
       };
       
       // Perform actual API call

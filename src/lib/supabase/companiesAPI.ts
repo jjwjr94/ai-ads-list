@@ -1,3 +1,4 @@
+
 /**
  * Companies API
  * 
@@ -108,15 +109,16 @@ export const companiesAPI = {
    * @param company The company to create
    * @returns Promise resolving to the created Company object
    */
-  async create(company: Omit<Company, "id">): Promise<Company> {
+  async create(company: Company): Promise<Company> {
     // Convert the company to the format expected by the database
-    const dbCompany = mapCompanyToDbInsert(company as any);
+    const dbCompany = mapCompanyToDbInsert(company);
     
     // Ensure all required fields
     if (!dbCompany.name || !dbCompany.website || !dbCompany.category) {
       throw new Error('Missing required fields for company');
     }
 
+    // Use the ID provided by the client (already generated with uuidv4)
     const { data, error } = await supabase
       .from('companies')
       .insert(dbCompany as any)
