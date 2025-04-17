@@ -14,12 +14,7 @@ export function Header() {
           />
         </Link>
         <div className="flex items-center gap-4">
-          <Link 
-            to="/explore" 
-            className="text-sm text-gray-600 hover:text-[#9b87f5] transition-colors"
-          >
-            Explore
-          </Link>
+          {/* Explore link removed from here */}
         </div>
       </div>
     </header>

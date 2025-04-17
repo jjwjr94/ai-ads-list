@@ -39,7 +39,7 @@ const App = () => (
           <div className="flex flex-col min-h-screen">
             <Header />
             <SidebarProvider defaultOpen={false}>
-              <div className="min-h-screen flex w-full">
+              <div className="min-h-screen flex w-full pt-12"> {/* Added pt-12 for padding-top */}
                 <AppSidebar />
                 <main className="flex-1">
                   <SidebarTrigger className="m-4" />

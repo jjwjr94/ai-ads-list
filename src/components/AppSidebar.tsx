@@ -33,7 +33,7 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar collapsible="icon" variant="floating" className="border-none">
       <SidebarHeader className="flex justify-end items-center p-2">
         {/* Logo removed from sidebar */}
       </SidebarHeader>
