@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Company, Category } from '@/types/database';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -63,31 +64,40 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
   const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
   
+  // Initialize the form with either the existing company or a new one with a UUID
+  const defaultValues = company || { ...emptyCompany, id: uuidv4() };
+  
   const form = useForm({
-    defaultValues: company || emptyCompany
+    defaultValues
   });
 
   useEffect(() => {
     if (!isEditing) {
       setTempId(uuidv4());
+      // Pre-set the ID in the form 
+      form.setValue('id', tempId);
     }
-  }, [isEditing]);
+  }, [isEditing, form]);
 
   const onSubmit = async (data: Company) => {
     setIsSubmitting(true);
     try {
+      // Ensure all required fields are set
+      if (!data.name || !data.website || !data.category) {
+        throw new Error('Please fill out all required fields (name, website, category)');
+      }
+
+      // Ensure ID is set for new companies
+      const companyData = isEditing ? data : { ...data, id: tempId || uuidv4() };
+
       if (isEditing && company) {
-        await updateCompany(company.id, data);
+        await updateCompany(company.id, companyData);
         toast({
           title: "Company updated",
           description: "The company has been successfully updated.",
         });
       } else {
-        const newCompany = {
-          ...data,
-          id: uuidv4()
-        };
-        await addCompany(newCompany);
+        await addCompany(companyData);
         toast({
           title: "Company added",
           description: "The new company has been successfully added.",
@@ -98,7 +108,7 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
       console.error('Error submitting form:', error);
       toast({
         title: "Error",
-        description: "An error occurred while saving the company.",
+        description: error instanceof Error ? error.message : "An error occurred while saving the company.",
         variant: "destructive",
       });
     } finally {
@@ -127,9 +137,9 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>Company Name*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Company name" {...field} />
+                      <Input placeholder="Company name" {...field} required />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,9 +151,9 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
                 name="website"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Website</FormLabel>
+                    <FormLabel>Website*</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com" {...field} />
+                      <Input placeholder="https://example.com" {...field} required />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,10 +165,11 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Category*</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
+                      required
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -202,6 +213,11 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
             <input 
               type="hidden" 
               {...form.register('logoUrl')} 
+            />
+            
+            <input 
+              type="hidden" 
+              {...form.register('id')} 
             />
           </div>
 

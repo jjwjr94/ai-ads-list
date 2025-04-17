@@ -1,3 +1,4 @@
+
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -76,30 +77,30 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @param company The frontend Company object
  * @returns A database company record suitable for insertion
  */
-export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
+export function mapCompanyToDbInsert(company: CompanyCreate | Company): DbInsertParams {
   // Create the database company record
   const dbCompany: DbInsertParams = {
-    id: company.id, // This might be undefined for new companies
+    id: company.id, // Keep ID for database insertion
     name: company.name,
     website: company.website,
     category: company.category,
-    description: company.description,
-    logo_url: company.logoUrl,
-    target_audience: company.targetAudience,
-    features: company.features,
-    pricing: company.pricing,
+    description: company.description || '',
+    logo_url: company.logoUrl || '',
+    target_audience: company.targetAudience || '',
+    features: company.features || [],
+    pricing: company.pricing || '',
     details: {
-      summary: company.details.summary,
-      highlighted: company.details.highlighted,
-      features: company.details.features,
-      pricing: company.details.pricing,
-      bestFor: company.details.bestFor
+      summary: company.details?.summary || '',
+      highlighted: company.details?.highlighted || false,
+      features: company.details?.features || [],
+      pricing: company.details?.pricing || '',
+      bestFor: company.details?.bestFor || ''
     },
-    linkedin_url: company.linkedinUrl,
-    founded_year: company.foundedYear,
-    headquarters: company.headquarters,
-    employee_count: company.employeeCount,
-    funding_stage: company.fundingStage,
+    linkedin_url: company.linkedinUrl || '',
+    founded_year: company.foundedYear || null,
+    headquarters: company.headquarters || '',
+    employee_count: company.employeeCount || '',
+    funding_stage: company.fundingStage || '',
     last_updated: company.lastUpdated ? company.lastUpdated.toISOString() : new Date().toISOString()
   };
 
