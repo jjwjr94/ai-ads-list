@@ -5,6 +5,8 @@
  * These types represent how data is used in the React components.
  */
 
+import type { Database } from '@/integrations/supabase/types';
+
 /**
  * Frontend representation of a company
  */
@@ -13,18 +15,17 @@ export interface Company {
   id: string;
   name: string;
   website: string;
+  logoUrl: string;
   
   // Optional fields
   category?: Category;
   description?: string;
-  logoUrl?: string;
   targetAudience?: string;
   features?: string[];
   pricing?: string;
   details: CompanyDetails;
   
   // Optional metadata
-  logo?: string;
   linkedinUrl?: string;
   foundedYear?: number;
   headquarters?: string;
@@ -32,7 +33,6 @@ export interface Company {
   fundingStage?: string;
   lastUpdated?: Date;
   aiNativeCriteria?: AiNativeCriteria;
-  url?: string;
 }
 
 /**
