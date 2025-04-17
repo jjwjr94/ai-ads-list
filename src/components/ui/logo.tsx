@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Company } from '@/types/frontend.models';
-import { findCompanyLogo } from '@/lib/logoFinder';
 
 interface LogoProps {
   src?: string;
@@ -28,7 +27,7 @@ const Logo: React.FC<LogoProps> = ({
 
   // State for logo source and loading status
   const [logoSrc, setLogoSrc] = useState<string | null | undefined>(src);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   
   // Extract first two letters for fallback
@@ -44,69 +43,6 @@ const Logo: React.FC<LogoProps> = ({
     return str?.startsWith('data:image/');
   };
 
-  // Check for the new uploaded logo
-  useEffect(() => {
-    // Check for the newly uploaded logo
-    const newLogoPath = '/lovable-uploads/c67095e0-d437-4c42-8ccb-220152d106db.png';
-    
-    try {
-      // Try to fetch the new logo
-      fetch(newLogoPath, { method: 'HEAD' })
-        .then(response => {
-          if (response.ok) {
-            console.log('Using new uploaded logo');
-            setLogoSrc(`${newLogoPath}?t=${Date.now()}`);
-            setHasError(false);
-          }
-        })
-        .catch(err => {
-          console.log('New logo not available, continuing with normal flow');
-        });
-    } catch (e) {
-      // Continue with normal logo finding logic
-    }
-  }, []);
-
-  // Check if company name is available and try to find direct match in public logos
-  useEffect(() => {
-    const checkPublicLogo = async () => {
-      if (company?.name && !src && !logoSrc) {
-        // Try direct match with company name for public directory
-        const companyNameSlug = company.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        
-        // Try different extensions
-        const possibleExtensions = ['png', 'jpg', 'jpeg', 'svg', 'svg+xml'];
-        for (const ext of possibleExtensions) {
-          try {
-            const localLogoPath = `/logos/${companyNameSlug}.${ext}`;
-            const response = await fetch(localLogoPath, { method: 'HEAD' });
-            if (response.ok) {
-              // Add cache-busting parameter
-              const cacheBuster = `?t=${Date.now()}`;
-              setLogoSrc(localLogoPath + cacheBuster);
-              return;
-            }
-          } catch (e) {
-            // Continue checking other extensions
-          }
-        }
-        
-        // Also check if there's a renamed logo
-        try {
-          const response = await fetch(`/logos/${companyNameSlug}_logo.png`, { method: 'HEAD' });
-          if (response.ok) {
-            setLogoSrc(`/logos/${companyNameSlug}_logo.png?t=${Date.now()}`);
-            return;
-          }
-        } catch (e) {
-          // Continue to next method
-        }
-      }
-    };
-    
-    checkPublicLogo();
-  }, [company, src, logoSrc]);
-
   // Use company.logoUrl if available, and src is not provided
   useEffect(() => {
     if (!src && company && company.logoUrl) {
@@ -115,7 +51,6 @@ const Logo: React.FC<LogoProps> = ({
       
       if (logoUrl) {
         if (isBase64Image(logoUrl)) {
-          // If it's already a base64 image, use it directly without cache busting
           setLogoSrc(logoUrl);
           console.log(`Using base64 encoded logo for ${company.name}`);
         } else {
@@ -125,71 +60,21 @@ const Logo: React.FC<LogoProps> = ({
       } else {
         setLogoSrc(null);
       }
+      setIsLoading(false);
     } else if (src) {
       if (isBase64Image(src)) {
-        // If it's a base64 image from props, use it directly
         setLogoSrc(src);
         console.log(`Using base64 encoded logo from props`);
       } else {
         // Add cache-busting for normal URL sources
         setLogoSrc(`${src}?t=${new Date().getTime()}`);
       }
+      setIsLoading(false);
+    } else {
+      // No source provided
+      setLogoSrc(null);
+      setIsLoading(false);
     }
-  }, [company, src]);
-
-  // Auto-find logo if company is provided and no src is available
-  useEffect(() => {
-    const autoFindLogo = async () => {
-      // Only attempt to find logo if company is provided and no src is available
-      if (company && !src && !logoSrc && !hasError) {
-        try {
-          setIsLoading(true);
-          const result = await findCompanyLogo(company);
-          if (result.success && result.logoUrl) {
-            // Check if the found logo is a base64 string
-            if (isBase64Image(result.logoUrl)) {
-              setLogoSrc(result.logoUrl);
-              console.log(`Found base64 logo for ${company.name}`);
-            } else {
-              // Add timestamp to prevent caching for normal URLs
-              setLogoSrc(`${result.logoUrl}?t=${new Date().getTime()}`);
-            }
-          }
-        } catch (error) {
-          console.error('Error auto-finding logo:', error);
-          setHasError(true);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    autoFindLogo();
-  }, [company, src, logoSrc, hasError]);
-
-  // Add console logging for debugging
-  useEffect(() => {
-    if (logoSrc) {
-      if (isBase64Image(logoSrc)) {
-        console.log(`Logo source for ${alt} is a base64 encoded image`);
-      } else {
-        console.log(`Logo source for ${alt}: ${logoSrc}`);
-      }
-    }
-  }, [logoSrc, alt]);
-
-  // Update logo source logic to handle optional fields
-  useEffect(() => {
-    const checkLogoSource = () => {
-      if (company) {
-        const companyLogoSrc = company.logoUrl || src;
-        setLogoSrc(companyLogoSrc);
-      } else {
-        setLogoSrc(src);
-      }
-    };
-    
-    checkLogoSource();
   }, [company, src]);
 
   return (
