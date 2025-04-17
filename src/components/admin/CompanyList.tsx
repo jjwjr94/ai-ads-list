@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Edit, RefreshCw, Search, ArrowUpDown } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Search, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
 
@@ -143,7 +143,17 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
                     company={company as Company}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{company.name}</TableCell>
+                <TableCell className="font-medium">
+                  <a 
+                    href={company.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center hover:text-purple-600 transition-colors"
+                  >
+                    {company.name}
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </TableCell>
                 <TableCell>{company.category}</TableCell>
                 <TableCell className="max-w-md truncate">{company.description}</TableCell>
                 <TableCell>
