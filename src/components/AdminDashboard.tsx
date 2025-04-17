@@ -48,7 +48,7 @@ export const AdminDashboard: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto py-6 space-y-6">
+ /*   <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Companies Database</h1>
         {activeTab === 'companies' && (
@@ -58,7 +58,7 @@ export const AdminDashboard: React.FC = () => {
           </Button>
         )}
       </div>
-      
+      */
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="companies">Companies</TabsTrigger>
