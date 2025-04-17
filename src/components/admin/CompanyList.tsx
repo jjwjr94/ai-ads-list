@@ -25,7 +25,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const { companies, deleteCompany, refreshCompanies, isLoading } = useCompanyDatabase();
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Filter companies based on search term
   const filteredCompanies = companies.filter(company => 
@@ -53,27 +52,6 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
     }
   };
 
-  // Handle data refresh
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      await refreshCompanies();
-      toast({
-        title: "Data refreshed",
-        description: "Company data has been refreshed.",
-      });
-    } catch (error) {
-      console.error('Error refreshing data:', error);
-      toast({
-        title: "Error",
-        description: "An error occurred while refreshing data.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -90,10 +68,10 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
         <Button 
           variant="outline" 
           size="icon" 
-          onClick={handleRefresh}
-          disabled={isRefreshing || isLoading}
+          onClick={refreshCompanies}
+          disabled={isLoading}
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
 
