@@ -45,7 +45,14 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
         
         if (!updated) {
           console.warn("Failed to update company with new logo URL, but storage upload succeeded");
-          // Don't show error toast here since the logo upload itself succeeded
+          // The updateCompany function will handle the error toast if needed
+          // We don't want to show another error toast here
+        } else {
+          // Only show a second success toast if both operations succeeded
+          toast({
+            title: "Company updated",
+            description: "Company has been updated with the new logo.",
+          });
         }
       } catch (updateErr) {
         console.error('Exception during company update:', updateErr);

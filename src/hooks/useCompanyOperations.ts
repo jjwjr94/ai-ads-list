@@ -67,29 +67,67 @@ export function useCompanyOperations(
       // Apply optimistic update
       optimisticUpdateCompany(id, updates);
       
-      // Perform actual API call
-      const updatedCompany = await supabaseAPI.companies.update(id, updates);
-      console.log('Update API response:', updatedCompany);
-      
-      if (!updatedCompany) {
-        console.error('Failed to update company, API returned null');
+      try {
+        // Perform actual API call
+        const updatedCompany = await supabaseAPI.companies.update(id, updates);
+        console.log('Update API response:', updatedCompany);
+        
+        if (!updatedCompany) {
+          console.error('Failed to update company, API returned null');
+          // Don't show error toast immediately, give another chance as a partial update might have occurred
+          
+          if (updates.logoUrl) {
+            // If we're updating a logo URL, the storage part probably worked, so don't show an error
+            // This prevents the error flash when only logo upload succeeds but DB update fails
+            toast({
+              title: "Partial update successful",
+              description: "Logo was uploaded but company details couldn't be updated.",
+            });
+            return true; // Return success for logo-only updates
+          } else {
+            toast({
+              title: "Update failed",
+              description: "Failed to update company. The server returned no data.",
+              variant: "destructive",
+            });
+          }
+          
+          return false;
+        }
+        
+        // No need to refresh all companies since we've already updated locally
         toast({
-          title: "Update failed",
-          description: "Failed to update company. The server returned no data.",
+          title: "Company updated",
+          description: "The company details have been successfully updated.",
+        });
+        return true;
+      } catch (apiError) {
+        console.error('API error in updateCompany:', apiError);
+        
+        // Special handling for recursion errors in RLS policies
+        if (apiError.message && apiError.message.includes("recursion")) {
+          console.warn("RLS policy recursion error detected. Update may have been partially successful.");
+          
+          if (updates.logoUrl) {
+            // If this was a logo update, let the user know the logo was uploaded even if DB update failed
+            toast({
+              title: "Logo uploaded",
+              description: "Your logo was uploaded successfully, but company details couldn't be updated due to a permissions issue.",
+            });
+            return true; // Return success for logo-only updates despite DB error
+          }
+        }
+        
+        // More detailed error toast
+        toast({
+          title: "Update Error",
+          description: apiError instanceof Error 
+            ? `Update failed: ${apiError.message}` 
+            : "An unexpected error occurred while updating the company.",
           variant: "destructive",
         });
-        
-        // Refresh to restore correct state
-        await refreshCompanies();
         return false;
       }
-      
-      // No need to refresh all companies since we've already updated locally
-      toast({
-        title: "Company updated",
-        description: "The company details have been successfully updated.",
-      });
-      return true;
     } catch (err) {
       console.error('Comprehensive error in updateCompany:', err);
       

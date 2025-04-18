@@ -168,15 +168,14 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
             // Call the onSuccess callback if provided
             if (onSuccess) onSuccess();
           } else {
-            throw new Error("Update operation failed");
+            // Don't throw an error here, as updateCompany already handles toasts
+            // Just don't call onSuccess so the form stays open
+            setIsSubmitting(false);
           }
         } catch (updateError) {
           console.error('Error during update operation:', updateError);
-          toast({
-            title: "Update failed",
-            description: updateError instanceof Error ? updateError.message : "Failed to update company. Please try again.",
-            variant: "destructive",
-          });
+          // updateCompany already handles toasts, so we don't need to show another one
+          setIsSubmitting(false);
         }
       } else {
         // Ensure we have an ID for new companies
@@ -201,6 +200,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
             description: "Failed to add company. Please try again.",
             variant: "destructive",
           });
+          setIsSubmitting(false);
         }
       }
     } catch (error) {
@@ -210,7 +210,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
         description: error instanceof Error ? error.message : "An error occurred while saving the company.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
