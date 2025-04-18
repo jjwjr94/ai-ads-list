@@ -1,3 +1,4 @@
+
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,10 @@ export const Hero = () => {
   const { companies, isLoading, getHighlightedCompanies } = useCompanyDatabase();
   const [displayCompanies, setDisplayCompanies] = useState<Company[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+
+  const handleExploreClick = () => {
+    navigate("/explore");
+  };
 
   const uploadBanner = async () => {
     try {
