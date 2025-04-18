@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { Company, Category, CompanyCreate } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { useToast } from '@/hooks/use-toast';
 
 export function useCompanyOperations(
   refreshCompanies: () => Promise<void>,
@@ -10,6 +11,8 @@ export function useCompanyOperations(
   optimisticAddCompany: (company: Company) => void,
   optimisticDeleteCompany: (id: string) => void
 ) {
+  const { toast } = useToast();
+
   // Get companies by category
   const getCompaniesByCategory = useCallback(async (category: Category) => {
     try {
@@ -70,18 +73,35 @@ export function useCompanyOperations(
       
       if (!updatedCompany) {
         console.error('Failed to update company, API returned null');
-        throw new Error('Failed to update company');
+        toast({
+          title: "Update failed",
+          description: "Failed to update company. Please try again later.",
+          variant: "destructive",
+        });
+        
+        // Refresh to restore correct state
+        await refreshCompanies();
+        return false;
       }
       
       // No need to refresh all companies since we've already updated locally
+      toast({
+        title: "Company updated",
+        description: "The company has been successfully updated.",
+      });
       return true;
     } catch (err) {
       console.error('Error updating company:', err);
+      toast({
+        title: "Update failed",
+        description: "An error occurred while updating the company.",
+        variant: "destructive",
+      });
       // If there's an error, refresh to get the correct state
       await refreshCompanies();
-      throw err;
+      return false;
     }
-  }, [refreshCompanies, optimisticUpdateCompany]);
+  }, [refreshCompanies, optimisticUpdateCompany, toast]);
 
   // Delete a company with optimistic update
   const deleteCompany = useCallback(async (id: string) => {
@@ -92,15 +112,35 @@ export function useCompanyOperations(
       // Perform actual API call
       const success = await supabaseAPI.companies.delete(id);
       
+      if (!success) {
+        toast({
+          title: "Delete failed",
+          description: "Failed to delete the company. Please try again later.",
+          variant: "destructive",
+        });
+        await refreshCompanies();
+        return false;
+      }
+      
+      toast({
+        title: "Company deleted",
+        description: "The company has been successfully deleted.",
+      });
+      
       // No need to refresh all companies since we've already updated locally
       return success;
     } catch (err) {
       console.error('Error deleting company:', err);
+      toast({
+        title: "Delete failed",
+        description: "An error occurred while deleting the company.",
+        variant: "destructive",
+      });
       // If there's an error, refresh to get the correct state
       await refreshCompanies();
       return false;
     }
-  }, [refreshCompanies, optimisticDeleteCompany]);
+  }, [refreshCompanies, optimisticDeleteCompany, toast]);
 
   return {
     getCompaniesByCategory,

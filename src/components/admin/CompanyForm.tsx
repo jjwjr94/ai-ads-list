@@ -43,7 +43,7 @@ const emptyCompany: Company = {
   id: '',
   name: '',
   website: '',
-  category: undefined,
+  category: Category.STRATEGY_PLANNING,
   logoUrl: '',
   description: '',
   targetAudience: '',
@@ -96,11 +96,13 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
 }) => {
   const { addCompany, updateCompany } = useCompanyDatabase();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tempId, setTempId] = useState<string>('');
+  const [tempId] = useState<string>(() => uuidv4());
   const { toast } = useToast();
   
   // Create default values ensuring company.id is properly passed for editing
-  const defaultValues = company ? { ...company } : { ...emptyCompany, id: uuidv4() };
+  const defaultValues = company ? 
+    { ...company } : 
+    { ...emptyCompany, id: tempId };
   
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -111,12 +113,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   useEffect(() => {
     if (isEditing && company) {
       // Reset the form with the company data to ensure all fields are properly populated
+      console.log('Setting up form with company data:', company);
       form.reset(company);
-    } else if (!isEditing) {
-      setTempId(uuidv4());
-      form.setValue('id', tempId);
     }
-  }, [isEditing, company, form, tempId]);
+  }, [isEditing, company, form]);
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
@@ -129,26 +129,44 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
 
       if (isEditing && company) {
         console.log(`Updating company ${company.id} with:`, data);
-        const success = await updateCompany(company.id, data);
-        console.log('Update result:', success);
+        // Ensure we're using the correct ID
+        const result = await updateCompany(company.id, data);
+        console.log('Update result:', result);
         
-        toast({
-          title: "Company updated",
-          description: "The company has been successfully updated.",
-        });
+        if (result) {
+          toast({
+            title: "Company updated",
+            description: "The company has been successfully updated.",
+          });
+          
+          // Call the onSuccess callback if provided
+          if (onSuccess) onSuccess();
+        }
       } else {
-        const companyData = { ...data, id: tempId || uuidv4() };
+        // Ensure we have an ID for new companies
+        const companyData = { 
+          ...data, 
+          id: data.id || tempId 
+        };
         console.log('Adding new company with data:', companyData);
-        await addCompany(companyData);
+        const newCompany = await addCompany(companyData);
         
-        toast({
-          title: "Company added",
-          description: "The new company has been successfully added.",
-        });
+        if (newCompany) {
+          toast({
+            title: "Company added",
+            description: "The new company has been successfully added.",
+          });
+          
+          // Call the onSuccess callback if provided
+          if (onSuccess) onSuccess();
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to add company. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
-      
-      // Call the onSuccess callback if provided
-      if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
@@ -174,6 +192,12 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Hidden ID field */}
+        <input
+          type="hidden"
+          {...form.register('id')}
+        />
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,6 +238,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -253,16 +278,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                 )}
               />
             </div>
-
-            <input 
-              type="hidden" 
-              {...form.register('logoUrl')} 
-            />
-            
-            <input 
-              type="hidden" 
-              {...form.register('id')} 
-            />
           </div>
 
           <div>

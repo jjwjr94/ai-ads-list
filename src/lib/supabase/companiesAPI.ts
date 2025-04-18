@@ -181,90 +181,101 @@ export const companiesAPI = {
   async update(id: string, updates: CompanyUpdate): Promise<Company | null> {
     console.log('API: Updating company with ID', id, 'with data:', updates);
     
-    // Clean up undefined values to prevent sending them to Supabase
-    const cleanUpdates = Object.entries(updates).reduce((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, any>);
-    
-    // Convert to database format
-    const dbUpdates: any = {};
-
-    // Map basic fields
-    if (cleanUpdates.name !== undefined) dbUpdates.name = cleanUpdates.name;
-    if (cleanUpdates.website !== undefined) dbUpdates.website = cleanUpdates.website;
-    if (cleanUpdates.category !== undefined) dbUpdates.category = cleanUpdates.category;
-    if (cleanUpdates.description !== undefined) dbUpdates.description = cleanUpdates.description;
-    if (cleanUpdates.logoUrl !== undefined) dbUpdates.logo_url = cleanUpdates.logoUrl;
-    if (cleanUpdates.targetAudience !== undefined) dbUpdates.target_audience = cleanUpdates.targetAudience;
-    if (cleanUpdates.features !== undefined) dbUpdates.features = cleanUpdates.features;
-    if (cleanUpdates.pricing !== undefined) dbUpdates.pricing = cleanUpdates.pricing;
-    if (cleanUpdates.linkedinUrl !== undefined) dbUpdates.linkedin_url = cleanUpdates.linkedinUrl;
-    if (cleanUpdates.foundedYear !== undefined) dbUpdates.founded_year = cleanUpdates.foundedYear;
-    if (cleanUpdates.headquarters !== undefined) dbUpdates.headquarters = cleanUpdates.headquarters;
-    if (cleanUpdates.employeeCount !== undefined) dbUpdates.employee_count = cleanUpdates.employeeCount;
-    if (cleanUpdates.fundingStage !== undefined) dbUpdates.funding_stage = cleanUpdates.fundingStage;
-
-    // Handle details separately to avoid infinite type instantiation
-    if (cleanUpdates.details) {
-      // Create a plain object with explicit type annotation to break the recursion
-      const detailsUpdate: {
-        summary?: string;
-        features?: string[];
-        highlighted?: boolean;
-        pricing?: string;
-        bestFor?: string;
-      } = {};
+    try {
+      // Clean up undefined values to prevent sending them to Supabase
+      const cleanUpdates = Object.entries(updates).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Record<string, any>);
       
-      // Only copy properties that exist in the updates
-      if (cleanUpdates.details.summary !== undefined) detailsUpdate.summary = cleanUpdates.details.summary;
-      if (cleanUpdates.details.features !== undefined) detailsUpdate.features = cleanUpdates.details.features;
-      if (cleanUpdates.details.highlighted !== undefined) detailsUpdate.highlighted = cleanUpdates.details.highlighted;
-      if (cleanUpdates.details.pricing !== undefined) detailsUpdate.pricing = cleanUpdates.details.pricing;
-      if (cleanUpdates.details.bestFor !== undefined) detailsUpdate.bestFor = cleanUpdates.details.bestFor;
+      // Convert to database format
+      const dbUpdates: any = {};
+
+      // Map basic fields
+      if (cleanUpdates.name !== undefined) dbUpdates.name = cleanUpdates.name;
+      if (cleanUpdates.website !== undefined) dbUpdates.website = cleanUpdates.website;
+      if (cleanUpdates.category !== undefined) dbUpdates.category = cleanUpdates.category;
+      if (cleanUpdates.description !== undefined) dbUpdates.description = cleanUpdates.description;
+      if (cleanUpdates.logoUrl !== undefined) dbUpdates.logo_url = cleanUpdates.logoUrl;
+      if (cleanUpdates.targetAudience !== undefined) dbUpdates.target_audience = cleanUpdates.targetAudience;
+      if (cleanUpdates.features !== undefined) dbUpdates.features = cleanUpdates.features;
+      if (cleanUpdates.pricing !== undefined) dbUpdates.pricing = cleanUpdates.pricing;
+      if (cleanUpdates.linkedinUrl !== undefined) dbUpdates.linkedin_url = cleanUpdates.linkedinUrl;
+      if (cleanUpdates.foundedYear !== undefined) dbUpdates.founded_year = cleanUpdates.foundedYear;
+      if (cleanUpdates.headquarters !== undefined) dbUpdates.headquarters = cleanUpdates.headquarters;
+      if (cleanUpdates.employeeCount !== undefined) dbUpdates.employee_count = cleanUpdates.employeeCount;
+      if (cleanUpdates.fundingStage !== undefined) dbUpdates.funding_stage = cleanUpdates.fundingStage;
+
+      // Handle details separately to avoid infinite type instantiation
+      if (cleanUpdates.details) {
+        // Create a plain object with explicit type annotation to break the recursion
+        const detailsUpdate: {
+          summary?: string;
+          features?: string[];
+          highlighted?: boolean;
+          pricing?: string;
+          bestFor?: string;
+        } = {};
+        
+        // Only copy properties that exist in the updates
+        if (cleanUpdates.details.summary !== undefined) detailsUpdate.summary = cleanUpdates.details.summary;
+        if (cleanUpdates.details.features !== undefined) detailsUpdate.features = cleanUpdates.details.features;
+        if (cleanUpdates.details.highlighted !== undefined) detailsUpdate.highlighted = cleanUpdates.details.highlighted;
+        if (cleanUpdates.details.pricing !== undefined) detailsUpdate.pricing = cleanUpdates.details.pricing;
+        if (cleanUpdates.details.bestFor !== undefined) detailsUpdate.bestFor = cleanUpdates.details.bestFor;
+        
+        // Assign the explicitly typed object to dbUpdates
+        dbUpdates.details = detailsUpdate;
+      }
+
+      // Handle AI Native criteria
+      if (cleanUpdates.aiNativeCriteria) {
+        if (cleanUpdates.aiNativeCriteria.hasDotAiDomain !== undefined) {
+          dbUpdates.has_dot_ai_domain = cleanUpdates.aiNativeCriteria.hasDotAiDomain;
+        }
+        if (cleanUpdates.aiNativeCriteria.foundedAfter2020 !== undefined) {
+          dbUpdates.founded_after_2020 = cleanUpdates.aiNativeCriteria.foundedAfter2020;
+        }
+        if (cleanUpdates.aiNativeCriteria.seriesAOrEarlier !== undefined) {
+          dbUpdates.series_a_or_earlier = cleanUpdates.aiNativeCriteria.seriesAOrEarlier;
+        }
+      }
       
-      // Assign the explicitly typed object to dbUpdates
-      dbUpdates.details = detailsUpdate;
-    }
+      console.log('API: Converted updates for Supabase:', dbUpdates);
 
-    // Handle AI Native criteria
-    if (cleanUpdates.aiNativeCriteria) {
-      if (cleanUpdates.aiNativeCriteria.hasDotAiDomain !== undefined) {
-        dbUpdates.has_dot_ai_domain = cleanUpdates.aiNativeCriteria.hasDotAiDomain;
+      // Only proceed if there are actually updates to make
+      if (Object.keys(dbUpdates).length === 0) {
+        console.log('No changes to update for company:', id);
+        return null;
       }
-      if (cleanUpdates.aiNativeCriteria.foundedAfter2020 !== undefined) {
-        dbUpdates.founded_after_2020 = cleanUpdates.aiNativeCriteria.foundedAfter2020;
+
+      // Add timestamp for last_updated
+      dbUpdates.last_updated = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('companies')
+        .update(dbUpdates)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error(`Error updating company with ID ${id}:`, error);
+        return null;
       }
-      if (cleanUpdates.aiNativeCriteria.seriesAOrEarlier !== undefined) {
-        dbUpdates.series_a_or_earlier = cleanUpdates.aiNativeCriteria.seriesAOrEarlier;
+
+      if (!data || data.length === 0) {
+        console.error(`No data returned after updating company ${id}`);
+        return null;
       }
-    }
-    
-    console.log('API: Converted updates for Supabase:', dbUpdates);
 
-    // Add timestamp for last_updated
-    dbUpdates.last_updated = new Date().toISOString();
-
-    const { data, error } = await supabase
-      .from('companies')
-      .update(dbUpdates)
-      .eq('id', id)
-      .select();
-
-    if (error) {
-      console.error(`Error updating company with ID ${id}:`, error);
+      console.log('API: Update successful, returned data:', data[0]);
+      return mapDbRecordToCompany(data[0]);
+    } catch (error) {
+      console.error(`Exception in update for company with ID ${id}:`, error);
       return null;
     }
-
-    if (!data || data.length === 0) {
-      console.error(`No data returned after updating company ${id}`);
-      return null;
-    }
-
-    console.log('API: Update successful, returned data:', data[0]);
-    return mapDbRecordToCompany(data[0]);
   },
 
   /**
