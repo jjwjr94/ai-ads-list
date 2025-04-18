@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/carousel";
 import CompanyCard from "@/components/ui/company-card";
 import { useCarouselAutoRotation } from "@/hooks/useCarouselAutoRotation";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Hero = () => {
   const navigate = useNavigate();
@@ -21,9 +22,31 @@ export const Hero = () => {
   const [displayCompanies, setDisplayCompanies] = useState<Company[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
-  const handleExploreClick = () => {
-    navigate("/explore");
+  const uploadBanner = async () => {
+    try {
+      const response = await fetch("/lovable-uploads/ac9b3c33-296d-4d01-a43f-1efd008f9b6f.png");
+      const blob = await response.blob();
+      
+      const { data, error } = await supabase.storage
+        .from('banners')
+        .upload('hero-banner.png', blob, {
+          upsert: true
+        });
+      
+      if (error) {
+        console.error('Error uploading banner:', error);
+        return;
+      }
+      
+      console.log('Banner uploaded successfully:', data);
+    } catch (error) {
+      console.error('Error in uploadBanner:', error);
+    }
   };
+
+  useEffect(() => {
+    uploadBanner();
+  }, []);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -58,7 +81,7 @@ export const Hero = () => {
   return (
     <section className="relative container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
       <img 
-        src="/lovable-uploads/ac9b3c33-296d-4d01-a43f-1efd008f9b6f.png" 
+        src={`https://mkbrqiknsraiskoybdry.supabase.co/storage/v1/object/public/banners/hero-banner.png`}
         alt="AI Marketing Banner" 
         className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 rounded-xl" 
       />
