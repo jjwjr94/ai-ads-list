@@ -1,3 +1,4 @@
+
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -56,29 +57,32 @@ export const Hero = () => {
   useCarouselAutoRotation(carouselApi);
 
   return (
-    <section className="relative px-6 py-8 overflow-hidden bg-white">
-      <div className="absolute inset-0 bg-[#F1F0FB]/50" />
-      <div className="relative max-w-6xl mx-auto">
+    <section className="relative px-6 py-8 overflow-hidden bg-gradient-to-b from-[#F1F0FB] to-white">
+      {/* Banner image - full width with overlay */}
+      <div className="absolute inset-0 w-full h-full">
+        <img 
+          src="/lovable-uploads/ac9b3c33-296d-4d01-a43f-1efd008f9b6f.png" 
+          alt="AI Marketing Banner" 
+          className="w-full h-full object-cover rounded-xl opacity-90"
+        />
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-30 rounded-xl"></div>
+      </div>
+      
+      <div className="relative max-w-6xl mx-auto z-10">
         <div className="text-center">
-          <div className="absolute top-0 right-0 w-1/2 h-full opacity-30 z-0">
-            <img 
-              src="/lovable-uploads/1fc27363-9183-4435-bf95-345a396895ac.png" 
-              alt="Background Vibe Pattern" 
-              className="w-full h-full object-cover rounded-2xl"
-            />
-          </div>
           <div className="relative z-10">
             <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 mb-2">
               <Wand2 className="w-4 h-4 mr-2 text-purple-600" />
               <span className="text-sm font-medium text-purple-600">AI-Powered Marketing Tools</span>
             </div>
-            <h1 className="mb-2 text-4xl font-bold tracking-tight text-[#1A1F2C] sm:text-5xl md:text-6xl">
+            <h1 className="mb-2 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
               Discover the Best 
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#E5DEFF] to-white">
                 AI Ads and AI Marketing Tools for Your Business
               </span>
             </h1>
-            <p className="max-w-2xl mx-auto mb-3 text-lg text-gray-600 sm:text-xl">
+            <p className="max-w-2xl mx-auto mb-3 text-lg text-gray-100 sm:text-xl">
               Explore cutting-edge solutions for AI ads and AI marketing to supercharge your team's efficiency, output and performance.
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center mb-4">
@@ -92,7 +96,7 @@ export const Hero = () => {
             </div>
             
             {displayCompanies.length > 0 && (
-              <div className="mt-2 px-4 md:px-10">
+              <div className="mt-2 px-4 md:px-10 bg-white/80 py-4 rounded-xl">
                 <Carousel
                   opts={{
                     align: "center",
@@ -117,7 +121,7 @@ export const Hero = () => {
             )}
             
             {displayCompanies.length === 0 && (
-              <div className="mt-2 text-gray-500">
+              <div className="mt-2 text-gray-100">
                 {isLoading ? "Loading featured tools..." : "No featured tools available yet"}
               </div>
             )}
