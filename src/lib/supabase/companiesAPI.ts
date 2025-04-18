@@ -85,7 +85,7 @@ export const companiesAPI = {
   },
   
   async update(id: string, updates: Partial<Company>): Promise<Company | null> {
-    // Create a new object for database updates
+    // Create a new object for database updates that matches the Supabase schema
     const dbUpdates: Record<string, any> = {};
     
     // Only add fields that are defined in the updates object
@@ -93,6 +93,7 @@ export const companiesAPI = {
     if (updates.website !== undefined) dbUpdates.website = updates.website;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+    if (updates.logo !== undefined) dbUpdates.logo_url = updates.logo; // Handle both logo fields
     if (updates.features !== undefined) dbUpdates.features = updates.features;
     if (updates.pricing !== undefined) dbUpdates.pricing = updates.pricing;
     if (updates.targetAudience !== undefined) dbUpdates.target_audience = updates.targetAudience;
@@ -101,6 +102,19 @@ export const companiesAPI = {
     if (updates.headquarters !== undefined) dbUpdates.headquarters = updates.headquarters;
     if (updates.employeeCount !== undefined) dbUpdates.employee_count = updates.employeeCount;
     if (updates.fundingStage !== undefined) dbUpdates.funding_stage = updates.fundingStage;
+    
+    // Handle AI Native criteria if present
+    if (updates.aiNativeCriteria) {
+      if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) {
+        dbUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
+      }
+      if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) {
+        dbUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
+      }
+      if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) {
+        dbUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
+      }
+    }
     
     // Handle details separately to avoid infinite type instantiation
     if (updates.details) {
@@ -118,14 +132,23 @@ export const companiesAPI = {
       dbUpdates.details = detailsObj;
     }
     
-    if (updates.category !== undefined && updates.category in categoryMapping) {
-      dbUpdates.category = categoryMapping[updates.category as Category];
+    // Ensure category is properly mapped to the database enum value
+    if (updates.category !== undefined) {
+      // Make sure we're using a valid category from the enum
+      if (updates.category in categoryMapping) {
+        dbUpdates.category = categoryMapping[updates.category as Category];
+      } else {
+        console.warn(`Invalid category: ${updates.category}, using default`);
+        // Use a default category if the provided one is invalid
+        dbUpdates.category = "Strategy & Planning";
+      }
     }
     
     dbUpdates.last_updated = new Date().toISOString();
     
     console.log('Updating company with values:', dbUpdates);
     
+    // Use proper error handling and ensure we get the updated record back
     const { data, error } = await supabase
       .from('companies')
       .update(dbUpdates)
@@ -138,8 +161,12 @@ export const companiesAPI = {
       throw error;
     }
     
-    if (!data) return null;
+    if (!data) {
+      console.error(`No data returned after updating company ${id}`);
+      return null;
+    }
     
+    console.log(`Company ${id} updated successfully, returned data:`, data);
     return mapDbRecordToCompany(data);
   },
   

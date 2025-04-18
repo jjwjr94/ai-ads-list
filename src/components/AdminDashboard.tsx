@@ -305,14 +305,42 @@ const AdminDashboard = () => {
         }
         
         console.log("Updating company with data:", updatedCompanyData);
-        await updateCompany(editingCompany.id, updatedCompanyData);
         
-        await refreshCompanies();
-        
-        toast({
-          title: "Company Updated",
-          description: `${companyData.name} has been successfully updated.`,
-        });
+        try {
+          // Use a more robust update approach with explicit error handling
+          const updatedCompany = await updateCompany(editingCompany.id, updatedCompanyData);
+          
+          if (!updatedCompany) {
+            throw new Error("Failed to update company - no data returned");
+          }
+          
+          console.log("Company updated successfully:", updatedCompany);
+          
+          // Refresh companies data to ensure UI is up to date
+          await refreshCompanies();
+          
+          // Show success toast
+          toast({
+            title: "Company Updated",
+            description: `${companyData.name} has been successfully updated.`,
+          });
+          
+          // Reset form and switch to companies tab
+          setEditingCompany(null);
+          form.reset();
+          setFeatures([]);
+          setLogoFile(null);
+          setLogoPreview(null);
+          setActiveTab('companies');
+        } catch (updateError) {
+          console.error("Error during company update:", updateError);
+          toast({
+            title: "Update Failed",
+            description: "Failed to update company. Please try again.",
+            variant: "destructive"
+          });
+          // Don't reset form or change tabs on error
+        }
       } else {
         const newCompany: Company = {
           ...companyData,
@@ -342,16 +370,15 @@ const AdminDashboard = () => {
           title: "Company Added",
           description: `${newCompany.name} has been successfully added.`,
         });
+        
+        // Reset form and switch to companies tab
+        setEditingCompany(null);
+        form.reset();
+        setFeatures([]);
+        setLogoFile(null);
+        setLogoPreview(null);
+        setActiveTab('companies');
       }
-
-      setEditingCompany(null);
-      form.reset();
-      setFeatures([]);
-      setLogoFile(null);
-      setLogoPreview(null);
-      
-      setActiveTab('companies');
-      
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
@@ -359,6 +386,7 @@ const AdminDashboard = () => {
         description: "Failed to save company data. Please try again.",
         variant: "destructive"
       });
+      // Don't reset form or change tabs on error
     } finally {
       setIsSubmitting(false);
     }
