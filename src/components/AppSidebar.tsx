@@ -13,6 +13,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarProvider
 } from "@/components/ui/sidebar";
 import { Category } from "@/types/frontend.models";
 
@@ -44,7 +45,6 @@ export function AppSidebar() {
       collapsible="icon" 
       variant="floating" 
       className="border-none shadow-none mt-12" 
-      defaultOpen={isOnCategoryPage}
     >
       <SidebarHeader className="flex justify-end items-center p-2">
         {/* Logo removed from sidebar */}
