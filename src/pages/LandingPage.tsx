@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -236,14 +237,14 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-6">
-              Ready to Transform Your Marketing with AI?
+              Find Your Perfect AI Marketing Tool
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Start exploring our directory of AI marketing tools today and find the perfect solutions for your business
+              Browse our curated collection of AI-powered marketing solutions
             </p>
             <Link to="/explore">
               <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-8 py-6 rounded-lg text-lg">
-                Get Started Now
+                Explore Tools
               </Button>
             </Link>
           </div>

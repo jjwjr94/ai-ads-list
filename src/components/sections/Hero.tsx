@@ -1,4 +1,3 @@
-
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -10,15 +9,17 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext
+  CarouselNext,
+  type CarouselApi
 } from "@/components/ui/carousel";
 import CompanyCard from "@/components/ui/company-card";
+import { useCarouselAutoRotation } from "@/hooks/useCarouselAutoRotation";
 
 export const Hero = () => {
   const navigate = useNavigate();
   const { companies, isLoading, getHighlightedCompanies } = useCompanyDatabase();
   const [displayCompanies, setDisplayCompanies] = useState<Company[]>([]);
-  const [carouselApi, setCarouselApi] = useState<any>(null);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   const handleExploreClick = () => {
     navigate("/explore");
@@ -66,6 +67,8 @@ export const Hero = () => {
     
     return () => clearInterval(autoPlayInterval);
   }, [carouselApi]);
+
+  useCarouselAutoRotation(carouselApi);
 
   return (
     <section className="relative px-6 py-12 overflow-hidden bg-white">
