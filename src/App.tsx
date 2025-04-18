@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,7 +24,10 @@ import {
   InfluencerMarketingPage,
   BrandManagementPage,
   AdFraudPage,
-  AiNativePage
+  AiNativePage,
+  B2BLeadGenPage,
+  CampaignOperationsPage,
+  EcommercePage
 } from "./pages/CategoryPages";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -37,7 +39,8 @@ const AppContent = () => {
   const isOnCategoryPage = location.pathname.includes('/') && 
     ['/strategy-planning', '/creative-content', '/performance-media', '/seo-organic', 
      '/data-analytics', '/web-app-development', '/account-management', '/social-media',
-     '/influencer-marketing', '/brand-management', '/ad-fraud', '/ai-native'].includes(location.pathname);
+     '/influencer-marketing', '/brand-management', '/ad-fraud', '/ai-native',
+     '/b2b-lead-gen', '/campaign-operations', '/ecommerce'].includes(location.pathname);
 
   return (
     <TooltipProvider>
@@ -73,6 +76,9 @@ const AppContent = () => {
                 <Route path="/brand-management" element={<BrandManagementPage />} />
                 <Route path="/ad-fraud" element={<AdFraudPage />} />
                 <Route path="/ai-native" element={<AiNativePage />} />
+                <Route path="/b2b-lead-gen" element={<B2BLeadGenPage />} />
+                <Route path="/campaign-operations" element={<CampaignOperationsPage />} />
+                <Route path="/ecommerce" element={<EcommercePage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
