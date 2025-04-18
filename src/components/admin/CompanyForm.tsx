@@ -119,6 +119,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   }, [isEditing, company, form]);
 
   const onSubmit = async (data: any) => {
+    console.log('Form submission triggered with data:', data);
     setIsSubmitting(true);
     try {
       if (!data.name || !data.website) {
@@ -129,18 +130,53 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
 
       if (isEditing && company) {
         console.log(`Updating company ${company.id} with:`, data);
-        // Ensure we're using the correct ID
-        const result = await updateCompany(company.id, data);
-        console.log('Update result:', result);
         
-        if (result) {
-          toast({
-            title: "Company updated",
-            description: "The company has been successfully updated.",
-          });
+        // Ensure we're using the correct ID and properly format the data
+        // Create a clean update object with only the fields we want to update
+        const updateData = {
+          name: data.name,
+          website: data.website,
+          category: data.category,
+          description: data.description,
+          logoUrl: data.logoUrl,
+          features: data.features || [],
+          details: {
+            summary: data.details?.summary || '',
+            highlighted: data.details?.highlighted || false,
+            pricing: data.details?.pricing || '',
+            bestFor: data.details?.bestFor || ''
+          },
+          foundedYear: data.foundedYear,
+          headquarters: data.headquarters,
+          employeeCount: data.employeeCount,
+          fundingStage: data.fundingStage
+        };
+        
+        console.log('Cleaned update data:', updateData);
+        
+        // Use a try-catch specifically for the update operation
+        try {
+          const result = await updateCompany(company.id, updateData);
+          console.log('Update result:', result);
           
-          // Call the onSuccess callback if provided
-          if (onSuccess) onSuccess();
+          if (result) {
+            toast({
+              title: "Company updated",
+              description: "The company has been successfully updated.",
+            });
+            
+            // Call the onSuccess callback if provided
+            if (onSuccess) onSuccess();
+          } else {
+            throw new Error("Update operation failed");
+          }
+        } catch (updateError) {
+          console.error('Error during update operation:', updateError);
+          toast({
+            title: "Update failed",
+            description: updateError instanceof Error ? updateError.message : "Failed to update company. Please try again.",
+            variant: "destructive",
+          });
         }
       } else {
         // Ensure we have an ID for new companies

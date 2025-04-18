@@ -1,24 +1,37 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { supabaseAPI } from '../lib/supabase';
 import { Company } from '@/types/frontend.models';
 import { useToast } from '@/hooks/use-toast';
 
 export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Company>) => Promise<boolean>) {
   const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
   
   // Upload a logo for a company
   const uploadLogo = useCallback(async (id: string, file: File, altText: string) => {
+    // Set uploading state to prevent multiple uploads
+    if (isUploading) return null;
+    
+    setIsUploading(true);
+    let logoUrl = null;
+    
     try {
       console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
       
-      // Step 1: Just upload to storage using the new function that doesn't update the database
-      const logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file);
+      // Step 1: Just upload to storage using the function that doesn't update the database
+      logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file);
       console.log(`Logo uploaded successfully to storage, URL: ${logoUrl}`);
       
       if (!logoUrl) {
         throw new Error("Failed to upload logo to storage");
       }
+      
+      // Show success toast immediately after successful storage upload
+      toast({
+        title: "Logo uploaded",
+        description: "Logo has been successfully uploaded.",
+      });
       
       // Step 2: Update company with new logo URL in a separate operation
       try {
@@ -32,12 +45,12 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
         
         if (!updated) {
           console.warn("Failed to update company with new logo URL, but storage upload succeeded");
-          // Continue even if the database update fails
+          // Don't show error toast here since the logo upload itself succeeded
         }
       } catch (updateErr) {
         console.error('Exception during company update:', updateErr);
-        // Continue even if the database update fails - we still want to return the logo URL
-        // This prevents the infinite recursion issue
+        // Don't show error toast here since the logo upload itself succeeded
+        // This prevents the error flash issue
       }
       
       // Return the URL regardless of whether the database update succeeded
@@ -45,16 +58,22 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       return logoUrl;
     } catch (err) {
       console.error('Error uploading logo:', err);
-      toast({
-        title: "Logo upload failed",
-        description: err instanceof Error ? err.message : "An error occurred during logo upload",
-        variant: "destructive",
-      });
+      // Only show error toast if the storage upload failed
+      if (!logoUrl) {
+        toast({
+          title: "Logo upload failed",
+          description: err instanceof Error ? err.message : "An error occurred during logo upload",
+          variant: "destructive",
+        });
+      }
       throw err;
+    } finally {
+      setIsUploading(false);
     }
-  }, [updateCompany, toast]);
+  }, [updateCompany, toast, isUploading]);
 
   return {
-    uploadLogo
+    uploadLogo,
+    isUploading
   };
 }
