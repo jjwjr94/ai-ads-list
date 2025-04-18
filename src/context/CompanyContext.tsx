@@ -179,22 +179,44 @@ export const CompanyProvider = ({ children }: { children: ReactNode }) => {
     uploadLogo: async (id: string, file: File, altText: string) => {
       try {
         console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
-        const logoUrl = await supabaseAPI.storage.uploadLogo(id, file, altText);
+        
+        // Step 1: Just upload to storage using the new function that doesn't update the database
+        const logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file);
         console.log(`Logo uploaded successfully, URL: ${logoUrl}`);
         
-        // Update company with new logo URL and add timestamp for cache busting
-        const updatedCompany = await supabaseAPI.companies.update(id, {
-          logo: logoUrl,
-          logoUrl: logoUrl
-        });
-        
-        console.log('Company updated with new logo URL');
+        // Step 2: Update company with new logo URL in a separate operation
+        try {
+          // Use a simplified update that only changes the logo fields
+          // This direct approach avoids the complex update that was causing recursion
+          const { data, error } = await supabase
+            .from('companies')
+            .update({
+              logo_url: logoUrl,
+              logo: logoUrl
+            })
+            .eq('id', id);
+            
+          if (error) {
+            console.error('Error updating company with logo URL:', error);
+            // Even if this fails, we still return the logo URL
+          } else {
+            console.log('Company updated with new logo URL');
+          }
+        } catch (updateErr) {
+          console.error('Exception during company update:', updateErr);
+          // Continue even if update fails
+        }
         
         // Force refresh companies to get updated logo paths
-        await refreshCompanies(); // Keep refresh after logo upload
+        try {
+          await refreshCompanies(); // Keep refresh after logo upload
+        } catch (refreshErr) {
+          console.error('Error refreshing companies after logo upload:', refreshErr);
+          // Continue even if refresh fails
+        }
         
-        // Add cache-busting parameter
-        return `${logoUrl}?t=${Date.now()}`;
+        // Return the URL regardless of whether the database update succeeded
+        return logoUrl;
       } catch (err) {
         console.error('Error uploading logo:', err);
         setError('Failed to upload logo to Supabase storage.');

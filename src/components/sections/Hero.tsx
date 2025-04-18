@@ -13,6 +13,7 @@ import {
   CarouselNext
 } from "@/components/ui/carousel";
 import CompanyCard from "@/components/ui/company-card";
+import { BackgroundPattern } from "@/components/ui/background-pattern";
 
 export const Hero = () => {
   const navigate = useNavigate();
@@ -75,6 +76,14 @@ export const Hero = () => {
   return (
     <section className="relative px-6 py-24 overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[#F1F0FB]/50" />
+      <BackgroundPattern 
+        text="it's a vibe" 
+        textColor="rgba(255, 255, 255, 0.5)"
+        fontSize="1.5rem"
+        rotation={-20}
+        opacity={0.15}
+        className="z-0"
+      />
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center">
           <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 mb-6">
