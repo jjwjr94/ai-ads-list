@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -125,47 +124,41 @@ const LandingPage = () => {
                 title: Category.SEO_ORGANIC,
                 icon: CodeSquare,
                 path: "/seo-organic",
-                color: "bg-[#E5DEFF]",
                 description: "Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO tools"
               },
               { 
                 title: Category.CREATIVE_CONTENT,
                 icon: Lightbulb,
                 path: "/creative-content",
-                color: "bg-[#FDE1D3]",
                 description: "AI ad generators, ad creative AI, AI content creation and similar tools"
               },
               { 
                 title: Category.SOCIAL_MEDIA,
                 icon: Search,
                 path: "/social-media",
-                color: "bg-[#D3E4FD]",
                 description: "AI-powered social media and community management"
               },
               { 
                 title: Category.DATA_ANALYTICS,
                 icon: PieChart,
                 path: "/data-analytics",
-                color: "bg-[#F2FCE2]",
                 description: "AI data analysis and visualization tools"
               },
               { 
                 title: Category.WEB_APP_DEVELOPMENT,
                 icon: CodeSquare,
                 path: "/web-app-development",
-                color: "bg-[#FFDEE2]",
                 description: "AI website builders, AI website generators"
               },
               { 
                 title: Category.STRATEGY_PLANNING,
                 icon: Database,
                 path: "/strategy-planning",
-                color: "bg-[#FEF7CD]",
                 description: "AI marketing strategy, planning and decision-making"
               }
             ].map((category, index) => (
               <Link to={category.path} key={index} className="group">
-                <div className={`${category.color} rounded-lg p-8 transition-transform transform hover:scale-105`}>
+                <div className={`rounded-lg p-8 border border-gray-200 h-full transition-transform transform hover:scale-105`}>
                   <category.icon className="h-10 w-10 text-[#9b87f5] mb-4" />
                   <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
                     {category.title}
