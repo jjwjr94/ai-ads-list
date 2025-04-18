@@ -40,6 +40,7 @@ export const AdminDashboard: React.FC = () => {
     toast({
       title: editingCompany ? "Company Updated" : "Company Added",
       description: `The company has been successfully ${editingCompany ? 'updated' : 'added'}.`,
+      variant: "default",
     });
     setEditingCompany(null);
     setIsAddingCompany(false);
