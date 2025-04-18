@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Database, FolderTree } from "lucide-react";
 import {
@@ -28,7 +27,10 @@ const categoryLinks = [
   { title: Category.INFLUENCER_MARKETING, path: '/influencer-marketing' },
   { title: Category.BRAND_MANAGEMENT, path: '/brand-management' },
   { title: Category.AD_FRAUD, path: '/ad-fraud' },
-  { title: Category.AI_NATIVE, path: '/ai-native' }
+  { title: Category.AI_NATIVE, path: '/ai-native' },
+  { title: Category.B2B_LEAD_GEN, path: '/b2b-lead-gen' },
+  { title: Category.CAMPAIGN_OPERATIONS, path: '/campaign-operations' },
+  { title: Category.ECOMMERCE, path: '/ecommerce' }
 ];
 
 const formatCategoryTitle = (categoryString: string): string => {

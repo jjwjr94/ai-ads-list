@@ -15,7 +15,6 @@ export const Explore = () => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // Load companies once on component mount
   useEffect(() => {
     const initializeData = async () => {
       if (!isInitialized) {
@@ -27,11 +26,9 @@ export const Explore = () => {
     initializeData();
   }, [isInitialized, loadCompanies]);
 
-  // Update category counts whenever companies data changes
   useEffect(() => {
     const counts: Record<string, number> = {};
     
-    // Process companies to count by category
     if (companies && companies.length > 0) {
       companies.forEach(company => {
         const category = company.category || '';
@@ -42,7 +39,6 @@ export const Explore = () => {
     setCategoryCounts(counts);
   }, [companies]);
   
-  // Define categoryCards with count values from the categoryCounts state
   const categoryCards = [
     { 
       title: Category.STRATEGY_PLANNING, 
@@ -115,23 +111,37 @@ export const Explore = () => {
       path: '/ai-native',
       description: 'AI-native agencies and consulting services',
       count: categoryCounts[Category.AI_NATIVE] || 0
+    },
+    { 
+      title: Category.B2B_LEAD_GEN, 
+      path: '/b2b-lead-gen',
+      description: 'AI tools for B2B lead generation and sales',
+      count: categoryCounts[Category.B2B_LEAD_GEN] || 0
+    },
+    { 
+      title: Category.CAMPAIGN_OPERATIONS, 
+      path: '/campaign-operations',
+      description: 'AI-powered campaign management and optimization',
+      count: categoryCounts[Category.CAMPAIGN_OPERATIONS] || 0
+    },
+    { 
+      title: Category.ECOMMERCE, 
+      path: '/ecommerce',
+      description: 'AI solutions for ecommerce marketing and sales',
+      count: categoryCounts[Category.ECOMMERCE] || 0
     }
   ];
   
-  // Initialize filteredCards after categoryCards is defined
   const [filteredCards, setFilteredCards] = useState(categoryCards);
 
-  // Update filtered cards whenever category cards are updated with new counts
   useEffect(() => {
     if (searchQuery) {
-      // If there's a search query, filter according to it
       const filtered = categoryCards.filter(card => 
         card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         card.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredCards(filtered);
     } else {
-      // Otherwise, use all category cards
       setFilteredCards(categoryCards);
     }
   }, [categoryCards, searchQuery]);
@@ -166,6 +176,12 @@ export const Explore = () => {
         return Shield;
       case Category.AI_NATIVE:
         return Layout;
+      case Category.B2B_LEAD_GEN:
+        return BarChart;
+      case Category.CAMPAIGN_OPERATIONS:
+        return LineChart;
+      case Category.ECOMMERCE:
+        return Code;
       default:
         return Database;
     }

@@ -1,4 +1,3 @@
-
 import { Category } from '@/types/frontend.models';
 import { CategoryPage } from '@/components/ui/category-page';
 
@@ -14,3 +13,6 @@ export const InfluencerMarketingPage = () => <CategoryPage category={Category.IN
 export const BrandManagementPage = () => <CategoryPage category={Category.BRAND_MANAGEMENT} />;
 export const AdFraudPage = () => <CategoryPage category={Category.AD_FRAUD} />;
 export const AiNativePage = () => <CategoryPage category={Category.AI_NATIVE} />;
+export const B2BLeadGenPage = () => <CategoryPage category={Category.B2B_LEAD_GEN} />;
+export const CampaignOperationsPage = () => <CategoryPage category={Category.CAMPAIGN_OPERATIONS} />;
+export const EcommercePage = () => <CategoryPage category={Category.ECOMMERCE} />;

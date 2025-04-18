@@ -132,6 +132,9 @@ export type Database = {
         | "Copywriting"
         | "Analytics"
         | "SEO"
+        | "B2B & Lead Gen"
+        | "Campaign Operations"
+        | "Ecommerce"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -263,6 +266,9 @@ export const Constants = {
         "Copywriting",
         "Analytics",
         "SEO",
+        "B2B & Lead Gen",
+        "Campaign Operations",
+        "Ecommerce",
       ],
     },
   },

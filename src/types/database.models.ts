@@ -23,7 +23,10 @@ export enum DbCategory {
   INFLUENCER_MARKETING = "Influencer & Partnership Marketing",
   BRAND_MANAGEMENT = "Brand Management",
   AD_FRAUD = "Ad Fraud Detection & Prevention",
-  AI_NATIVE = "AI-Native Agencies"
+  AI_NATIVE = "AI-Native Agencies",
+  B2B_LEAD_GEN = "B2B & Lead Gen",
+  CAMPAIGN_OPERATIONS = "Campaign Operations", 
+  ECOMMERCE = "Ecommerce"
 }
 
 /**
