@@ -14,7 +14,7 @@ export const categoryMapping: Record<Category, Database['public']['Enums']['comp
   "Brand Management": "Brand Management",
   "Ad Fraud Detection & Prevention": "Ad Fraud Detection & Prevention",
   "AI-Native Agencies": "AI-Native Agencies",
-  "B2B & Lead Gen": "B2B & Lead Gen",
+  "B2B & Lead Gen": "B2B & Lead Gen", 
   "Campaign Operations": "Campaign Operations", 
   "Ecommerce": "Ecommerce"
 };
