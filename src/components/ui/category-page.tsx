@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -254,7 +255,8 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                         Key Features:
                       </div>
                       <ul className="pl-6 text-sm text-gray-600 list-disc">
-                        {(company.details.features || company.features || []).map((feature, idx) => (
+                        {/* Use both sources for features as a fallback mechanism */}
+                        {(company.features || []).map((feature: string, idx: number) => (
                           <li key={idx}>{feature}</li>
                         ))}
                       </ul>
