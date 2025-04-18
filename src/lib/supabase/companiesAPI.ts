@@ -39,7 +39,7 @@ export const mapDbRecordToCompany = (record: any): Company => {
     website: record.website,
     category: record.category as Category, // Cast to Category enum
     description: record.description,
-    logoUrl: record.logo_url || '',
+    logoUrl: record.logo_url || '',  // Map from logo_url to logoUrl
     targetAudience: record.target_audience || '',
     features: record.features || [],
     pricing: record.pricing || '',
@@ -73,7 +73,7 @@ export const mapCompanyToDbRecord = (company: CompanyCreate) => {
     website: company.website,
     category: company.category, // Category enum value is a string that matches DB values
     description: company.description,
-    logo_url: company.logoUrl,
+    logo_url: company.logoUrl,  // Map from logoUrl to logo_url
     target_audience: company.targetAudience,
     features: company.features,
     pricing: company.pricing,
@@ -176,52 +176,72 @@ export const companiesAPI = {
   },
 
   async update(id: string, updates: CompanyUpdate): Promise<Company | null> {
-  console.log('API: Attempting to update company with ID', id, 'with data:', updates);
-  
-  try {
-    // Clean up undefined values to prevent sending them to Supabase
-    const cleanUpdates = Object.entries(updates).reduce((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, any>);
+    console.log('API: Attempting to update company with ID', id, 'with data:', updates);
     
-    console.log('API: Cleaned updates:', cleanUpdates);
+    try {
+      // Clean up undefined values to prevent sending them to Supabase
+      const cleanUpdates = {} as Record<string, any>;
+      
+      // Correctly map frontend properties to database column names
+      if (updates.name !== undefined) cleanUpdates.name = updates.name;
+      if (updates.website !== undefined) cleanUpdates.website = updates.website;
+      if (updates.category !== undefined) cleanUpdates.category = updates.category;
+      if (updates.description !== undefined) cleanUpdates.description = updates.description;
+      if (updates.logoUrl !== undefined) cleanUpdates.logo_url = updates.logoUrl; // Map logoUrl to logo_url
+      if (updates.targetAudience !== undefined) cleanUpdates.target_audience = updates.targetAudience;
+      if (updates.features !== undefined) cleanUpdates.features = updates.features;
+      if (updates.pricing !== undefined) cleanUpdates.pricing = updates.pricing;
+      if (updates.linkedinUrl !== undefined) cleanUpdates.linkedin_url = updates.linkedinUrl;
+      if (updates.foundedYear !== undefined) cleanUpdates.founded_year = updates.foundedYear;
+      if (updates.headquarters !== undefined) cleanUpdates.headquarters = updates.headquarters;
+      if (updates.employeeCount !== undefined) cleanUpdates.employee_count = updates.employeeCount;
+      if (updates.fundingStage !== undefined) cleanUpdates.funding_stage = updates.fundingStage;
+      if (updates.details !== undefined) cleanUpdates.details = updates.details;
+      
+      if (updates.aiNativeCriteria) {
+        if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
+          cleanUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
+        if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) 
+          cleanUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
+        if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) 
+          cleanUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
+      }
+      
+      console.log('API: Cleaned updates:', cleanUpdates);
 
-    // Ensure there are actual updates to make
-    if (Object.keys(cleanUpdates).length === 0) {
-      console.log('No changes to update for company:', id);
+      // Ensure there are actual updates to make
+      if (Object.keys(cleanUpdates).length === 0) {
+        console.log('No changes to update for company:', id);
+        return null;
+      }
+
+      // Add timestamp for last_updated
+      cleanUpdates.last_updated = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('companies')
+        .update(cleanUpdates)
+        .eq('id', id)
+        .select()
+        .single();  // Use single() to get the updated record directly
+
+      if (error) {
+        console.error(`Error updating company with ID ${id}:`, error);
+        return null;
+      }
+
+      if (!data) {
+        console.error(`No data returned after updating company ${id}`);
+        return null;
+      }
+
+      console.log('API: Update successful, returned data:', data);
+      return mapDbRecordToCompany(data);
+    } catch (error) {
+      console.error(`Exception in update for company with ID ${id}:`, error);
       return null;
     }
-
-    // Add timestamp for last_updated
-    cleanUpdates.last_updated = new Date().toISOString();
-
-    const { data, error } = await supabase
-      .from('companies')
-      .update(cleanUpdates)
-      .eq('id', id)
-      .select()
-      .single();  // Use single() to get the updated record directly
-
-    if (error) {
-      console.error(`Error updating company with ID ${id}:`, error);
-      return null;
-    }
-
-    if (!data) {
-      console.error(`No data returned after updating company ${id}`);
-      return null;
-    }
-
-    console.log('API: Update successful, returned data:', data);
-    return mapDbRecordToCompany(data);
-  } catch (error) {
-    console.error(`Exception in update for company with ID ${id}:`, error);
-    return null;
-  }
-},
+  },
 
   /**
    * Delete a company

@@ -21,6 +21,8 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       }
       
       // Then update company with new logo URL
+      // The field is named logoUrl in the frontend model but logo_url in the database
+      // The mapping from logoUrl to logo_url happens in the companiesAPI.update function
       const updated = await updateCompany(id, {
         logoUrl
       });
