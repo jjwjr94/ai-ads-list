@@ -1,6 +1,5 @@
-
 import { useCallback } from 'react';
-import { Company, Category, CompanyCreate } from '@/types/frontend.models';
+import { Company, CompanyCreate } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
@@ -62,7 +61,7 @@ export function useCompanyOperations(
   // Update an existing company with optimistic update
   const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
-      console.log(`Updating company ${id} with:`, updates);
+      console.log(`Attempting to update company ${id} with updates:`, updates);
       
       // Apply optimistic update
       optimisticUpdateCompany(id, updates);
@@ -75,7 +74,7 @@ export function useCompanyOperations(
         console.error('Failed to update company, API returned null');
         toast({
           title: "Update failed",
-          description: "Failed to update company. Please try again later.",
+          description: "Failed to update company. The server returned no data.",
           variant: "destructive",
         });
         
@@ -87,17 +86,22 @@ export function useCompanyOperations(
       // No need to refresh all companies since we've already updated locally
       toast({
         title: "Company updated",
-        description: "The company has been successfully updated.",
+        description: "The company details have been successfully updated.",
       });
       return true;
     } catch (err) {
-      console.error('Error updating company:', err);
+      console.error('Comprehensive error in updateCompany:', err);
+      
+      // More detailed error toast
       toast({
-        title: "Update failed",
-        description: "An error occurred while updating the company.",
+        title: "Update Error",
+        description: err instanceof Error 
+          ? `Update failed: ${err.message}` 
+          : "An unexpected error occurred while updating the company.",
         variant: "destructive",
       });
-      // If there's an error, refresh to get the correct state
+      
+      // Refresh to restore correct state
       await refreshCompanies();
       return false;
     }
