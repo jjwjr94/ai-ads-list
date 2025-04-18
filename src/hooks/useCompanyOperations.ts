@@ -1,5 +1,6 @@
+
 import { useCallback } from 'react';
-import { Company, CompanyCreate } from '@/types/frontend.models';
+import { Company, CompanyCreate, Category } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
