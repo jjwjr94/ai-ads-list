@@ -13,11 +13,13 @@ import { PlusCircle } from 'lucide-react';
 import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
 import { useSession } from '@/hooks/useSession';
+import { useToast } from '@/hooks/use-toast';
 
 export const AdminDashboard: React.FC = () => {
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isAddingCompany, setIsAddingCompany] = useState(false);
   const { session } = useSession();
+  const { toast } = useToast();
   
   const handleEditCompany = (company: Company) => {
     setEditingCompany(company);
@@ -35,6 +37,10 @@ export const AdminDashboard: React.FC = () => {
   };
   
   const handleSaveComplete = () => {
+    toast({
+      title: editingCompany ? "Company Updated" : "Company Added",
+      description: `The company has been successfully ${editingCompany ? 'updated' : 'added'}.`,
+    });
     setEditingCompany(null);
     setIsAddingCompany(false);
   };
