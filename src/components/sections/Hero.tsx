@@ -1,3 +1,4 @@
+
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -53,21 +54,7 @@ export const Hero = () => {
     }
   }, [isLoading, companies, getHighlightedCompanies]);
 
-  useEffect(() => {
-    if (!carouselApi) return;
-    
-    console.log("Setting up carousel auto-rotation");
-    const autoPlayInterval = setInterval(() => {
-      if (carouselApi.canScrollNext()) {
-        carouselApi.scrollNext();
-      } else {
-        carouselApi.scrollTo(0);
-      }
-    }, 3000);
-    
-    return () => clearInterval(autoPlayInterval);
-  }, [carouselApi]);
-
+  // Apply the auto-rotation hook
   useCarouselAutoRotation(carouselApi);
 
   return (

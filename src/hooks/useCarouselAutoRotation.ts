@@ -15,9 +15,9 @@ export const useCarouselAutoRotation = (api: CarouselApi | null) => {
 
       if (elapsed >= interval) {
         if (api.canScrollNext()) {
-          api.scrollNext({ duration: 1000 }); // Smooth 1-second transition
+          api.scrollNext();
         } else {
-          api.scrollTo(0, { duration: 1000 });
+          api.scrollTo(0);
         }
         lastTime = currentTime;
       }
