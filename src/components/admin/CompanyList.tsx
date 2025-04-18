@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Company } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
@@ -94,12 +95,15 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
       'Data & Analytics': '/data-analytics',
       'Creative & Content': '/creative-content',
       'Web & App Development': '/web-app-development',
-      'Account Management': '/account-management',
+      'Account Management & Client Services': '/account-management',
       'Social Media & Community Management': '/social-media',
-      'Influencer Marketing': '/influencer-marketing',
+      'Influencer & Partnership Marketing': '/influencer-marketing',
       'Brand Management': '/brand-management',
-      'Ad Fraud': '/ad-fraud',
-      'AI Native': '/ai-native'
+      'Ad Fraud Detection & Prevention': '/ad-fraud',
+      'AI-Native Agencies': '/ai-native',
+      'B2B & Lead Gen': '/b2b-lead-gen',
+      'Campaign Operations': '/campaign-operations',
+      'Ecommerce': '/ecommerce'
     };
 
     return categoryMap[category] || '/';
