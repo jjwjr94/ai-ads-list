@@ -13,7 +13,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarProvider
 } from "@/components/ui/sidebar";
 import { Category } from "@/types/frontend.models";
 
@@ -38,14 +37,10 @@ const formatCategoryTitle = (categoryString: string): string => {
 
 export function AppSidebar() {
   const location = useLocation();
-  const isOnCategoryPage = location.pathname.substring(1) in Category;
+  const isOnCategoryPage = location.pathname.includes('/');
 
   return (
-    <Sidebar 
-      collapsible="icon" 
-      variant="floating" 
-      className="border-none shadow-none mt-12" 
-    >
+    <Sidebar collapsible="icon" variant="floating" className="border-none shadow-none mt-12">
       <SidebarHeader className="flex justify-end items-center p-2">
         {/* Logo removed from sidebar */}
       </SidebarHeader>
@@ -58,16 +53,6 @@ export function AppSidebar() {
                   <Link to="/" className="hover:bg-gray-100">
                     <LayoutDashboard />
                     <span>Home</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Database menu item - moved above Categories */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Database">
-                  <Link to="/database" className="hover:bg-gray-100">
-                    <Database />
-                    <span>Database</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -95,6 +80,15 @@ export function AppSidebar() {
                     ))}
                   </SidebarMenuSub>
                 )}
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Database">
+                  <Link to="/database" className="hover:bg-gray-100">
+                    <Database />
+                    <span>Database</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
