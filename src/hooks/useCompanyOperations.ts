@@ -57,7 +57,7 @@ export function useCompanyOperations(
   }, [refreshCompanies, optimisticAddCompany]);
 
   // Update an existing company with optimistic update
-  const updateCompany = useCallback(async (id: string, updates: any) => {
+  const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
       console.log(`Updating company ${id} with:`, updates);
       
@@ -66,9 +66,15 @@ export function useCompanyOperations(
       
       // Perform actual API call
       const updatedCompany = await supabaseAPI.companies.update(id, updates);
+      console.log('Update API response:', updatedCompany);
+      
+      if (!updatedCompany) {
+        console.error('Failed to update company, API returned null');
+        throw new Error('Failed to update company');
+      }
       
       // No need to refresh all companies since we've already updated locally
-      return updatedCompany !== null;
+      return true;
     } catch (err) {
       console.error('Error updating company:', err);
       // If there's an error, refresh to get the correct state

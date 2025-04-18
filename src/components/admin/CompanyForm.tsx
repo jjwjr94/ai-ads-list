@@ -99,19 +99,24 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const [tempId, setTempId] = useState<string>('');
   const { toast } = useToast();
   
-  const defaultValues = company || { ...emptyCompany, id: uuidv4() };
+  // Create default values ensuring company.id is properly passed for editing
+  const defaultValues = company ? { ...company } : { ...emptyCompany, id: uuidv4() };
   
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues
   });
 
+  // Set up the form with the company data when in edit mode
   useEffect(() => {
-    if (!isEditing) {
+    if (isEditing && company) {
+      // Reset the form with the company data to ensure all fields are properly populated
+      form.reset(company);
+    } else if (!isEditing) {
       setTempId(uuidv4());
       form.setValue('id', tempId);
     }
-  }, [isEditing, form, tempId]);
+  }, [isEditing, company, form, tempId]);
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
@@ -120,21 +125,29 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
         throw new Error('Please fill out all required fields (name and website)');
       }
 
-      const companyData = isEditing ? data : { ...data, id: tempId || uuidv4() };
+      console.log('Form submission data:', data);
 
       if (isEditing && company) {
-        await updateCompany(company.id, companyData);
+        console.log(`Updating company ${company.id} with:`, data);
+        const success = await updateCompany(company.id, data);
+        console.log('Update result:', success);
+        
         toast({
           title: "Company updated",
           description: "The company has been successfully updated.",
         });
       } else {
+        const companyData = { ...data, id: tempId || uuidv4() };
+        console.log('Adding new company with data:', companyData);
         await addCompany(companyData);
+        
         toast({
           title: "Company added",
           description: "The new company has been successfully added.",
         });
       }
+      
+      // Call the onSuccess callback if provided
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error submitting form:', error);
