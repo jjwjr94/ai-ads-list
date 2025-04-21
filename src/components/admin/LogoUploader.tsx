@@ -10,14 +10,16 @@ interface LogoUploaderProps {
   companyId: string;
   currentLogoUrl?: string;
   onLogoUpdated: (logoUrl: string) => void;
+  disabled?: boolean;
 }
 
 export const LogoUploader: React.FC<LogoUploaderProps> = ({ 
   companyId, 
   currentLogoUrl,
-  onLogoUpdated
+  onLogoUpdated,
+  disabled = false
 }) => {
-  const { uploadLogo, updateCompany } = useCompanyDatabase();
+  const { uploadLogo } = useCompanyDatabase();
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null | undefined>(currentLogoUrl);
   const { toast } = useToast();
@@ -53,7 +55,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
     // Upload file to storage
     setIsUploading(true);
     try {
-      // Only upload to storage, don't update company yet
+      // Pass the file name as the third argument to uploadLogo
       const logoUrl = await uploadLogo(companyId, file);
       console.log('Logo uploaded to storage with URL:', logoUrl);
       
@@ -115,7 +117,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
           <Button
             variant="outline"
             onClick={() => document.getElementById('logo-upload')?.click()}
-            disabled={isUploading}
+            disabled={isUploading || disabled}
           >
             {isUploading ? (
               <>
@@ -134,7 +136,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
             <Button
               variant="outline"
               onClick={handleDeleteLogo}
-              disabled={isUploading}
+              disabled={isUploading || disabled}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Logo
@@ -147,7 +149,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
             accept="image/*"
             className="hidden"
             onChange={handleFileChange}
-            disabled={isUploading}
+            disabled={isUploading || disabled}
           />
         </div>
       </div>

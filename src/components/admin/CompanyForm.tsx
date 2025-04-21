@@ -98,6 +98,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempId] = useState<string>(() => uuidv4());
   const { toast } = useToast();
+  const [formChanged, setFormChanged] = useState(false);
   
   // Create default values ensuring company.id is properly passed for editing
   const defaultValues = company ? 
@@ -106,7 +107,8 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues
+    defaultValues,
+    mode: 'onChange',
   });
 
   // Set up the form with the company data when in edit mode
@@ -117,6 +119,16 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
       form.reset(company);
     }
   }, [isEditing, company, form]);
+
+  // Track form changes to enable/disable submit button
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (type === 'change') {
+        setFormChanged(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const onSubmit = async (data: any) => {
     console.log('Form submission triggered with data:', data);
@@ -217,12 +229,20 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const addFeature = () => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', [...currentFeatures, '']);
+    setFormChanged(true);
   };
 
   const removeFeature = (index: number) => {
     const currentFeatures = form.getValues('features') || [];
     form.setValue('features', currentFeatures.filter((_, i) => i !== index));
+    setFormChanged(true);
   };
+
+  // Check if the form has any validation errors
+  const hasErrors = Object.keys(form.formState.errors).length > 0;
+  
+  // Update button should be enabled if form has changed and has no validation errors
+  const isSubmitDisabled = isSubmitting || (hasErrors && formChanged);
 
   return (
     <Form {...form}>
@@ -243,7 +263,15 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   <FormItem>
                     <FormLabel>Company Name*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Company name" {...field} required />
+                      <Input 
+                        placeholder="Company name" 
+                        {...field} 
+                        required 
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setFormChanged(true);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -257,7 +285,15 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   <FormItem>
                     <FormLabel>Website*</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com" {...field} required />
+                      <Input 
+                        placeholder="https://example.com" 
+                        {...field} 
+                        required 
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setFormChanged(true);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -271,7 +307,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select 
-                      onValueChange={field.onChange} 
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setFormChanged(true);
+                      }} 
                       defaultValue={field.value}
                       value={field.value}
                     >
@@ -303,9 +342,11 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                       <Input 
                         type="number" 
                         placeholder="2020" 
-                        {...field}
                         value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        onChange={(e) => {
+                          field.onChange(e.target.value ? parseInt(e.target.value) : undefined);
+                          setFormChanged(true);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -322,6 +363,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               currentLogoUrl={form.watch('logoUrl')}
               onLogoUpdated={(logoUrl) => {
                 form.setValue('logoUrl', logoUrl);
+                setFormChanged(true);
               }}
             />
           </div>
@@ -338,6 +380,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   placeholder="Brief description of the company" 
                   className="min-h-[100px]"
                   {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setFormChanged(true);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -357,6 +403,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   const newFeatures = [...form.getValues('features')];
                   newFeatures[index] = e.target.value;
                   form.setValue('features', newFeatures);
+                  setFormChanged(true);
                 }}
                 placeholder={`Feature ${index + 1}`}
               />
@@ -391,7 +438,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    setFormChanged(true);
+                  }}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
@@ -408,7 +458,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting || !formChanged}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? 'Update Company' : 'Add Company'}
           </Button>
