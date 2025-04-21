@@ -152,9 +152,13 @@ export const Explore = () => {
         card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         card.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredCards(filtered);
+      // Sort filtered cards by count in descending order
+      const sortedFiltered = [...filtered].sort((a, b) => (b.count || 0) - (a.count || 0));
+      setFilteredCards(sortedFiltered);
     } else {
-      setFilteredCards(categoryCards);
+      // Sort all cards by count in descending order
+      const sortedCards = [...categoryCards].sort((a, b) => (b.count || 0) - (a.count || 0));
+      setFilteredCards(sortedCards);
     }
   }, [categoryCards, searchQuery]);
 
