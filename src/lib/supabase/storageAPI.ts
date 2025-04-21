@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 
 // Storage operations for company logos
@@ -39,12 +40,12 @@ export const storageAPI = {
     }
   },
   
-  // New function that only handles storage operations without database updates
-  async uploadLogoToStorage(id: string, file: File): Promise<string> {
-    console.log(`Uploading logo file to storage for company ${id}: ${file.name}`);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${id}.${fileExt}`;
-    const filePath = `logos/${fileName}`;
+  // Fixed function signature to include fileName parameter
+  async uploadLogoToStorage(id: string, file: File, fileName: string): Promise<string> {
+    console.log(`Uploading logo file to storage for company ${id}: ${fileName}`);
+    const fileExt = fileName.split('.').pop();
+    const fileBaseName = `${id}.${fileExt}`;
+    const filePath = `logos/${fileBaseName}`;
     
     try {
       console.log(`Attempting to upload to path: ${filePath}`);

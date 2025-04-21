@@ -55,8 +55,8 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
     // Upload file to storage
     setIsUploading(true);
     try {
-      // Pass the file name as the third argument to uploadLogo
-      const logoUrl = await uploadLogo(companyId, file);
+      // Fixed: Pass the file name as the third argument
+      const logoUrl = await uploadLogo(companyId, file, file.name);
       console.log('Logo uploaded to storage with URL:', logoUrl);
       
       // Pass logoUrl to parent component to update form state

@@ -20,8 +20,8 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
       
       // Upload to storage using the function that doesn't update the database
-      // Use the file's name as the third argument
-      logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file);
+      // Fix: Pass the file name as the third argument
+      logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file, file.name);
       console.log(`Logo uploaded successfully to storage, URL: ${logoUrl}`);
       
       if (!logoUrl) {
