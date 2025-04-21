@@ -30,7 +30,8 @@ import {
   CampaignOperationsPage,
   EcommercePage,
   SimulationForecastingPage,
-  AffiliatePage
+  AffiliatePage,
+  Feedback
 } from "./pages/CategoryPages";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -84,6 +85,7 @@ const AppContent = () => {
                 <Route path="/ecommerce" element={<EcommercePage />} />
                 <Route path="/simulation-forecasting" element={<SimulationForecastingPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
+                <Route path="/feedback" element={<Feedback />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
