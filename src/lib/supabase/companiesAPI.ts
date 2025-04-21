@@ -1,3 +1,4 @@
+// src/lib/supabase/companiesAPI.ts
 
 import { Category } from '@/types/frontend.models';
 import { DbCategory } from '@/types/database.models';
@@ -6,7 +7,6 @@ import { Company, CompanyCreate, CompanyUpdate } from '@/types/frontend.models';
 import { v4 as uuidv4 } from 'uuid';
 import { Database } from '@/integrations/supabase/types';
 
-// Define types for database records
 interface DbRecord {
   id: string;
   name: string;
@@ -30,23 +30,19 @@ interface DbRecord {
   [key: string]: any;
 }
 
-// Define interface for the RPC function parameters
 interface UpdateCompanyLogoParams {
   company_id: string;
   logo_url_value: string;
 }
 
-/**
- * Helper function to map database record to frontend Company object
- */
 export const mapDbRecordToCompany = (record: any): Company => {
   return {
     id: record.id,
     name: record.name,
     website: record.website,
-    category: record.category as Category, // Cast to Category enum
+    category: record.category as Category,
     description: record.description,
-    logoUrl: record.logo_url || '',  // Map from logo_url to logoUrl
+    logoUrl: record.logo_url || '',
     targetAudience: record.target_audience || '',
     features: record.features || [],
     pricing: record.pricing || '',
@@ -71,16 +67,13 @@ export const mapDbRecordToCompany = (record: any): Company => {
   };
 };
 
-/**
- * Helper function to map frontend Company to database record for insertion
- */
 export const mapCompanyToDbRecord = (company: CompanyCreate) => {
   const dbRecord: any = {
     name: company.name,
     website: company.website,
-    category: company.category, // Category enum value is a string that matches DB values
+    category: company.category,
     description: company.description,
-    logo_url: company.logoUrl,  // Map from logoUrl to logo_url
+    logo_url: company.logoUrl,
     target_audience: company.targetAudience,
     features: company.features,
     pricing: company.pricing,
@@ -92,7 +85,6 @@ export const mapCompanyToDbRecord = (company: CompanyCreate) => {
     details: company.details
   };
 
-  // Add AI Native criteria if present
   if (company.aiNativeCriteria) {
     dbRecord.has_dot_ai_domain = company.aiNativeCriteria.hasDotAiDomain;
     dbRecord.founded_after_2020 = company.aiNativeCriteria.foundedAfter2020;
@@ -102,106 +94,56 @@ export const mapCompanyToDbRecord = (company: CompanyCreate) => {
   return dbRecord;
 };
 
-/**
- * Companies API for interacting with the Supabase database
- */
 export const companiesAPI = {
-  /**
-   * Get all companies
-   */
   async getAll(): Promise<Company[]> {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*');
-    
+    const { data, error } = await supabase.from('companies').select('*');
     if (error) {
       console.error('Error fetching companies:', error);
       return [];
     }
-
     return data.map(mapDbRecordToCompany);
   },
 
-  /**
-   * Get a company by ID
-   */
   async getById(id: string): Promise<Company | null> {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .eq('id', id)
-      .single();
-
+    const { data, error } = await supabase.from('companies').select('*').eq('id', id).single();
     if (error) {
       console.error(`Error fetching company with ID ${id}:`, error);
       return null;
     }
-
     return mapDbRecordToCompany(data);
   },
 
-  /**
-   * Get companies by category
-   */
   async getByCategory(category: Category): Promise<Company[]> {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .eq('category', category)
-      .order('name', { ascending: true });
-    
+    const { data, error } = await supabase.from('companies').select('*').eq('category', category).order('name', { ascending: true });
     if (error) {
       console.error(`Error fetching companies in category ${category}:`, error);
       return [];
     }
-
     return data.map(mapDbRecordToCompany);
   },
 
-  /**
-   * Add a new company
-   */
   async add(company: CompanyCreate): Promise<Company | null> {
     const dbRecord = mapCompanyToDbRecord(company);
-    
-    // Generate an ID for the company for optimistic updates
     const generatedId = company.id || uuidv4();
     dbRecord.id = generatedId;
-    
-    const { data, error } = await supabase
-      .from('companies')
-      .insert([dbRecord])
-      .select()
-      .single();
 
+    const { data, error } = await supabase.from('companies').insert([dbRecord]).select().single();
     if (error) {
       console.error('Error adding company:', error);
       return null;
     }
-
     return mapDbRecordToCompany(data);
   },
 
   async update(id: string, updates: CompanyUpdate): Promise<Company | null> {
-    console.log('API: Attempting to update company with ID', id, 'with data:', updates);
-    
     try {
-      // Clean up undefined values to prevent sending them to Supabase
       const cleanUpdates = {} as Record<string, any>;
-      
-      // Correctly map frontend properties to database column names
+
       if (updates.name !== undefined) cleanUpdates.name = updates.name;
       if (updates.website !== undefined) cleanUpdates.website = updates.website;
-      if (updates.category !== undefined) {
-        cleanUpdates.category = updates.category;
-        console.log('API: Setting category to', updates.category);
-      }
+      if (updates.category !== undefined) cleanUpdates.category = updates.category;
       if (updates.description !== undefined) cleanUpdates.description = updates.description;
-      if (updates.logoUrl !== undefined) {
-        cleanUpdates.logo_url = updates.logoUrl; // Map logoUrl to logo_url
-        console.log('API: Setting logo_url, length:', updates.logoUrl.length);
-        console.log('API: Logo URL is base64:', updates.logoUrl.startsWith('data:'));
-      }
+      if (updates.logoUrl !== undefined) cleanUpdates.logo_url = updates.logoUrl;
       if (updates.targetAudience !== undefined) cleanUpdates.target_audience = updates.targetAudience;
       if (updates.features !== undefined) cleanUpdates.features = updates.features;
       if (updates.pricing !== undefined) cleanUpdates.pricing = updates.pricing;
@@ -211,182 +153,78 @@ export const companiesAPI = {
       if (updates.employeeCount !== undefined) cleanUpdates.employee_count = updates.employeeCount;
       if (updates.fundingStage !== undefined) cleanUpdates.funding_stage = updates.fundingStage;
       if (updates.details !== undefined) cleanUpdates.details = updates.details;
-      
+
       if (updates.aiNativeCriteria) {
-        if (updates.aiNativeCriteria.hasDotAiDomain !== undefined) 
+        if (updates.aiNativeCriteria.hasDotAiDomain !== undefined)
           cleanUpdates.has_dot_ai_domain = updates.aiNativeCriteria.hasDotAiDomain;
-        if (updates.aiNativeCriteria.foundedAfter2020 !== undefined) 
+        if (updates.aiNativeCriteria.foundedAfter2020 !== undefined)
           cleanUpdates.founded_after_2020 = updates.aiNativeCriteria.foundedAfter2020;
-        if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined) 
+        if (updates.aiNativeCriteria.seriesAOrEarlier !== undefined)
           cleanUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
       }
-      
-      console.log('API: Cleaned updates for Supabase:', Object.keys(cleanUpdates));
-      console.log('API: Number of fields being updated:', Object.keys(cleanUpdates).length);
 
-      // Ensure there are actual updates to make
-      if (Object.keys(cleanUpdates).length === 0) {
-        console.log('No changes to update for company:', id);
-        return null;
-      }
+      if (Object.keys(cleanUpdates).length === 0) return null;
 
-      // Add timestamp for last_updated
       cleanUpdates.last_updated = new Date().toISOString();
 
-      // Log the exact payload being sent to Supabase
-      console.log('API: Final payload being sent to Supabase:', cleanUpdates);
-
-      // Single updates for critical fields if we're only updating one field
       if (Object.keys(cleanUpdates).length <= 2 && cleanUpdates.logo_url) {
-        console.log('API: Performing dedicated logo update');
-        
-        // Try a direct RPC call as an alternative approach for logo updates
-        // Fix the type issue by correctly typing the parameters
         const rpcParams: UpdateCompanyLogoParams = {
           company_id: id,
           logo_url_value: cleanUpdates.logo_url
         };
-        
-        const { data: rpcData, error: rpcError } = await supabase.rpc(
-          'update_company_logo', 
-          rpcParams
-        ).select();
-        
-        if (rpcError) {
-          console.error('API: RPC logo update failed:', rpcError);
-          console.log('API: Falling back to standard update');
-        } else if (rpcData) {
-          console.log('API: RPC logo update succeeded:', rpcData);
-          return mapDbRecordToCompany(rpcData);
+
+        const { data: rpcData, error: rpcError } = await supabase.rpc('update_company_logo', rpcParams).select();
+
+        if (!rpcError && rpcData) {
+          return mapDbRecordToCompany(rpcData[0]);
         }
       }
 
-      // Standard update approach
-      const { data, error } = await supabase
-        .from('companies')
-        .update(cleanUpdates)
-        .eq('id', id)
-        .select()
-        .single();  // Use single() to get the updated record directly
+      const { data, error } = await supabase.from('companies').update(cleanUpdates).eq('id', id).select().single();
+      if (error || !data) return null;
 
-      if (error) {
-        // Log detailed error information
-        console.error(`API: Error updating company with ID ${id}:`, error);
-        console.error('API: Error details:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
-        return null;
-      }
-
-      if (!data) {
-        console.error(`API: No data returned after updating company ${id}`);
-        return null;
-      }
-
-      console.log('API: Update successful, returned data:', data);
       return mapDbRecordToCompany(data);
     } catch (error) {
-      console.error(`API: Exception in update for company with ID ${id}:`, error);
+      console.error(`Exception updating company ${id}:`, error);
       return null;
     }
   },
 
-  /**
-   * Delete a company
-   */
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('companies')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error(`Error deleting company with ID ${id}:`, error);
-      return false;
-    }
-
-    return true;
+    const { error } = await supabase.from('companies').delete().eq('id', id);
+    return !error;
   },
 
-  /**
-   * Search companies by name or description
-   */
   async search(query: string): Promise<Company[]> {
     const { data, error } = await supabase
       .from('companies')
       .select('*')
       .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
-
-    if (error) {
-      console.error(`Error searching companies with query "${query}":`, error);
-      return [];
-    }
-
+    if (error) return [];
     return data.map(mapDbRecordToCompany);
   },
 
-  /**
-   * Get highlighted companies
-   */
   async getHighlighted(): Promise<Company[]> {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*')
-      .filter('details->highlighted', 'eq', true);
-    
-    if (error) {
-      console.error('Error fetching highlighted companies:', error);
-      return [];
-    }
-
+    const { data, error } = await supabase.from('companies').select('*').filter('details->highlighted', 'eq', true);
+    if (error) return [];
     if (data && data.length > 0) {
-      // Return highlighted companies in a random order
       return data.map(mapDbRecordToCompany).sort(() => 0.5 - Math.random());
     }
-    
-    // If no highlighted companies, get random companies as fallback
-    const { data: randomData, error: randomError } = await supabase
-      .from('companies')
-      .select('*')
-      .limit(6);
-    
-    if (randomError) {
-      console.error('Error fetching random companies:', randomError);
-      return [];
-    }
-
-    // Return random companies in a random order
+    const { data: randomData, error: randomError } = await supabase.from('companies').select('*').limit(6);
+    if (randomError) return [];
     return randomData.map(mapDbRecordToCompany).sort(() => 0.5 - Math.random());
   },
 
-  /**
-   * Upload a company logo
-   */
   async uploadLogo(companyId: string, file: File, fileName: string): Promise<string> {
     const fileExt = fileName.split('.').pop();
     const filePath = `${companyId}/logo.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('company-logos')
-      .upload(filePath, file, { upsert: true });
-    
-    if (uploadError) {
-      console.error('Error uploading logo:', uploadError);
-      throw new Error(`Failed to upload logo: ${uploadError.message}`);
-    }
-    
-    const { data } = supabase.storage
-      .from('company-logos')
-      .getPublicUrl(filePath);
-    
+
+    const { error: uploadError } = await supabase.storage.from('company-logos').upload(filePath, file, { upsert: true });
+    if (uploadError) throw new Error(`Failed to upload logo: ${uploadError.message}`);
+
+    const { data } = supabase.storage.from('company-logos').getPublicUrl(filePath);
     const logoUrl = data.publicUrl;
-    
-    // Update the company with the new logo URL
     await this.update(companyId, { logoUrl });
-    
     return logoUrl;
   }
 };
