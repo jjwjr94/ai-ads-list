@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -40,12 +38,14 @@ export const Feedback = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Thank you for your feedback!",
-      description: "We'll get back to you soon.",
-    });
-    form.reset();
+    const subject = "Feedback from " + values.name;
+    const body = `Name: ${values.name}
+Email: ${values.email}
+
+Feedback:
+${values.feedback}`;
+    
+    window.location.href = `mailto:jay@ado-ai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   return (
