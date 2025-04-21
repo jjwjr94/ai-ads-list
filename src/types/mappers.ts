@@ -1,4 +1,3 @@
-
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -79,7 +78,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @returns A database company record suitable for insertion
  */
 export function mapCompanyToDbInsert(company: Company): DbInsertParams {
-  // Create the database company record
+  // Create the database company record without created_at
   const dbCompany: DbInsertParams = {
     id: company.id, // Keep ID for database insertion
     name: company.name,
@@ -137,7 +136,7 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   if (companyUpdate.headquarters !== undefined) dbUpdate.headquarters = companyUpdate.headquarters;
   if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
   if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
-  
+
   // Use last_updated field matching the database schema
   if (companyUpdate.lastUpdated !== undefined) {
     dbUpdate.last_updated = companyUpdate.lastUpdated.toISOString();
