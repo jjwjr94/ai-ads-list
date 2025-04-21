@@ -63,16 +63,17 @@ export function useCompanyOperations(
   const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
       console.log(`Attempting to update company ${id} with updates:`, updates);
-      console.log(`Has logo update: ${updates.logoUrl ? 'Yes' : 'No'}`);
+      
+      // Better logging for category updates
+      if (updates.category) {
+        console.log(`Category update: ${updates.category}`);
+        console.log(`Category type: ${typeof updates.category}`);
+      }
+      
       if (updates.logoUrl) {
         console.log(`Logo URL length: ${updates.logoUrl.length}`);
         console.log(`Logo URL first 50 chars: ${updates.logoUrl.substring(0, 50)}`);
         console.log(`Is base64: ${updates.logoUrl.startsWith('data:') ? 'Yes' : 'No'}`);
-      }
-      
-      console.log(`Has category update: ${updates.category ? 'Yes' : 'No'}`);
-      if (updates.category) {
-        console.log(`New category value: ${updates.category}`);
       }
       
       // Apply optimistic update
@@ -112,6 +113,19 @@ export function useCompanyOperations(
           if (updates.category && Object.keys(updates).length === 1) {
             // If this is just a category update, try with a dedicated category update
             console.log('Attempting dedicated category update');
+            console.log('Category value being sent:', updates.category);
+            
+            // Ensure the category is a valid value
+            if (!Object.values(Category).includes(updates.category as Category)) {
+              console.error('Invalid category value:', updates.category);
+              toast({
+                title: "Category update failed",
+                description: `Invalid category value: ${updates.category}`,
+                variant: "destructive",
+              });
+              return false;
+            }
+            
             const categoryUpdateSuccess = await supabaseAPI.companies.update(id, { category: updates.category });
             if (!categoryUpdateSuccess) {
               console.error('Dedicated category update failed');

@@ -31,9 +31,16 @@ interface DbRecord {
   [key: string]: any;
 }
 
+// Define the correct interface for the RPC function's parameters
 interface UpdateCompanyLogoParams {
   company_id: string;
   logo_url_value: string;
+}
+
+// Define an interface for updating category
+interface UpdateCompanyCategoryParams {
+  company_id: string;
+  category_value: string;
 }
 
 export const mapDbRecordToCompany = (record: any): Company => {
@@ -168,7 +175,8 @@ export const companiesAPI = {
 
       cleanUpdates.last_updated = new Date().toISOString();
 
-      if (Object.keys(cleanUpdates).length <= 2 && cleanUpdates.logo_url) {
+      // Special handling for logo-only updates
+      if (Object.keys(cleanUpdates).length === 2 && cleanUpdates.logo_url) {
         const rpcParams: UpdateCompanyLogoParams = {
           company_id: id,
           logo_url_value: cleanUpdates.logo_url
@@ -176,12 +184,38 @@ export const companiesAPI = {
 
         // Fix: Provide both type arguments for RPC call
         const { data, error } = await supabase.rpc<
-          UpdateCompanyLogoParams, 
+          'update_company_logo', 
           Database['public']['Functions']['update_company_logo']['Returns']
         >('update_company_logo', rpcParams);
 
         if (!error && data) {
           return mapDbRecordToCompany(data[0]);
+        }
+      }
+
+      // Special handling for category-only updates
+      if (Object.keys(cleanUpdates).length === 2 && cleanUpdates.category) {
+        console.log('Performing category-only update with value:', cleanUpdates.category);
+        
+        // Use a direct update for category changes since there's no RPC function for this
+        const { data, error } = await supabase
+          .from('companies')
+          .update({ 
+            category: cleanUpdates.category,
+            last_updated: cleanUpdates.last_updated 
+          })
+          .eq('id', id)
+          .select()
+          .single();
+        
+        if (error) {
+          console.error('Error updating company category:', error);
+          return null;
+        }
+        
+        if (data) {
+          console.log('Category update successful:', data);
+          return mapDbRecordToCompany(data);
         }
       }
 
