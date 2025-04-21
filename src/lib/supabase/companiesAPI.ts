@@ -1,5 +1,8 @@
-import { supabase } from './supabase';
-import { DbCompany } from '@/types/supabase.models';
+
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+
+export type DbCompany = Database['public']['Tables']['companies']['Row'];
 
 export const getCompanies = async (): Promise<DbCompany[]> => {
   const { data, error } = await supabase
