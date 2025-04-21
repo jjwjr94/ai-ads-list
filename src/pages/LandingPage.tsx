@@ -49,13 +49,13 @@ const LandingPage = () => {
     fetchFeaturedCompanies();
   }, []);
 
+  // ✅ Your hero section starts HERE, inside the return
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
-      {/* Hero Section with banner background */}
-      <section className="relative container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
-        {/* Background banner */}
+      <section className="relative flex items-center justify-center py-16 px-4 min-h-[80vh]">
+        {/* Background banner image */}
         <div
-          className="absolute inset-0 z-0 mx-4 rounded-2xl opacity-50"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-50 z-0"
           style={{
             backgroundImage: 'url("/images/hero-banner.png")',
             backgroundSize: 'cover',
@@ -65,7 +65,7 @@ const LandingPage = () => {
         />
 
         {/* Content on top */}
-        <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm">
+        <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm shadow-md">
           <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
             Discover the Best{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
