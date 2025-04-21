@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -50,40 +49,44 @@ const LandingPage = () => {
     fetchFeaturedCompanies();
   }, []);
 
-  <section className="relative container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
-  {/* Background banner */}
-  <div
-    className="absolute inset-0 z-0 mx-4 rounded-2xl opacity-50"
-    style={{
-      backgroundImage: 'url("/images/hero-banner.png")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    }}
-  />
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
+      {/* Hero Section with banner background */}
+      <section className="relative container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
+        {/* Background banner */}
+        <div
+          className="absolute inset-0 z-0 mx-4 rounded-2xl opacity-50"
+          style={{
+            backgroundImage: 'url("/images/hero-banner.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
 
-  {/* Content on top */}
-  <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm">
-    <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
-      Discover the Best{" "}
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
-        Vibe Marketing
-      </span>{" "}
-      Tools for Your Business
-    </h1>
-    <p className="text-xl text-gray-700 mb-8">
-      AI Ads and AI Marketing tools that make it easy for anyone to create ads and content, launch campaigns, and measure results.
-    </p>
-    <div className="flex justify-center gap-4 flex-wrap">
-      <Link to="/explore">
-        <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-lg text-lg">
-          Explore Tools <ArrowRight className="ml-2" />
-        </Button>
-      </Link>
-    </div>
-  </div>
-</section>
+        {/* Content on top */}
+        <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm">
+          <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
+            Discover the Best{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
+              Vibe Marketing
+            </span>{" "}
+            Tools for Your Business
+          </h1>
+          <p className="text-xl text-gray-700 mb-8">
+            AI Ads and AI Marketing tools that make it easy for anyone to create ads and content, launch campaigns, and measure results.
+          </p>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <Link to="/explore">
+              <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-lg text-lg">
+                Explore Tools <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
+      {/* Featured Companies Carousel */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           {isLoading ? (
@@ -92,10 +95,7 @@ const LandingPage = () => {
             </div>
           ) : featuredCompanies.length > 0 ? (
             <Carousel
-              opts={{
-                align: "center",
-                loop: true,
-              }}
+              opts={{ align: "center", loop: true }}
               className="w-full"
             >
               <CarouselContent className="-ml-2 md:-ml-4">
@@ -120,6 +120,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Explore by Category */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -131,37 +132,37 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { 
+              {
                 title: Category.SEO_ORGANIC,
                 icon: CodeSquare,
                 path: "/seo-organic",
                 description: "Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO tools"
               },
-              { 
+              {
                 title: Category.CREATIVE_CONTENT,
                 icon: Lightbulb,
                 path: "/creative-content",
                 description: "AI ad generators, ad creative AI, AI content creation and similar tools"
               },
-              { 
+              {
                 title: Category.SOCIAL_MEDIA,
                 icon: Search,
                 path: "/social-media",
                 description: "AI-powered social media and community management"
               },
-              { 
+              {
                 title: Category.DATA_ANALYTICS,
                 icon: PieChart,
                 path: "/data-analytics",
                 description: "AI data analysis and visualization tools"
               },
-              { 
+              {
                 title: Category.WEB_APP_DEVELOPMENT,
                 icon: CodeSquare,
                 path: "/web-app-development",
                 description: "AI website builders, AI website generators"
               },
-              { 
+              {
                 title: Category.STRATEGY_PLANNING,
                 icon: Database,
                 path: "/strategy-planning",
@@ -169,7 +170,7 @@ const LandingPage = () => {
               }
             ].map((category, index) => (
               <Link to={category.path} key={index} className="group">
-                <div className={`rounded-lg p-8 border border-gray-200 h-full transition-transform transform hover:scale-105`}>
+                <div className="rounded-lg p-8 border border-gray-200 h-full transition-transform transform hover:scale-105">
                   <category.icon className="h-10 w-10 text-[#9b87f5] mb-4" />
                   <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
                     {category.title}
@@ -193,6 +194,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Why Use AI Marketing Tools */}
       <section className="py-16 bg-gradient-to-b from-[#f8f9fa] to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -243,6 +245,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Final CTA */}
       <section className="py-16 bg-[#1A1F2C]">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
