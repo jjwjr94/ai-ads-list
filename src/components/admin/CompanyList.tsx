@@ -54,7 +54,8 @@ export const CompanyList: React.FC<CompanyListProps> = ({ onEditCompany }) => {
   const sortedAndFilteredCompanies = useMemo(() => {
     const filtered = companies.filter(company => 
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.description.toLowerCase().includes(searchTerm.toLowerCase())
+      company.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.category?.toLowerCase().includes(searchTerm.toLowerCase()) // Added category search
     );
 
     return filtered.sort((a, b) => {

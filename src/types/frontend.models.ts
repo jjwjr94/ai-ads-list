@@ -1,4 +1,3 @@
-
 /**
  * Frontend Models
  * 
@@ -82,7 +81,7 @@ export enum Category {
 /**
  * Type for company creation
  */
-export type CompanyCreate = Omit<Company, 'id'> & { id?: string };
+export type CompanyCreate = Omit<Company, 'id'>;
 
 /**
  * Type for company updates

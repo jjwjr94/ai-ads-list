@@ -41,7 +41,7 @@ const mapFrontendToDb = (company: Partial<Company>): Partial<DbCompany> => {
   if (company.name !== undefined) result.name = company.name;
   if (company.website !== undefined) result.website = company.website;
   if (company.description !== undefined) result.description = company.description;
-  if (company.category !== undefined) result.category = company.category as any;
+  if (company.category !== undefined) result.category = company.category;
   if (company.features !== undefined) result.features = company.features;
   if (company.pricing !== undefined) result.pricing = company.pricing;
   if (company.targetAudience !== undefined) result.target_audience = company.targetAudience;
@@ -149,9 +149,21 @@ export const add = async (company: any): Promise<Company> => {
   return data && data[0] ? mapDbToFrontend(data[0]) : mapDbToFrontend(company as any);
 };
 
-export const insertCompany = async (company: any): Promise<Company> => {
-  const result = await add(company);
-  return result;
+export const insertCompany = async (company: Company): Promise<Company> => {
+  const dbCompany = mapFrontendToDb(company);
+  
+  const { data, error } = await supabase
+    .from('companies')
+    .insert(dbCompany)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error inserting company:", error);
+    throw error;
+  }
+
+  return data ? mapDbToFrontend(data) : company;
 };
 
 export const update = async (id: string, updates: Partial<Company>): Promise<Company | null> => {
