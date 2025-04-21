@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import { supabaseAPI } from '../lib/supabase';
 import { Company } from '@/types/frontend.models';
@@ -33,6 +32,22 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
         description: "Logo has been successfully uploaded to storage.",
       });
       
+      // Immediately update the company record with the new logo URL
+      // This ensures the logo URL is saved to the database even if the form isn't submitted
+      try {
+        console.log(`Updating company ${id} with new logo URL: ${logoUrl}`);
+        const updateResult = await updateCompany(id, { logoUrl });
+        
+        if (updateResult) {
+          console.log(`Company ${id} successfully updated with new logo URL`);
+        } else {
+          console.warn(`Company ${id} logo URL update may not have been saved to database`);
+        }
+      } catch (updateError) {
+        console.error('Error updating company with logo URL:', updateError);
+        // Don't throw here, as we still want to return the logo URL for the form
+      }
+      
       // Return the URL with cache-busting parameter
       return logoUrl;
     } catch (err) {
@@ -46,7 +61,7 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
     } finally {
       setIsUploading(false);
     }
-  }, [toast, isUploading]);
+  }, [toast, isUploading, updateCompany]);
 
   return {
     uploadLogo,
