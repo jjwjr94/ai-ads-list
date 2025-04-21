@@ -9,7 +9,7 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
   const [isUploading, setIsUploading] = useState(false);
   
   // Upload a logo for a company
-  const uploadLogo = useCallback(async (id: string, file: File) => {
+  const uploadLogo = useCallback(async (id: string, file: File, fileName: string) => {
     // Set uploading state to prevent multiple uploads
     if (isUploading) return null;
     
@@ -20,8 +20,7 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
       
       // Upload to storage using the function that doesn't update the database
-      // Fix: Pass the file name as the third argument
-      logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file, file.name);
+      logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file, fileName);
       console.log(`Logo uploaded successfully to storage, URL: ${logoUrl}`);
       
       if (!logoUrl) {

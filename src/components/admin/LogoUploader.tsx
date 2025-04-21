@@ -61,6 +61,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       
       // Pass logoUrl to parent component to update form state
       if (logoUrl) {
+        console.log('Updating logo URL in parent component:', logoUrl);
         onLogoUpdated(logoUrl);
       }
     } catch (error) {
@@ -80,6 +81,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       try {
         // Only clear the preview and notify parent, actual update happens on form submit
         setPreviewUrl(null);
+        console.log('Removing logo - notifying parent component');
         onLogoUpdated('');
         toast({
           title: "Logo removed",

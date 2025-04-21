@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -256,9 +257,20 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   // Update button should be enabled if form has changed and has no validation errors
   const isSubmitDisabled = isSubmitting || (hasErrors && formChanged);
 
+  // Log the actual state of the button for debugging
+  console.log('Button state:', {
+    isSubmitting,
+    hasErrors,
+    formChanged,
+    isSubmitDisabled,
+  });
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={(e) => {
+        console.log('Form submit event triggered');
+        form.handleSubmit(onSubmit)(e);
+      }} className="space-y-6">
         {/* Hidden ID field */}
         <input
           type="hidden"
@@ -470,7 +482,18 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting || !formChanged}>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || !formChanged}
+            className={`${!isSubmitting && formChanged ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            onClick={() => {
+              console.log('Update button clicked, form state:', {
+                isSubmitting,
+                formChanged,
+                values: form.getValues()
+              });
+            }}
+          >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? 'Update Company' : 'Add Company'}
           </Button>
