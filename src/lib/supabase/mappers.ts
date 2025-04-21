@@ -79,7 +79,7 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @returns A database company record suitable for insertion
  */
 export function mapCompanyToDbInsert(company: Company): DbInsertParams {
-  // Create the database company record
+  // Create the database company record without created_at
   const dbCompany: DbInsertParams = {
     id: company.id, // Keep ID for database insertion
     name: company.name,
@@ -102,7 +102,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     headquarters: company.headquarters || '',
     employee_count: company.employeeCount || '',
     funding_stage: company.fundingStage || '',
-    created_at: company.lastUpdated ? company.lastUpdated.toISOString() : new Date().toISOString()
+    last_updated: company.lastUpdated ? company.lastUpdated.toISOString() : new Date().toISOString()
   };
 
   // Add AI native criteria if it exists
@@ -137,10 +137,10 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   if (companyUpdate.headquarters !== undefined) dbUpdate.headquarters = companyUpdate.headquarters;
   if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
   if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
-  
-  // Use created_at instead of last_updated field since that's what exists in the DB schema
+
+  // Use last_updated field matching the database schema
   if (companyUpdate.lastUpdated !== undefined) {
-    dbUpdate.created_at = companyUpdate.lastUpdated.toISOString();
+    dbUpdate.last_updated = companyUpdate.lastUpdated.toISOString();
   }
 
   // Map details if any detail fields are updated
