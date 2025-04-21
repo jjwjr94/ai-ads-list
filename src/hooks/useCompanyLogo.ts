@@ -8,47 +8,49 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   
-  // Upload a logo for a company
   const uploadLogo = useCallback(async (id: string, file: File, fileName: string) => {
-    // Set uploading state to prevent multiple uploads
     if (isUploading) return null;
     
     setIsUploading(true);
     let logoUrl = null;
     
     try {
-      console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
+      console.log(`Starting logo upload process for company ID: ${id} at ${new Date().toISOString()}`);
+      console.log(`File type: ${file.type}, File size: ${file.size} bytes`);
       
-      // Convert file to base64 if it's an image
       if (file.type.startsWith('image/')) {
         return new Promise<string>((resolve, reject) => {
+          console.log('File is an image, beginning base64 conversion...');
           const reader = new FileReader();
+          
           reader.onload = async (e) => {
             try {
               const base64String = e.target?.result as string;
-              console.log('Successfully converted image to base64');
+              console.log('Base64 conversion successful. String length:', base64String.length);
+              console.log('First 100 chars of base64:', base64String.substring(0, 100));
               
-              // Update the company with the base64 encoded logo
+              console.log(`Attempting to update company ${id} with base64 logo...`);
               const updateResult = await updateCompany(id, { logoUrl: base64String });
               
               if (updateResult) {
-                console.log('Successfully updated company with base64 logo');
+                console.log(`Successfully updated company ${id} with base64 logo at ${new Date().toISOString()}`);
                 toast({
                   title: "Logo uploaded",
-                  description: "Logo has been successfully uploaded and saved.",
+                  description: "Logo has been successfully converted to base64 and saved to database.",
                 });
                 resolve(base64String);
               } else {
-                console.error('Failed to update company with base64 logo');
+                const errorMsg = 'Failed to update company with base64 logo in database';
+                console.error(errorMsg);
                 toast({
                   title: "Logo upload failed",
-                  description: "Failed to save the logo. Please try again.",
+                  description: "Failed to save the base64 logo to database. Please try again.",
                   variant: "destructive",
                 });
-                reject(new Error('Failed to update company with logo'));
+                reject(new Error(errorMsg));
               }
             } catch (error) {
-              console.error('Error in base64 conversion or update:', error);
+              console.error('Error in base64 conversion or database update:', error);
               reject(error);
             } finally {
               setIsUploading(false);
@@ -56,11 +58,11 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
           };
           
           reader.onerror = (error) => {
-            console.error('Error reading file:', error);
+            console.error('Error reading file for base64 conversion:', error);
             setIsUploading(false);
             toast({
               title: "Logo upload failed",
-              description: "Failed to read the image file.",
+              description: "Failed to read the image file for base64 conversion.",
               variant: "destructive",
             });
             reject(error);
@@ -70,38 +72,36 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
         });
       }
       
-      // If not directly handling as base64, use the storage API
+      // Fallback to storage API if not handling as base64
+      console.log('File not processed as base64, using storage API instead...');
       logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file, fileName);
-      console.log(`Logo uploaded successfully to storage, URL: ${logoUrl}`);
+      console.log(`Logo uploaded to storage successfully, URL: ${logoUrl}`);
       
       if (!logoUrl) {
         throw new Error("Failed to upload logo to storage");
       }
       
-      // Show success toast for storage upload
       toast({
         title: "Logo uploaded",
         description: "Logo has been successfully uploaded to storage.",
       });
       
-      // Immediately update the company record with the new logo URL
       try {
-        console.log(`Updating company ${id} with new logo URL: ${logoUrl}`);
+        console.log(`Updating company ${id} with storage URL: ${logoUrl}`);
         const updateResult = await updateCompany(id, { logoUrl });
         
         if (updateResult) {
-          console.log(`Company ${id} successfully updated with new logo URL`);
+          console.log(`Successfully updated company ${id} with storage URL at ${new Date().toISOString()}`);
         } else {
-          console.warn(`Company ${id} logo URL update may not have been saved to database`);
+          console.warn(`Company ${id} logo URL update may have failed`);
         }
       } catch (updateError) {
-        console.error('Error updating company with logo URL:', updateError);
+        console.error('Error updating company with storage logo URL:', updateError);
       }
       
-      // Return the URL with cache-busting parameter
       return logoUrl;
     } catch (err) {
-      console.error('Error uploading logo:', err);
+      console.error('Error in logo upload process:', err);
       toast({
         title: "Logo upload failed",
         description: err instanceof Error ? err.message : "An error occurred during logo upload",
