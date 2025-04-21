@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -99,6 +98,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const [tempId] = useState<string>(() => uuidv4());
   const { toast } = useToast();
   const [formChanged, setFormChanged] = useState(false);
+  const [initialFormValues, setInitialFormValues] = useState<any>(null);
   
   // Create default values ensuring company.id is properly passed for editing
   const defaultValues = company ? 
@@ -117,18 +117,30 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
       // Reset the form with the company data to ensure all fields are properly populated
       console.log('Setting up form with company data:', company);
       form.reset(company);
+      // Store initial values to compare against later
+      setInitialFormValues(JSON.stringify(company));
     }
   }, [isEditing, company, form]);
 
-  // Track form changes to enable/disable submit button
+  // Track form changes to enable/disable submit button using a deep comparison approach
   useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change') {
+    // Set up subscription to all form values
+    const subscription = form.watch((formValues) => {
+      if (initialFormValues) {
+        // Compare current form values with initial values to detect changes
+        const currentValues = JSON.stringify(formValues);
+        const hasChanged = currentValues !== initialFormValues;
+        setFormChanged(hasChanged);
+        console.log('Form changed:', hasChanged);
+      } else {
+        // For new companies, any input means the form has changed
         setFormChanged(true);
       }
     });
+    
+    // Cleanup subscription on unmount
     return () => subscription.unsubscribe();
-  }, [form]);
+  }, [form, initialFormValues]);
 
   const onSubmit = async (data: any) => {
     console.log('Form submission triggered with data:', data);
