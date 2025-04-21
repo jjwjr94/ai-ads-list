@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 import {
   Form,
   FormControl,
@@ -47,6 +48,10 @@ Feedback:
 ${values.feedback}`;
     
     window.location.href = `mailto:jay@ado-ai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    toast("Just hit send in your email client. Thanks for your feedback!", {
+      description: "Your feedback will be sent to jay@ado-ai.com",
+    });
   }
 
   return (
