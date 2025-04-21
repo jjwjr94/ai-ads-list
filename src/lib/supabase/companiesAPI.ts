@@ -23,7 +23,7 @@ interface DbRecord {
   headquarters?: string;
   employee_count?: string;
   funding_stage?: string;
-  last_updated?: string; // Ensure this is string type
+  last_updated?: string;
   has_dot_ai_domain?: boolean;
   founded_after_2020?: boolean | null;
   series_a_or_earlier?: boolean | null;
@@ -235,10 +235,17 @@ export const companiesAPI = {
         console.log('API: Performing dedicated logo update');
         
         // Try a direct RPC call as an alternative approach for logo updates
-        const { data: rpcData, error: rpcError } = await supabase.rpc('update_company_logo', {
-          company_id: id,
-          logo_url_value: cleanUpdates.logo_url
-        }).select();
+        // Fix the type issue by explicitly typing the parameters
+        const { data: rpcData, error: rpcError } = await supabase.rpc(
+          'update_company_logo', 
+          {
+            company_id: id,
+            logo_url_value: cleanUpdates.logo_url
+          } as {
+            company_id: string;
+            logo_url_value: string;
+          }
+        ).select();
         
         if (rpcError) {
           console.error('API: RPC logo update failed:', rpcError);
