@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -100,6 +99,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const { toast } = useToast();
   const [formChanged, setFormChanged] = useState(false);
   const [initialFormValues, setInitialFormValues] = useState<any>(null);
+  const [logoChanged, setLogoChanged] = useState(false);
   
   // Create default values ensuring company.id is properly passed for editing
   const defaultValues = company ? 
@@ -130,9 +130,9 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
       if (initialFormValues) {
         // Compare current form values with initial values to detect changes
         const currentValues = JSON.stringify(formValues);
-        const hasChanged = currentValues !== initialFormValues;
+        const hasChanged = currentValues !== initialFormValues || logoChanged;
         setFormChanged(hasChanged);
-        console.log('Form changed:', hasChanged);
+        console.log('Form changed:', hasChanged, 'Logo changed:', logoChanged);
       } else {
         // For new companies, any input means the form has changed
         setFormChanged(true);
@@ -141,7 +141,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
     
     // Cleanup subscription on unmount
     return () => subscription.unsubscribe();
-  }, [form, initialFormValues]);
+  }, [form, initialFormValues, logoChanged]);
 
   const onSubmit = async (data: any) => {
     console.log('Form submission triggered with data:', data);
@@ -189,6 +189,9 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               title: "Company updated",
               description: "The company has been successfully updated.",
             });
+            
+            // Reset logo changed state after successful update
+            setLogoChanged(false);
             
             // Call the onSuccess callback if provided
             if (onSuccess) onSuccess();
@@ -254,15 +257,17 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   // Check if the form has any validation errors
   const hasErrors = Object.keys(form.formState.errors).length > 0;
   
-  // Update button should be enabled if form has changed and has no validation errors
-  const isSubmitDisabled = isSubmitting || (hasErrors && formChanged);
+  // Update button should be disabled if form is submitting, has errors, or hasn't changed
+  const isSubmitDisabled = isSubmitting || hasErrors || (!formChanged && !logoChanged);
 
-  // Log the actual state of the button for debugging
+  // Log the actual state of the button and validation errors for debugging
   console.log('Button state:', {
     isSubmitting,
     hasErrors,
     formChanged,
+    logoChanged,
     isSubmitDisabled,
+    validationErrors: form.formState.errors
   });
 
   return (
@@ -388,6 +393,8 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               onLogoUpdated={(logoUrl) => {
                 form.setValue('logoUrl', logoUrl);
                 setFormChanged(true);
+                setLogoChanged(true); // Explicitly track logo changes
+                console.log('Logo updated, setting logoChanged to true');
               }}
             />
           </div>
@@ -483,20 +490,40 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
             Cancel
           </Button>
           <Button 
-            type="submit" 
-            disabled={isSubmitting || !formChanged}
-            className={`${!isSubmitting && formChanged ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-            onClick={() => {
-              console.log('Update button clicked, form state:', {
-                isSubmitting,
-                formChanged,
-                values: form.getValues()
-              });
-            }}
+            type="submit"
+            disabled={isSubmitDisabled}
+            className={isSubmitDisabled ? 'opacity-50' : ''}
           >
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? 'Update Company' : 'Add Company'}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {isEditing ? 'Updating...' : 'Adding...'}
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                {isEditing ? 'Update Company' : 'Add Company'}
+              </>
+            )}
           </Button>
+        </div>
+        
+        {/* Debug information */}
+        <div className="mt-4 p-4 bg-gray-100 rounded-md text-xs">
+          <h4 className="font-bold mb-2">Debug Information:</h4>
+          <div>Form Changed: {formChanged ? 'Yes' : 'No'}</div>
+          <div>Logo Changed: {logoChanged ? 'Yes' : 'No'}</div>
+          <div>Has Errors: {hasErrors ? 'Yes' : 'No'}</div>
+          <div>Is Submitting: {isSubmitting ? 'Yes' : 'No'}</div>
+          <div>Button Disabled: {isSubmitDisabled ? 'Yes' : 'No'}</div>
+          {hasErrors && (
+            <div className="mt-2">
+              <div className="font-bold text-red-500">Validation Errors:</div>
+              <pre className="overflow-auto max-h-40">
+                {JSON.stringify(form.formState.errors, null, 2)}
+              </pre>
+            </div>
+          )}
         </div>
       </form>
     </Form>
