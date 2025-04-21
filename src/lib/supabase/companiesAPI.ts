@@ -1,3 +1,4 @@
+
 // src/lib/supabase/companiesAPI.ts
 
 import { Category } from '@/types/frontend.models';
@@ -173,7 +174,11 @@ export const companiesAPI = {
           logo_url_value: cleanUpdates.logo_url
         };
 
-        const { data, error } = await supabase.rpc<any>('update_company_logo', rpcParams);
+        // Fix: Provide both type arguments for RPC call
+        const { data, error } = await supabase.rpc<
+          UpdateCompanyLogoParams, 
+          Database['public']['Functions']['update_company_logo']['Returns']
+        >('update_company_logo', rpcParams);
 
         if (!error && data) {
           return mapDbRecordToCompany(data[0]);
