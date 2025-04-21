@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import { supabaseAPI } from '../lib/supabase';
 import { Company } from '@/types/frontend.models';
@@ -18,7 +19,58 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
     try {
       console.log(`Uploading logo for company ID: ${id} at ${new Date().toISOString()}`);
       
-      // Upload to storage using the function that doesn't update the database
+      // Convert file to base64 if it's an image
+      if (file.type.startsWith('image/')) {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            try {
+              const base64String = e.target?.result as string;
+              console.log('Successfully converted image to base64');
+              
+              // Update the company with the base64 encoded logo
+              const updateResult = await updateCompany(id, { logoUrl: base64String });
+              
+              if (updateResult) {
+                console.log('Successfully updated company with base64 logo');
+                toast({
+                  title: "Logo uploaded",
+                  description: "Logo has been successfully uploaded and saved.",
+                });
+                resolve(base64String);
+              } else {
+                console.error('Failed to update company with base64 logo');
+                toast({
+                  title: "Logo upload failed",
+                  description: "Failed to save the logo. Please try again.",
+                  variant: "destructive",
+                });
+                reject(new Error('Failed to update company with logo'));
+              }
+            } catch (error) {
+              console.error('Error in base64 conversion or update:', error);
+              reject(error);
+            } finally {
+              setIsUploading(false);
+            }
+          };
+          
+          reader.onerror = (error) => {
+            console.error('Error reading file:', error);
+            setIsUploading(false);
+            toast({
+              title: "Logo upload failed",
+              description: "Failed to read the image file.",
+              variant: "destructive",
+            });
+            reject(error);
+          };
+          
+          reader.readAsDataURL(file);
+        });
+      }
+      
+      // If not directly handling as base64, use the storage API
       logoUrl = await supabaseAPI.storage.uploadLogoToStorage(id, file, fileName);
       console.log(`Logo uploaded successfully to storage, URL: ${logoUrl}`);
       
@@ -33,7 +85,6 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
       });
       
       // Immediately update the company record with the new logo URL
-      // This ensures the logo URL is saved to the database even if the form isn't submitted
       try {
         console.log(`Updating company ${id} with new logo URL: ${logoUrl}`);
         const updateResult = await updateCompany(id, { logoUrl });
@@ -45,7 +96,6 @@ export function useCompanyLogo(updateCompany: (id: string, updates: Partial<Comp
         }
       } catch (updateError) {
         console.error('Error updating company with logo URL:', updateError);
-        // Don't throw here, as we still want to return the logo URL for the form
       }
       
       // Return the URL with cache-busting parameter

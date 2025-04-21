@@ -55,14 +55,17 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
     // Upload file to storage
     setIsUploading(true);
     try {
-      // Fixed: Pass the file name as the third argument
       const logoUrl = await uploadLogo(companyId, file, file.name);
-      console.log('Logo uploaded to storage with URL:', logoUrl);
+      console.log('Logo uploaded with URL:', logoUrl);
       
       // Pass logoUrl to parent component to update form state
       if (logoUrl) {
         console.log('Updating logo URL in parent component:', logoUrl);
         onLogoUpdated(logoUrl);
+        toast({
+          title: "Logo uploaded",
+          description: "Logo has been successfully uploaded and saved.",
+        });
       }
     } catch (error) {
       console.error('Error uploading logo:', error);
@@ -120,6 +123,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
             variant="outline"
             onClick={() => document.getElementById('logo-upload')?.click()}
             disabled={isUploading || disabled}
+            type="button"
           >
             {isUploading ? (
               <>
@@ -139,6 +143,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
               variant="outline"
               onClick={handleDeleteLogo}
               disabled={isUploading || disabled}
+              type="button"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Logo
