@@ -1,73 +1,83 @@
-# Welcome to your Lovable project
 
-## Project info
+# AI Ads & Marketing Tools Directory
 
-**URL**: https://lovable.dev/projects/d833d2f5-2a65-4c05-a0b2-edf04310e830
+A comprehensive directory of AI-powered marketing and advertising tools to help businesses discover and leverage artificial intelligence in their marketing operations.
 
-## How can I edit this code?
+## About the Project
 
-There are several ways of editing your application.
+This platform serves as a curated collection of AI marketing tools, helping businesses find the right solutions across various categories including:
 
-**Use Lovable**
+- Strategy & Planning
+- Creative & Content
+- Performance & Media Buying
+- SEO & Organic Growth
+- Data & Analytics
+- Web & App Development
+- Account Management
+- Social Media & Community Management
+- Influencer & Partnership Marketing
+- Brand Management
+- Ad Fraud Detection
+- AI-Native Agencies
+- And more...
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d833d2f5-2a65-4c05-a0b2-edf04310e830) and start prompting.
+## Features
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Comprehensive Tool Directory**: Browse and search through a curated list of AI marketing tools
+- **Category-Based Navigation**: Easy exploration by marketing function
+- **Detailed Company Profiles**: Access information about pricing, features, and target audience
+- **Admin Dashboard**: Manage tool listings and company information
+- **Real-time Search**: Find tools quickly with instant search functionality
+- **Responsive Design**: Optimized for all devices and screen sizes
 
-**Use your preferred IDE**
+## Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+This project is built with modern web technologies:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React + TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Backend**: Supabase (Database, Authentication, Storage)
+- **Build Tool**: Vite
+- **State Management**: Tanstack Query
 
-Follow these steps:
+## Local Development
+
+To run this project locally, follow these steps:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Step 2: Navigate to the project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
+# Step 3: Install the necessary dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Deployment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project can be deployed through the Lovable platform. Simply navigate to Share -> Publish in your Lovable project.
 
-**Use GitHub Codespaces**
+## Custom Domain Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+You can connect your own domain to this project. Navigate to Project > Settings > Domains in Lovable to set up your custom domain.
 
-## What technologies are used for this project?
+## Contributing
 
-This project is built with:
+To contribute to this project:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/d833d2f5-2a65-4c05-a0b2-edf04310e830) and click on Share -> Publish.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
