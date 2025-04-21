@@ -129,6 +129,18 @@ export const Explore = () => {
       path: '/ecommerce',
       description: 'AI solutions for ecommerce marketing and sales',
       count: categoryCounts[Category.ECOMMERCE] || 0
+    },
+    { 
+      title: Category.SIMULATION_FORECASTING, 
+      path: '/simulation-forecasting',
+      description: 'AI-powered simulation and forecasting tools for marketing and business planning',
+      count: categoryCounts[Category.SIMULATION_FORECASTING] || 0
+    },
+    { 
+      title: Category.AFFILIATE, 
+      path: '/affiliate',
+      description: 'AI tools for affiliate marketing and performance tracking',
+      count: categoryCounts[Category.AFFILIATE] || 0
     }
   ];
   
@@ -181,6 +193,10 @@ export const Explore = () => {
       case Category.CAMPAIGN_OPERATIONS:
         return LineChart;
       case Category.ECOMMERCE:
+        return Code;
+      case Category.SIMULATION_FORECASTING:
+        return BarChart;
+      case Category.AFFILIATE:
         return Code;
       default:
         return Database;
