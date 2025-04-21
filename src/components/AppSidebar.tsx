@@ -16,9 +16,9 @@ import {
 import { Category } from "@/types/frontend.models";
 
 const categoryLinks = [
-  { title: Category.STRATEGY_PLANNING, path: '/strategy-planning' },
   { title: Category.CREATIVE_CONTENT, path: '/creative-content' },
   { title: Category.PERFORMANCE_MEDIA, path: '/performance-media' },
+  { title: Category.STRATEGY_PLANNING, path: '/strategy-planning' },
   { title: Category.SEO_ORGANIC, path: '/seo-organic' },
   { title: Category.DATA_ANALYTICS, path: '/data-analytics' },
   { title: Category.WEB_APP_DEVELOPMENT, path: '/web-app-development' },
