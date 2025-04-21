@@ -1,4 +1,4 @@
-
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,7 +28,9 @@ import {
   AiNativePage,
   B2BLeadGenPage,
   CampaignOperationsPage,
-  EcommercePage
+  EcommercePage,
+  SimulationForecastingPage,
+  AffiliatePage
 } from "./pages/CategoryPages";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -41,7 +43,7 @@ const AppContent = () => {
     ['/strategy-planning', '/creative-content', '/performance-media', '/seo-organic', 
      '/data-analytics', '/web-app-development', '/account-management', '/social-media',
      '/influencer-marketing', '/brand-management', '/ad-fraud', '/ai-native',
-     '/b2b-lead-gen', '/campaign-operations', '/ecommerce'].includes(location.pathname);
+     '/b2b-lead-gen', '/campaign-operations', '/ecommerce', '/simulation-forecasting', '/affiliate'].includes(location.pathname);
 
   return (
     <TooltipProvider>
@@ -80,6 +82,8 @@ const AppContent = () => {
                 <Route path="/b2b-lead-gen" element={<B2BLeadGenPage />} />
                 <Route path="/campaign-operations" element={<CampaignOperationsPage />} />
                 <Route path="/ecommerce" element={<EcommercePage />} />
+                <Route path="/simulation-forecasting" element={<SimulationForecastingPage />} />
+                <Route path="/affiliate" element={<AffiliatePage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

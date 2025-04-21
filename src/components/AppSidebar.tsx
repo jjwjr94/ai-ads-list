@@ -30,7 +30,9 @@ const categoryLinks = [
   { title: Category.AI_NATIVE, path: '/ai-native' },
   { title: Category.B2B_LEAD_GEN, path: '/b2b-lead-gen' },
   { title: Category.CAMPAIGN_OPERATIONS, path: '/campaign-operations' },
-  { title: Category.ECOMMERCE, path: '/ecommerce' }
+  { title: Category.ECOMMERCE, path: '/ecommerce' },
+  { title: Category.SIMULATION_FORECASTING, path: '/simulation-forecasting' },
+  { title: Category.AFFILIATE, path: '/affiliate' }
 ];
 
 const formatCategoryTitle = (categoryString: string): string => {

@@ -16,5 +16,7 @@ export const categoryMapping: Record<Category, Database['public']['Enums']['comp
   "AI-Native Agencies": "AI-Native Agencies",
   "B2B & Lead Gen": "B2B & Lead Gen", 
   "Campaign Operations": "Campaign Operations", 
-  "Ecommerce": "Ecommerce"
+  "Ecommerce": "Ecommerce",
+  "Simulation/Forecasting": "Simulation/Forecasting",
+  "Affiliate": "Affiliate"
 };
