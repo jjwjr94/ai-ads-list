@@ -173,10 +173,10 @@ export const companiesAPI = {
           logo_url_value: cleanUpdates.logo_url
         };
 
-        const { data: rpcData, error: rpcError } = await supabase.rpc('update_company_logo', rpcParams).select();
+        const { data, error } = await supabase.rpc<any>('update_company_logo', rpcParams);
 
-        if (!rpcError && rpcData) {
-          return mapDbRecordToCompany(rpcData[0]);
+        if (!error && data) {
+          return mapDbRecordToCompany(data[0]);
         }
       }
 

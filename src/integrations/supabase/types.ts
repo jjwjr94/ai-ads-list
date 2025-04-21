@@ -107,7 +107,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_company_logo: {
+        Args: { company_id: string; logo_url_value: string }
+        Returns: {
+          category: Database["public"]["Enums"]["company_category"] | null
+          created_at: string | null
+          description: string | null
+          details: Json | null
+          employee_count: string | null
+          features: string[] | null
+          founded_after_2020: boolean | null
+          founded_year: number | null
+          funding_stage: string | null
+          has_dot_ai_domain: boolean | null
+          headquarters: string | null
+          id: string
+          linkedin_url: string | null
+          logo_url: string | null
+          name: string
+          pricing: string | null
+          series_a_or_earlier: boolean | null
+          target_audience: string | null
+          website: string
+        }[]
+      }
     }
     Enums: {
       company_category:
