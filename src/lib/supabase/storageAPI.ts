@@ -1,70 +1,37 @@
-import { supabase } from '../../integrations/supabase/client';
 
-// GitHub repository information
-const GITHUB_REPO_OWNER = 'jjwjr94';
-const GITHUB_REPO_NAME = 'ai-ads-zen-garden';
-const GITHUB_BRANCH = 'main';
+import { supabase } from '../../integrations/supabase/client';
 
 // Storage operations for company logos
 export const storageAPI = {
-  // Generate GitHub CDN URL for a logo
-  getGitHubLogoUrl(id: string, fileExt: string): string {
-    // Format: https://raw.githubusercontent.com/{owner}/{repo}/{branch}/public/logos/{companyId}.{ext}
-    return `https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/${GITHUB_BRANCH}/public/logos/${id}.${fileExt}`;
-  },
-  
-  // This function is kept for backward compatibility but now returns a GitHub URL
-  async uploadLogo(id: string, file: File, altText: string) : Promise<string> {
-    console.log(`Processing logo file for company ${id}: ${file.name}`);
-    const fileExt = file.name.split('.').pop() || 'png';
+  async uploadLogo(id: string, file: File, altText: string): Promise<string> {
+    console.log(`Uploading logo file for company ${id}: ${file.name}`);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${id}.${fileExt}`;
+    const filePath = `logos/${fileName}`;
     
-    // Return GitHub CDN URL instead of uploading to Supabase
-    return this.getGitHubLogoUrl(id, fileExt);
-  },
-  
-  // This function is kept for backward compatibility but now returns a GitHub URL
-  async uploadLogoToStorage(id: string, file: File, fileName: string): Promise<string> {
-    console.log(`Processing logo file for company ${id}: ${fileName}`);
-    const fileExt = fileName.split('.').pop() || 'png';
-    
-    // Return GitHub CDN URL instead of uploading to Supabase
-    return this.getGitHubLogoUrl(id, fileExt);
-  },
-  
-  // This function is kept for backward compatibility but now returns a GitHub URL
-  getPublicUrl(path: string): string {
-    // Extract company ID from path (assuming format: logos/{id}.{ext})
-    const matches = path.match(/logos\/([^.]+)\.(.+)/);
-    if (matches && matches.length >= 3) {
-      const [, id, ext] = matches;
-      return this.getGitHubLogoUrl(id, ext);
-    }
-    
-    // Fallback to a placeholder if path doesn't match expected format
-    return 'https://placehold.co/400x400?text=Logo';
-  },
-  
-  // Additional storage operations can be added here if needed
-  
-  // Example: Upload any file to Supabase storage (if you need this functionality) 
-  async uploadFile(bucket: string, path: string, file: File): Promise<string> {
     try {
+      console.log(`Attempting to upload to path: ${filePath}`);
       const { data, error } = await supabase
         .storage
-        .from(bucket)
-        .upload(path, file, {
+        .from('company-logos')
+        .upload(filePath, file, {
           upsert: true
         });
       
       if (error) {
-        console.error(`Error uploading file to ${bucket}/${path}:`, error);
+        console.error(`Error uploading logo for company ${id}:`, error);
         throw error;
       }
       
+      console.log('Upload successful, data:', data);
+      
+      // Get public URL for the uploaded file
       const { data: urlData } = supabase
         .storage
-        .from(bucket)
-        .getPublicUrl(path);
+        .from('company-logos')
+        .getPublicUrl(filePath);
+        
+      console.log(`Generated public URL: ${urlData.publicUrl}`);
         
       return urlData.publicUrl;
     } catch (error) {
@@ -73,43 +40,51 @@ export const storageAPI = {
     }
   },
   
-  // Example: Delete a file from Supabase storage (if you need this functionality)
-  async deleteFile(bucket: string, path: string): Promise<boolean> {
+  // Fixed function signature to include fileName parameter
+  async uploadLogoToStorage(id: string, file: File, fileName: string): Promise<string> {
+    console.log(`Uploading logo file to storage for company ${id}: ${fileName}`);
+    const fileExt = fileName.split('.').pop();
+    const fileBaseName = `${id}.${fileExt}`;
+    const filePath = `logos/${fileBaseName}`;
+    
     try {
-      const { error } = await supabase
+      console.log(`Attempting to upload to path: ${filePath}`);
+      const { data, error } = await supabase
         .storage
-        .from(bucket)
-        .remove([path]);
+        .from('company-logos')
+        .upload(filePath, file, {
+          upsert: true
+        });
       
       if (error) {
-        console.error(`Error deleting file from ${bucket}/${path}:`, error);
-        return false;
+        console.error(`Error uploading logo for company ${id}:`, error);
+        throw error;
       }
       
-      return true;
+      console.log('Upload successful, data:', data);
+      
+      // Get public URL for the uploaded file
+      const { data: urlData } = supabase
+        .storage
+        .from('company-logos')
+        .getPublicUrl(filePath);
+        
+      console.log(`Generated public URL: ${urlData.publicUrl}`);
+      
+      // Add cache-busting parameter
+      return `${urlData.publicUrl}?t=${Date.now()}`;
     } catch (error) {
-      console.error('Storage delete error:', error);
-      return false;
+      console.error('Storage upload error:', error);
+      throw error;
     }
   },
   
-  // Example: List files in a Supabase storage bucket (if you need this functionality)
-  async listFiles(bucket: string, path: string): Promise<string[]> {
-    try {
-      const { data, error } = await supabase
-        .storage
-        .from(bucket)
-        .list(path);
+  getPublicUrl(path: string): string {
+    const { data } = supabase
+      .storage
+      .from('company-logos')
+      .getPublicUrl(path);
       
-      if (error) {
-        console.error(`Error listing files in ${bucket}/${path}:`, error);
-        return [];
-      }
-      
-      return data.map(item => item.name);
-    } catch (error) {
-      console.error('Storage list error:', error);
-      return [];
-    }
+    return data.publicUrl;
   }
 };
