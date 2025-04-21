@@ -1,4 +1,3 @@
-
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +15,6 @@ import {
 import CompanyCard from "@/components/ui/company-card";
 import { useCarouselAutoRotation } from "@/hooks/useCarouselAutoRotation";
 import { supabase } from "@/integrations/supabase/client";
-import { BackgroundPattern } from "@/components/ui/background-pattern";
 
 export const Hero = () => {
   const navigate = useNavigate();
@@ -86,14 +84,13 @@ export const Hero = () => {
 
   return (
     <section className="relative container mx-auto py-16 px-4 flex items-center justify-center min-h-[80vh]">
-      <div className="absolute inset-0 bg-[#F1F0FB]/50 rounded-xl z-0" />
-      <BackgroundPattern 
-        text="it's a vibe" 
-        textColor="rgba(255, 255, 255, 0.5)"
-        fontSize="1.5rem"
-        rotation={-20}
-        opacity={0.15}
-        className="z-0 rounded-xl overflow-hidden"
+      <div 
+        className="absolute inset-0 rounded-xl z-0 bg-cover bg-center" 
+        style={{ 
+          backgroundImage: "url('/images/hero-banner.png')",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover"
+        }} 
       />
       <div className="text-center max-w-3xl relative z-10">
         <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-purple-200 bg-purple-50 mb-2">
