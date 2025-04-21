@@ -152,6 +152,8 @@ export type Database = {
         | "B2B & Lead Gen"
         | "Campaign Operations"
         | "Ecommerce"
+        | "Simulation/Forecasting"
+        | "Affiliate"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -286,6 +288,8 @@ export const Constants = {
         "B2B & Lead Gen",
         "Campaign Operations",
         "Ecommerce",
+        "Simulation/Forecasting",
+        "Affiliate",
       ],
     },
   },

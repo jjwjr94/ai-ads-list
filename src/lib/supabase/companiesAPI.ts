@@ -1,4 +1,3 @@
-
 // src/lib/supabase/companiesAPI.ts
 
 import { Category } from '@/types/frontend.models';
