@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,13 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null | undefined>(currentLogoUrl);
   const { toast } = useToast();
   
+  // Update preview whenever currentLogoUrl changes
+  useEffect(() => {
+    if (currentLogoUrl) {
+      setPreviewUrl(currentLogoUrl);
+    }
+  }, [currentLogoUrl]);
+  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -34,20 +42,25 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       return;
     }
     
+    // Immediately show preview from local file
     const reader = new FileReader();
     reader.onload = (e) => {
-      setPreviewUrl(e.target?.result as string);
+      const result = e.target?.result as string;
+      setPreviewUrl(result);
     };
     reader.readAsDataURL(file);
     
+    // Upload file to storage
     setIsUploading(true);
     try {
-      const logoUrl = await uploadLogo(companyId, file, file.name);
-      onLogoUpdated(logoUrl);
-      toast({
-        title: "Logo uploaded",
-        description: "The company logo has been successfully uploaded.",
-      });
+      // Only upload to storage, don't update company yet
+      const logoUrl = await uploadLogo(companyId, file);
+      console.log('Logo uploaded to storage with URL:', logoUrl);
+      
+      // Pass logoUrl to parent component to update form state
+      if (logoUrl) {
+        onLogoUpdated(logoUrl);
+      }
     } catch (error) {
       console.error('Error uploading logo:', error);
       toast({
@@ -63,20 +76,18 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
   const handleDeleteLogo = async () => {
     if (window.confirm('Are you sure you want to delete this company\'s logo?')) {
       try {
-        await updateCompany(companyId, {
-          logoUrl: ''  // Update to use logoUrl instead of logo
-        });
+        // Only clear the preview and notify parent, actual update happens on form submit
         setPreviewUrl(null);
         onLogoUpdated('');
         toast({
-          title: "Logo deleted",
-          description: "The company logo has been successfully removed.",
+          title: "Logo removed",
+          description: "The logo has been removed. Save the form to confirm changes.",
         });
       } catch (error) {
         console.error('Error deleting logo:', error);
         toast({
           title: "Error",
-          description: "An error occurred while deleting the logo.",
+          description: "An error occurred while removing the logo.",
           variant: "destructive",
         });
       }

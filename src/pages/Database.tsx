@@ -1,6 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import { CompanyProvider } from '../context/CompanyContext';
 import AdminDashboard from '../components/AdminDashboard';
+import { Toaster } from "@/components/ui/toaster";
 
 const Admin = () => {
   return (
@@ -13,6 +15,7 @@ const Admin = () => {
         </div>
         
         <AdminDashboard />
+        <Toaster />
       </div>
     </CompanyProvider>
   );

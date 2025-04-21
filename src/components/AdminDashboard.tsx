@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Company } from '@/types/frontend.models';
 import {
@@ -13,6 +14,7 @@ import CompanyList from './admin/CompanyList';
 import CompanyForm from './admin/CompanyForm';
 import { useSession } from '@/hooks/useSession';
 import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 
 export const AdminDashboard: React.FC = () => {
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
@@ -88,6 +90,7 @@ export const AdminDashboard: React.FC = () => {
           </CardContent>
         </Card>
       )}
+      <Toaster />
     </div>
   );
 };
