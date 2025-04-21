@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Company, Category } from '@/types/frontend.models';
 import { supabaseAPI } from '@/lib/supabase';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -24,6 +24,7 @@ export interface CompanyContextType {
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
 
 export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Use the useCompanies hook to manage company data
   const { 
     companies, 
     isLoading, 
@@ -35,6 +36,12 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadCompanies
   } = useCompanies();
   
+  // Load companies on mount, but only once
+  useEffect(() => {
+    loadCompanies();
+  }, [loadCompanies]);
+  
+  // Use the useCompanyOperations hook for CRUD operations
   const { 
     getCompaniesByCategory,
     getCompanyById,
@@ -48,19 +55,16 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     optimisticDeleteCompany
   );
   
+  // Use the useCompanyQueries hook for specialized queries
   const {
     getHighlightedCompanies,
     searchCompanies
   } = useCompanyQueries();
   
+  // Use the useCompanyLogo hook for logo management
   const {
     uploadLogo
   } = useCompanyLogo(updateCompany);
-
-  // Load companies on mount, but only once
-  useEffect(() => {
-    loadCompanies();
-  }, [loadCompanies]);
 
   const value: CompanyContextType = {
     companies,
