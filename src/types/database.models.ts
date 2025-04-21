@@ -1,3 +1,4 @@
+
 /**
  * Database Models
  * 
@@ -51,6 +52,7 @@ export interface DbCompany {
   headquarters?: string | null;
   employee_count?: string | null;
   funding_stage?: string | null;
+  created_at?: string | null; // Include created_at since it's in the table
   last_updated?: string | null;
   
   // AI Native criteria fields

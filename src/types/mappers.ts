@@ -1,3 +1,4 @@
+
 /**
  * Mapper functions for converting between database and frontend models
  * 
@@ -77,8 +78,8 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
  * @param company The frontend Company object
  * @returns A database company record suitable for insertion
  */
-export function mapCompanyToDbInsert(company: Company): DbInsertParams {
-  // Create the database company record without created_at
+export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
+  // Create the database company record, supporting both created_at and last_updated
   const dbCompany: DbInsertParams = {
     id: company.id, // Keep ID for database insertion
     name: company.name,
@@ -101,6 +102,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     headquarters: company.headquarters || '',
     employee_count: company.employeeCount || '',
     funding_stage: company.fundingStage || '',
+    created_at: new Date().toISOString(), // Include created_at with current timestamp
     last_updated: company.lastUpdated ? company.lastUpdated.toISOString() : new Date().toISOString()
   };
 
@@ -137,9 +139,12 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
   if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
 
-  // Use last_updated field matching the database schema
+  // Update both last_updated and created_at (if needed for updates)
   if (companyUpdate.lastUpdated !== undefined) {
     dbUpdate.last_updated = companyUpdate.lastUpdated.toISOString();
+  } else {
+    // Always update last_updated timestamp for any update
+    dbUpdate.last_updated = new Date().toISOString();
   }
 
   // Map details if any detail fields are updated
