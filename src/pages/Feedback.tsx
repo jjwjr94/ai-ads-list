@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -38,7 +39,7 @@ export const Feedback = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const subject = "Feedback from " + values.name;
+    const subject = `AI Ads List Feedback from ${values.name}`;
     const body = `Name: ${values.name}
 Email: ${values.email}
 
