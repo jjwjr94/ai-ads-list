@@ -30,6 +30,12 @@ interface DbRecord {
   [key: string]: any;
 }
 
+// Define interface for the RPC function parameters
+interface UpdateCompanyLogoParams {
+  company_id: string;
+  logo_url_value: string;
+}
+
 /**
  * Helper function to map database record to frontend Company object
  */
@@ -235,16 +241,15 @@ export const companiesAPI = {
         console.log('API: Performing dedicated logo update');
         
         // Try a direct RPC call as an alternative approach for logo updates
-        // Fix the type issue by explicitly typing the parameters
+        // Fix the type issue by correctly typing the parameters
+        const rpcParams: UpdateCompanyLogoParams = {
+          company_id: id,
+          logo_url_value: cleanUpdates.logo_url
+        };
+        
         const { data: rpcData, error: rpcError } = await supabase.rpc(
           'update_company_logo', 
-          {
-            company_id: id,
-            logo_url_value: cleanUpdates.logo_url
-          } as {
-            company_id: string;
-            logo_url_value: string;
-          }
+          rpcParams
         ).select();
         
         if (rpcError) {
