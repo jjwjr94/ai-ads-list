@@ -70,7 +70,10 @@ const formSchema = z.object({
   pricing: z.string().optional(),
   foundedYear: z.number().optional(),
   headquarters: z.string().optional(),
-  employeeCount: z.string().optional(),
+  // Fix: Allow employeeCount to be null or undefined
+  employeeCount: z.union([z.string(), z.null(), z.undefined()]).optional(),
+  // Also fix any other fields that might have similar issues
+  fundingStage: z.union([z.string(), z.null(), z.undefined()]).optional(),
   details: z.object({
     summary: z.string().optional(),
     highlighted: z.boolean().default(false),
@@ -173,8 +176,8 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
           },
           foundedYear: data.foundedYear,
           headquarters: data.headquarters,
-          employeeCount: data.employeeCount,
-          fundingStage: data.fundingStage
+          employeeCount: data.employeeCount || '',
+          fundingStage: data.fundingStage || ''
         };
         
         console.log('Cleaned update data:', updateData);
