@@ -1,6 +1,7 @@
 
 import { Category } from '@/types/frontend.models';
 import { CategoryPage } from '@/components/ui/category-page';
+import Feedback from './Feedback';
 
 export const StrategyPlanningPage = () => <CategoryPage category={Category.STRATEGY_PLANNING} />;
 export const CreativeContentPage = () => <CategoryPage category={Category.CREATIVE_CONTENT} />;
@@ -20,3 +21,5 @@ export const EcommercePage = () => <CategoryPage category={Category.ECOMMERCE} /
 export const SimulationForecastingPage = () => <CategoryPage category={Category.SIMULATION_FORECASTING} />;
 export const AffiliatePage = () => <CategoryPage category={Category.AFFILIATE} />;
 
+// Export Feedback component to fix App.tsx error
+export { Feedback };
