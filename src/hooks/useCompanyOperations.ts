@@ -63,6 +63,17 @@ export function useCompanyOperations(
   const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
     try {
       console.log(`Attempting to update company ${id} with updates:`, updates);
+      console.log(`Has logo update: ${updates.logoUrl ? 'Yes' : 'No'}`);
+      if (updates.logoUrl) {
+        console.log(`Logo URL length: ${updates.logoUrl.length}`);
+        console.log(`Logo URL first 50 chars: ${updates.logoUrl.substring(0, 50)}`);
+        console.log(`Is base64: ${updates.logoUrl.startsWith('data:') ? 'Yes' : 'No'}`);
+      }
+      
+      console.log(`Has category update: ${updates.category ? 'Yes' : 'No'}`);
+      if (updates.category) {
+        console.log(`New category value: ${updates.category}`);
+      }
       
       // Apply optimistic update
       optimisticUpdateCompany(id, updates);
@@ -74,23 +85,58 @@ export function useCompanyOperations(
         
         if (!updatedCompany) {
           console.error('Failed to update company, API returned null');
-          // Don't show error toast immediately, give another chance as a partial update might have occurred
           
-          if (updates.logoUrl) {
-            // If we're updating a logo URL, the storage part probably worked, so don't show an error
-            // This prevents the error flash when only logo upload succeeds but DB update fails
-            toast({
-              title: "Partial update successful",
-              description: "Logo was uploaded but company details couldn't be updated.",
-            });
-            return true; // Return success for logo-only updates
-          } else {
-            toast({
-              title: "Update failed",
-              description: "Failed to update company. The server returned no data.",
-              variant: "destructive",
-            });
+          // Retry the update with a more focused approach for different properties
+          if (updates.logoUrl && Object.keys(updates).length === 1) {
+            // If this is just a logo update, try with a dedicated logo update
+            console.log('Attempting dedicated logo update');
+            const logoUpdateSuccess = await supabaseAPI.companies.update(id, { logoUrl: updates.logoUrl });
+            if (!logoUpdateSuccess) {
+              console.error('Dedicated logo update failed');
+              toast({
+                title: "Logo update failed",
+                description: "Failed to save logo to database. Please try again.",
+                variant: "destructive",
+              });
+              return false;
+            } else {
+              console.log('Dedicated logo update succeeded');
+              toast({
+                title: "Logo updated",
+                description: "Logo was successfully updated.",
+              });
+              return true;
+            }
           }
+          
+          if (updates.category && Object.keys(updates).length === 1) {
+            // If this is just a category update, try with a dedicated category update
+            console.log('Attempting dedicated category update');
+            const categoryUpdateSuccess = await supabaseAPI.companies.update(id, { category: updates.category });
+            if (!categoryUpdateSuccess) {
+              console.error('Dedicated category update failed');
+              toast({
+                title: "Category update failed",
+                description: "Failed to update category. Please try again.",
+                variant: "destructive",
+              });
+              return false;
+            } else {
+              console.log('Dedicated category update succeeded');
+              toast({
+                title: "Category updated",
+                description: "Category was successfully updated.",
+              });
+              return true;
+            }
+          }
+          
+          // Show a generic message for other types of updates
+          toast({
+            title: "Update failed",
+            description: "Failed to update company. The server returned no data.",
+            variant: "destructive",
+          });
           
           return false;
         }

@@ -1,3 +1,4 @@
+
 import { Category } from '@/types/frontend.models';
 import { DbCategory } from '@/types/database.models';
 import { supabase } from '@/integrations/supabase/client';
@@ -185,9 +186,16 @@ export const companiesAPI = {
       // Correctly map frontend properties to database column names
       if (updates.name !== undefined) cleanUpdates.name = updates.name;
       if (updates.website !== undefined) cleanUpdates.website = updates.website;
-      if (updates.category !== undefined) cleanUpdates.category = updates.category;
+      if (updates.category !== undefined) {
+        cleanUpdates.category = updates.category;
+        console.log('API: Setting category to', updates.category);
+      }
       if (updates.description !== undefined) cleanUpdates.description = updates.description;
-      if (updates.logoUrl !== undefined) cleanUpdates.logo_url = updates.logoUrl; // Map logoUrl to logo_url
+      if (updates.logoUrl !== undefined) {
+        cleanUpdates.logo_url = updates.logoUrl; // Map logoUrl to logo_url
+        console.log('API: Setting logo_url, length:', updates.logoUrl.length);
+        console.log('API: Logo URL is base64:', updates.logoUrl.startsWith('data:'));
+      }
       if (updates.targetAudience !== undefined) cleanUpdates.target_audience = updates.targetAudience;
       if (updates.features !== undefined) cleanUpdates.features = updates.features;
       if (updates.pricing !== undefined) cleanUpdates.pricing = updates.pricing;
@@ -207,7 +215,8 @@ export const companiesAPI = {
           cleanUpdates.series_a_or_earlier = updates.aiNativeCriteria.seriesAOrEarlier;
       }
       
-      console.log('API: Cleaned updates:', cleanUpdates);
+      console.log('API: Cleaned updates for Supabase:', Object.keys(cleanUpdates));
+      console.log('API: Number of fields being updated:', Object.keys(cleanUpdates).length);
 
       // Ensure there are actual updates to make
       if (Object.keys(cleanUpdates).length === 0) {
@@ -218,6 +227,29 @@ export const companiesAPI = {
       // Add timestamp for last_updated
       cleanUpdates.last_updated = new Date().toISOString();
 
+      // Log the exact payload being sent to Supabase
+      console.log('API: Final payload being sent to Supabase:', cleanUpdates);
+
+      // Single updates for critical fields if we're only updating one field
+      if (Object.keys(cleanUpdates).length <= 2 && cleanUpdates.logo_url) {
+        console.log('API: Performing dedicated logo update');
+        
+        // Try a direct RPC call as an alternative approach for logo updates
+        const { data: rpcData, error: rpcError } = await supabase.rpc('update_company_logo', {
+          company_id: id,
+          logo_url_value: cleanUpdates.logo_url
+        }).select();
+        
+        if (rpcError) {
+          console.error('API: RPC logo update failed:', rpcError);
+          console.log('API: Falling back to standard update');
+        } else if (rpcData) {
+          console.log('API: RPC logo update succeeded:', rpcData);
+          return mapDbRecordToCompany(rpcData);
+        }
+      }
+
+      // Standard update approach
       const { data, error } = await supabase
         .from('companies')
         .update(cleanUpdates)
@@ -226,19 +258,26 @@ export const companiesAPI = {
         .single();  // Use single() to get the updated record directly
 
       if (error) {
-        console.error(`Error updating company with ID ${id}:`, error);
+        // Log detailed error information
+        console.error(`API: Error updating company with ID ${id}:`, error);
+        console.error('API: Error details:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
         return null;
       }
 
       if (!data) {
-        console.error(`No data returned after updating company ${id}`);
+        console.error(`API: No data returned after updating company ${id}`);
         return null;
       }
 
       console.log('API: Update successful, returned data:', data);
       return mapDbRecordToCompany(data);
     } catch (error) {
-      console.error(`Exception in update for company with ID ${id}:`, error);
+      console.error(`API: Exception in update for company with ID ${id}:`, error);
       return null;
     }
   },
