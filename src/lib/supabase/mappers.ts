@@ -13,7 +13,7 @@ import {
   DbInsertParams,
   DbUpdateParams,
   DbCategory
-} from './database.models';
+} from '@/types/database.models';
 
 import {
   Company,
@@ -22,7 +22,7 @@ import {
   AiNativeCriteria,
   CompanyCreate,
   CompanyUpdate
-} from './frontend.models';
+} from '@/types/frontend.models';
 
 /**
  * Maps a database company record to a frontend Company object
@@ -102,7 +102,7 @@ export function mapCompanyToDbInsert(company: Company): DbInsertParams {
     headquarters: company.headquarters || '',
     employee_count: company.employeeCount || '',
     funding_stage: company.fundingStage || '',
-    created_at: new Date().toISOString() // Use created_at instead of last_updated
+    created_at: company.lastUpdated ? company.lastUpdated.toISOString() : new Date().toISOString()
   };
 
   // Add AI native criteria if it exists
@@ -138,7 +138,7 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
   if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
   
-  // Replace last_updated with the field that exists in the database schema
+  // Use created_at instead of last_updated field since that's what exists in the DB schema
   if (companyUpdate.lastUpdated !== undefined) {
     dbUpdate.created_at = companyUpdate.lastUpdated.toISOString();
   }
