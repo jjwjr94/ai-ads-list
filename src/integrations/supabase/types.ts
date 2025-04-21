@@ -23,14 +23,12 @@ export type Database = {
           has_dot_ai_domain: boolean | null
           headquarters: string | null
           id: string
-          last_updated: string | null
           linkedin_url: string | null
           logo_url: string | null
           name: string
           pricing: string | null
           series_a_or_earlier: boolean | null
           target_audience: string | null
-          updated_at: string | null
           website: string
         }
         Insert: {
@@ -46,14 +44,12 @@ export type Database = {
           has_dot_ai_domain?: boolean | null
           headquarters?: string | null
           id: string
-          last_updated?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name: string
           pricing?: string | null
           series_a_or_earlier?: boolean | null
           target_audience?: string | null
-          updated_at?: string | null
           website: string
         }
         Update: {
@@ -69,14 +65,12 @@ export type Database = {
           has_dot_ai_domain?: boolean | null
           headquarters?: string | null
           id?: string
-          last_updated?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name?: string
           pricing?: string | null
           series_a_or_earlier?: boolean | null
           target_audience?: string | null
-          updated_at?: string | null
           website?: string
         }
         Relationships: []

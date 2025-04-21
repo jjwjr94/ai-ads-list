@@ -1,76 +1,176 @@
 
-import { Company, Category, CompanyDetails } from '../../types/database';
-import type { Database } from '../../integrations/supabase/types';
-import { categoryMapping } from './categoryMapping';
+/**
+ * Mapper functions for converting between database and frontend models
+ * 
+ * This file contains utility functions that handle the transformation
+ * between database models (how data is stored in Supabase) and
+ * frontend models (how data is used in React components).
+ */
 
-// Helper function to map database record to Company object
-export const mapDbRecordToCompany = (record: any): Company => {
-  // Get the logo URL, which may be base64 encoded
-  const logoUrl = record.logo_url || '';
-  
-  // Convert details to a proper CompanyDetails object, handling null/undefined
+import { 
+  DbCompany, 
+  DbCompanyDetails,
+  DbInsertParams,
+  DbUpdateParams,
+  DbCategory
+} from './database.models';
+
+import {
+  Company,
+  CompanyDetails,
+  Category,
+  AiNativeCriteria,
+  CompanyCreate,
+  CompanyUpdate
+} from './frontend.models';
+
+/**
+ * Maps a database company record to a frontend Company object
+ * @param dbCompany The database company record
+ * @returns A frontend Company object
+ */
+export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
+  // Create the company details object
   const details: CompanyDetails = {
-    summary: record.details?.summary ?? null,
-    detailFeatures: record.details?.detailFeatures || record.features || [],
-    highlighted: record.details?.highlighted ?? false,
-    pricing: record.details?.pricing ?? null,
-    bestFor: record.details?.bestFor ?? null
+    summary: dbCompany.details?.summary || '',
+    highlighted: dbCompany.details?.highlighted || false,
+    features: dbCompany.details?.features || [],
+    pricing: dbCompany.details?.pricing || '',
+    bestFor: dbCompany.details?.bestFor || ''
   };
 
+  // Create the AI native criteria object if any of the fields exist
+  let aiNativeCriteria: AiNativeCriteria | undefined;
+  if (dbCompany.has_dot_ai_domain !== null || 
+      dbCompany.founded_after_2020 !== null || 
+      dbCompany.series_a_or_earlier !== null) {
+    aiNativeCriteria = {
+      hasDotAiDomain: dbCompany.has_dot_ai_domain || false,
+      foundedAfter2020: dbCompany.founded_after_2020 || false,
+      seriesAOrEarlier: dbCompany.series_a_or_earlier || false
+    };
+  }
+
+  // Create and return the frontend Company object
   return {
-    id: record.id,
-    name: record.name,
-    website: record.website || '',
-    logoUrl: logoUrl, // This may be base64 encoded
-    logo: logoUrl, // Keep both logo fields for backward compatibility
-    category: record.category as Category,
-    description: record.description || '',
-    features: record.features || [],
-    pricing: record.pricing || (record.details?.pricing || ''),
-    targetAudience: record.target_audience || (record.details?.bestFor || ''),
-    details: details,
-    linkedinUrl: record.linkedin_url || '',
-    foundedYear: record.founded_year || undefined,
-    headquarters: record.headquarters || '',
-    employeeCount: record.employee_count || '',
-    fundingStage: record.funding_stage || '',
-    lastUpdated: record.last_updated ? new Date(record.last_updated) : new Date(),
-    url: record.website || ''
+    id: dbCompany.id,
+    name: dbCompany.name,
+    website: dbCompany.website,
+    category: dbCompany.category as unknown as Category,
+    description: dbCompany.description || '',
+    logoUrl: dbCompany.logo_url || '',
+    targetAudience: dbCompany.target_audience || '',
+    features: dbCompany.features || [],
+    pricing: dbCompany.pricing || '',
+    details,
+    linkedinUrl: dbCompany.linkedin_url,
+    foundedYear: dbCompany.founded_year,
+    headquarters: dbCompany.headquarters,
+    employeeCount: dbCompany.employee_count,
+    fundingStage: dbCompany.funding_stage,
+    lastUpdated: dbCompany.last_updated ? new Date(dbCompany.last_updated) : undefined,
+    aiNativeCriteria
   };
-};
+}
 
-// Helper function to map Company object to database record
-export const mapCompanyToDbRecord = (company: Company): Database['public']['Tables']['companies']['Insert'] => {
-  // Prepare logo URL, keep base64 as is
-  const logoUrl = company.logoUrl || company.logo || '';
-  
-  // Create a plain object for details that can be serialized to JSON
-  const detailsObj = {
-    summary: company.details?.summary ?? null,
-    detailFeatures: company.details?.detailFeatures || company.features || [],
-    highlighted: Boolean(company.details?.highlighted ?? false),
-    pricing: company.details?.pricing ?? null,
-    bestFor: company.details?.bestFor ?? null
-  };
-  
-  const dbRecord: Database['public']['Tables']['companies']['Insert'] = {
-    id: company.id,
+/**
+ * Maps a frontend Company object to a database company record for insertion
+ * @param company The frontend Company object
+ * @returns A database company record suitable for insertion
+ */
+export function mapCompanyToDbInsert(company: Company): DbInsertParams {
+  // Create the database company record
+  const dbCompany: DbInsertParams = {
+    id: company.id, // Keep ID for database insertion
     name: company.name,
-    website: company.website || company.url || '',
-    logo_url: logoUrl,
-    category: categoryMapping[company.category],
+    website: company.website,
+    category: company.category as unknown as DbCategory,
     description: company.description || '',
-    features: company.features || company.details?.detailFeatures || [],
-    pricing: company.pricing || (company.details?.pricing || ''),
-    target_audience: company.targetAudience || (company.details?.bestFor || ''),
-    details: detailsObj,
+    logo_url: company.logoUrl || '',
+    target_audience: company.targetAudience || '',
+    features: company.features || [],
+    pricing: company.pricing || '',
+    details: {
+      summary: company.details?.summary || '',
+      highlighted: company.details?.highlighted || false,
+      features: company.details?.features || [],
+      pricing: company.details?.pricing || '',
+      bestFor: company.details?.bestFor || ''
+    },
     linkedin_url: company.linkedinUrl || '',
-    founded_year: company.foundedYear,
+    founded_year: company.foundedYear || null,
     headquarters: company.headquarters || '',
     employee_count: company.employeeCount || '',
     funding_stage: company.fundingStage || '',
-    last_updated: new Date().toISOString()
+    created_at: new Date().toISOString() // Use created_at instead of last_updated
   };
+
+  // Add AI native criteria if it exists
+  if (company.aiNativeCriteria) {
+    dbCompany.has_dot_ai_domain = company.aiNativeCriteria.hasDotAiDomain;
+    dbCompany.founded_after_2020 = company.aiNativeCriteria.foundedAfter2020;
+    dbCompany.series_a_or_earlier = company.aiNativeCriteria.seriesAOrEarlier;
+  }
+
+  return dbCompany;
+}
+
+/**
+ * Maps a frontend Company update object to a database update record
+ * @param companyUpdate The frontend Company update object
+ * @returns A database update record
+ */
+export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpdateParams {
+  const dbUpdate: DbUpdateParams = {};
+
+  // Map basic fields
+  if (companyUpdate.name !== undefined) dbUpdate.name = companyUpdate.name;
+  if (companyUpdate.website !== undefined) dbUpdate.website = companyUpdate.website;
+  if (companyUpdate.category !== undefined) dbUpdate.category = companyUpdate.category as unknown as DbCategory;
+  if (companyUpdate.description !== undefined) dbUpdate.description = companyUpdate.description;
+  if (companyUpdate.logoUrl !== undefined) dbUpdate.logo_url = companyUpdate.logoUrl;
+  if (companyUpdate.targetAudience !== undefined) dbUpdate.target_audience = companyUpdate.targetAudience;
+  if (companyUpdate.features !== undefined) dbUpdate.features = companyUpdate.features;
+  if (companyUpdate.pricing !== undefined) dbUpdate.pricing = companyUpdate.pricing;
+  if (companyUpdate.linkedinUrl !== undefined) dbUpdate.linkedin_url = companyUpdate.linkedinUrl;
+  if (companyUpdate.foundedYear !== undefined) dbUpdate.founded_year = companyUpdate.foundedYear;
+  if (companyUpdate.headquarters !== undefined) dbUpdate.headquarters = companyUpdate.headquarters;
+  if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
+  if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
   
-  return dbRecord;
-};
+  // Replace last_updated with the field that exists in the database schema
+  if (companyUpdate.lastUpdated !== undefined) {
+    dbUpdate.created_at = companyUpdate.lastUpdated.toISOString();
+  }
+
+  // Map details if any detail fields are updated
+  if (companyUpdate.details) {
+    const dbDetails: DbCompanyDetails = {};
+    
+    if (companyUpdate.details.summary !== undefined) dbDetails.summary = companyUpdate.details.summary;
+    if (companyUpdate.details.highlighted !== undefined) dbDetails.highlighted = companyUpdate.details.highlighted;
+    if (companyUpdate.details.features !== undefined) dbDetails.features = companyUpdate.details.features;
+    if (companyUpdate.details.pricing !== undefined) dbDetails.pricing = companyUpdate.details.pricing;
+    if (companyUpdate.details.bestFor !== undefined) dbDetails.bestFor = companyUpdate.details.bestFor;
+    
+    // Only add details if at least one field is being updated
+    if (Object.keys(dbDetails).length > 0) {
+      dbUpdate.details = dbDetails;
+    }
+  }
+
+  // Map AI native criteria if any fields are updated
+  if (companyUpdate.aiNativeCriteria) {
+    if (companyUpdate.aiNativeCriteria.hasDotAiDomain !== undefined) {
+      dbUpdate.has_dot_ai_domain = companyUpdate.aiNativeCriteria.hasDotAiDomain;
+    }
+    if (companyUpdate.aiNativeCriteria.foundedAfter2020 !== undefined) {
+      dbUpdate.founded_after_2020 = companyUpdate.aiNativeCriteria.foundedAfter2020;
+    }
+    if (companyUpdate.aiNativeCriteria.seriesAOrEarlier !== undefined) {
+      dbUpdate.series_a_or_earlier = companyUpdate.aiNativeCriteria.seriesAOrEarlier;
+    }
+  }
+
+  return dbUpdate;
+}
