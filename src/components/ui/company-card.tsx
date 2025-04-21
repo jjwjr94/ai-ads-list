@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Company } from '@/types/frontend.models';
 import {
   Card,
@@ -24,6 +24,15 @@ interface CompanyCardProps {
 }
 
 const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
+  useEffect(() => {
+    // Debug log to check if company has logo data
+    if (company.logoUrl) {
+      console.log(`Company ${company.name} has logo URL: ${company.logoUrl.substring(0, 100)}...`);
+    } else {
+      console.log(`Company ${company.name} has no logo URL`);
+    }
+  }, [company]);
+
   return (
     <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${company.details?.highlighted ? 'border-[#9b87f5] border-2' : ''}`}>
       <CardHeader className="pb-4">
@@ -44,7 +53,6 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <CardTitle className="text-xl font-bold">{company.name}</CardTitle>
           </div>
           <Logo 
-            src={company.logoUrl} 
             alt={`${company.name} logo`}
             size="lg"
             className="ml-4"

@@ -41,10 +41,10 @@ export function useCompanyOperations(
       const companyWithId = {
         ...company,
         id: company.id || generatedId
-      };
+      } as Company;
       
       // Apply optimistic update with the full company object including ID
-      optimisticAddCompany(companyWithId as Company);
+      optimisticAddCompany(companyWithId);
       
       // Perform actual API call
       const newCompany = await supabaseAPI.companies.add(companyWithId);
@@ -87,11 +87,11 @@ export function useCompanyOperations(
         if (!updatedCompany) {
           console.error('Failed to update company, API returned null');
           
-          // Retry the update with a more focused approach for different properties
+          // Special handling for logo updates
           if (updates.logoUrl && Object.keys(updates).length === 1) {
             // If this is just a logo update, try with a dedicated logo update
             console.log('Attempting dedicated logo update');
-            const logoUpdateSuccess = await supabaseAPI.companies.update(id, { logoUrl: updates.logoUrl });
+            const logoUpdateSuccess = await supabaseAPI.companies.updateCompanyLogo(id, updates.logoUrl);
             if (!logoUpdateSuccess) {
               console.error('Dedicated logo update failed');
               toast({
@@ -105,41 +105,6 @@ export function useCompanyOperations(
               toast({
                 title: "Logo updated",
                 description: "Logo was successfully updated.",
-              });
-              return true;
-            }
-          }
-          
-          if (updates.category && Object.keys(updates).length === 1) {
-            // If this is just a category update, try with a dedicated category update
-            console.log('Attempting dedicated category update');
-            console.log('Category value being sent:', updates.category);
-            
-            // Ensure the category is a valid value
-            if (!Object.values(Category).includes(updates.category as Category)) {
-              console.error('Invalid category value:', updates.category);
-              toast({
-                title: "Category update failed",
-                description: `Invalid category value: ${updates.category}`,
-                variant: "destructive",
-              });
-              return false;
-            }
-            
-            const categoryUpdateSuccess = await supabaseAPI.companies.update(id, { category: updates.category });
-            if (!categoryUpdateSuccess) {
-              console.error('Dedicated category update failed');
-              toast({
-                title: "Category update failed",
-                description: "Failed to update category. Please try again.",
-                variant: "destructive",
-              });
-              return false;
-            } else {
-              console.log('Dedicated category update succeeded');
-              toast({
-                title: "Category updated",
-                description: "Category was successfully updated.",
               });
               return true;
             }
@@ -161,7 +126,7 @@ export function useCompanyOperations(
           description: "The company details have been successfully updated.",
         });
         return true;
-      } catch (apiError) {
+      } catch (apiError: any) {
         console.error('API error in updateCompany:', apiError);
         
         // Special handling for recursion errors in RLS policies
@@ -188,7 +153,7 @@ export function useCompanyOperations(
         });
         return false;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Comprehensive error in updateCompany:', err);
       
       // More detailed error toast
@@ -213,9 +178,9 @@ export function useCompanyOperations(
       optimisticDeleteCompany(id);
       
       // Perform actual API call
-      const success = await supabaseAPI.companies.delete(id);
+      const deletedId = await supabaseAPI.companies.delete_(id);
       
-      if (!success) {
+      if (!deletedId) {
         toast({
           title: "Delete failed",
           description: "Failed to delete the company. Please try again later.",
@@ -231,7 +196,7 @@ export function useCompanyOperations(
       });
       
       // No need to refresh all companies since we've already updated locally
-      return success;
+      return true;
     } catch (err) {
       console.error('Error deleting company:', err);
       toast({

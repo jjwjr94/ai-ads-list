@@ -40,7 +40,6 @@ export const storageAPI = {
     }
   },
   
-  // Fixed function signature to include fileName parameter
   async uploadLogoToStorage(id: string, file: File, fileName: string): Promise<string> {
     console.log(`Uploading logo file to storage for company ${id}: ${fileName}`);
     const fileExt = fileName.split('.').pop();
@@ -53,7 +52,8 @@ export const storageAPI = {
         .storage
         .from('company-logos')
         .upload(filePath, file, {
-          upsert: true
+          upsert: true,
+          cacheControl: '0' // Prevent caching
         });
       
       if (error) {
@@ -71,8 +71,10 @@ export const storageAPI = {
         
       console.log(`Generated public URL: ${urlData.publicUrl}`);
       
-      // Add cache-busting parameter
-      return `${urlData.publicUrl}?t=${Date.now()}`;
+      // Return with explicit cache busting parameter
+      const urlWithCacheBusting = `${urlData.publicUrl}?t=${Date.now()}`;
+      console.log(`URL with cache busting: ${urlWithCacheBusting}`);
+      return urlWithCacheBusting;
     } catch (error) {
       console.error('Storage upload error:', error);
       throw error;
@@ -85,6 +87,7 @@ export const storageAPI = {
       .from('company-logos')
       .getPublicUrl(path);
       
-    return data.publicUrl;
+    // Always add cache busting to prevent stale images
+    return `${data.publicUrl}?t=${Date.now()}`;
   }
 };

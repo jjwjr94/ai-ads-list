@@ -45,6 +45,12 @@ const Logo: React.FC<LogoProps> = ({
 
   // Use company.logoUrl if available, and src is not provided
   useEffect(() => {
+    // Reset error state when props change
+    setHasError(false);
+    
+    // Debug what sources we have
+    console.log(`Logo for ${alt}:`, { src, companyLogo: company?.logoUrl });
+    
     if (!src && company && company.logoUrl) {
       // Check if the logo is a base64 string 
       const logoUrl = company.logoUrl || null;
@@ -54,8 +60,17 @@ const Logo: React.FC<LogoProps> = ({
           setLogoSrc(logoUrl);
           console.log(`Using base64 encoded logo for ${company.name}`);
         } else {
-          // Add timestamp for normal URLs to prevent caching
-          setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+          // Ensure the URL is absolute and add cache busting
+          if (logoUrl.startsWith('http')) {
+            setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+          } else if (logoUrl.startsWith('/')) {
+            // Handle relative URLs correctly
+            setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+          } else {
+            // Possible relative path missing leading slash
+            setLogoSrc(`/${logoUrl}?t=${new Date().getTime()}`);
+          }
+          console.log(`Set logo URL to: ${logoSrc}`);
         }
       } else {
         setLogoSrc(null);
@@ -66,8 +81,16 @@ const Logo: React.FC<LogoProps> = ({
         setLogoSrc(src);
         console.log(`Using base64 encoded logo from props`);
       } else {
-        // Add cache-busting for normal URL sources
-        setLogoSrc(`${src}?t=${new Date().getTime()}`);
+        // Ensure the URL is absolute and add cache busting
+        if (src.startsWith('http')) {
+          setLogoSrc(`${src}?t=${new Date().getTime()}`);
+        } else if (src.startsWith('/')) {
+          // Handle relative URLs correctly
+          setLogoSrc(`${src}?t=${new Date().getTime()}`);
+        } else {
+          // Possible relative path missing leading slash
+          setLogoSrc(`/${src}?t=${new Date().getTime()}`);
+        }
       }
       setIsLoading(false);
     } else {
@@ -75,7 +98,7 @@ const Logo: React.FC<LogoProps> = ({
       setLogoSrc(null);
       setIsLoading(false);
     }
-  }, [company, src]);
+  }, [company, src, alt]);
 
   return (
     <div 
