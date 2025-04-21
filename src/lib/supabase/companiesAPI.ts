@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import { Category, Company } from '@/types/frontend.models';
@@ -7,6 +6,9 @@ export type DbCompany = Database['public']['Tables']['companies']['Row'];
 
 // Convert database company to frontend company format
 const mapDbToFrontend = (dbCompany: DbCompany): Company => {
+  // Safe access to details object with proper type checking
+  const detailsObj = dbCompany.details as Record<string, any> | null;
+  
   return {
     id: dbCompany.id,
     name: dbCompany.name,
@@ -22,15 +24,12 @@ const mapDbToFrontend = (dbCompany: DbCompany): Company => {
     fundingStage: dbCompany.funding_stage || undefined,
     foundedYear: dbCompany.founded_year || undefined,
     logoUrl: dbCompany.logo_url || undefined,
-    details: dbCompany.details ? {
-      pricing: dbCompany.details.pricing || null,
-      bestFor: dbCompany.details.bestFor || '',
-      summary: dbCompany.details.summary || undefined,
-      highlighted: dbCompany.details.highlighted || false,
-      features: dbCompany.details.features || []
-    } : {
-      pricing: null,
-      bestFor: '',
+    details: {
+      pricing: detailsObj?.pricing || null,
+      bestFor: detailsObj?.bestFor || '',
+      summary: detailsObj?.summary || undefined,
+      highlighted: detailsObj?.highlighted || false,
+      features: detailsObj?.features || []
     }
   };
 };

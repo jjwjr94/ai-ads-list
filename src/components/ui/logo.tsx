@@ -48,54 +48,59 @@ const Logo: React.FC<LogoProps> = ({
     // Reset error state when props change
     setHasError(false);
     
-    // Debug what sources we have
-    console.log(`Logo for ${alt}:`, { src, companyLogo: company?.logoUrl });
-    
-    if (!src && company && company.logoUrl) {
-      // Check if the logo is a base64 string 
-      const logoUrl = company.logoUrl || null;
+    try {
+      // Debug what sources we have
+      console.log(`Logo for ${alt}:`, { src, companyLogo: company?.logoUrl });
       
-      if (logoUrl) {
-        if (isBase64Image(logoUrl)) {
-          setLogoSrc(logoUrl);
-          console.log(`Using base64 encoded logo for ${company.name}`);
+      if (!src && company && company.logoUrl) {
+        // Check if the logo is a base64 string 
+        const logoUrl = company.logoUrl || null;
+        
+        if (logoUrl) {
+          if (isBase64Image(logoUrl)) {
+            setLogoSrc(logoUrl);
+            console.log(`Using base64 encoded logo for ${company.name}`);
+          } else {
+            // Ensure the URL is absolute and add cache busting
+            if (logoUrl.startsWith('http')) {
+              setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+            } else if (logoUrl.startsWith('/')) {
+              // Handle relative URLs correctly
+              setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+            } else {
+              // Possible relative path missing leading slash
+              setLogoSrc(`/${logoUrl}?t=${new Date().getTime()}`);
+            }
+            console.log(`Set logo URL to: ${logoSrc}`);
+          }
+        } else {
+          setLogoSrc(null);
+        }
+      } else if (src) {
+        if (isBase64Image(src)) {
+          setLogoSrc(src);
+          console.log(`Using base64 encoded logo from props`);
         } else {
           // Ensure the URL is absolute and add cache busting
-          if (logoUrl.startsWith('http')) {
-            setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
-          } else if (logoUrl.startsWith('/')) {
+          if (src.startsWith('http')) {
+            setLogoSrc(`${src}?t=${new Date().getTime()}`);
+          } else if (src.startsWith('/')) {
             // Handle relative URLs correctly
-            setLogoSrc(`${logoUrl}?t=${new Date().getTime()}`);
+            setLogoSrc(`${src}?t=${new Date().getTime()}`);
           } else {
             // Possible relative path missing leading slash
-            setLogoSrc(`/${logoUrl}?t=${new Date().getTime()}`);
+            setLogoSrc(`/${src}?t=${new Date().getTime()}`);
           }
-          console.log(`Set logo URL to: ${logoSrc}`);
         }
       } else {
+        // No source provided
         setLogoSrc(null);
       }
-      setIsLoading(false);
-    } else if (src) {
-      if (isBase64Image(src)) {
-        setLogoSrc(src);
-        console.log(`Using base64 encoded logo from props`);
-      } else {
-        // Ensure the URL is absolute and add cache busting
-        if (src.startsWith('http')) {
-          setLogoSrc(`${src}?t=${new Date().getTime()}`);
-        } else if (src.startsWith('/')) {
-          // Handle relative URLs correctly
-          setLogoSrc(`${src}?t=${new Date().getTime()}`);
-        } else {
-          // Possible relative path missing leading slash
-          setLogoSrc(`/${src}?t=${new Date().getTime()}`);
-        }
-      }
-      setIsLoading(false);
-    } else {
-      // No source provided
+    } catch (err) {
+      console.error('Error processing logo URL:', err);
       setLogoSrc(null);
+      setHasError(true);
+    } finally {
       setIsLoading(false);
     }
   }, [company, src, alt]);

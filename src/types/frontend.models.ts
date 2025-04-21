@@ -1,3 +1,4 @@
+
 /**
  * Frontend Models
  * 
@@ -42,7 +43,7 @@ export interface CompanyDetails {
   summary?: string;
   highlighted?: boolean;
   features?: string[]; // This line is added to ensure features exists in CompanyDetails
-  pricing: string | null; // Nullable to match database model
+  pricing: string | null; // Explicitly allow null to match database model
   bestFor: string;
 }
 

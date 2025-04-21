@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,13 +53,12 @@ const emptyCompany: Company = {
     summary: '',
     highlighted: false,
     features: [],
-    pricing: '',
+    pricing: null, // Changed to null to match the type definition
     bestFor: ''
   }
 };
 
-// Form schema validation
-// Form schema validation
+// Form schema validation with updated pricing field handling
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -71,15 +71,15 @@ const formSchema = z.object({
   pricing: z.string().optional(),
   foundedYear: z.number().optional(),
   headquarters: z.string().optional(),
-  // Fix: Allow employeeCount to be null or undefined
+  // Fixed field types to allow null or undefined
   employeeCount: z.union([z.string(), z.null(), z.undefined()]).optional(),
-  // Also fix any other fields that might have similar issues
   fundingStage: z.union([z.string(), z.null(), z.undefined()]).optional(),
   details: z.object({
     summary: z.string().optional(),
     highlighted: z.boolean().default(false),
     features: z.array(z.string()).optional(),
-    pricing: z.string().optional(),
+    // Allow null for pricing
+    pricing: z.union([z.string(), z.null()]).optional(),
     bestFor: z.string().optional(),
   }),
 });
