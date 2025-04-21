@@ -13,7 +13,7 @@ import {
   DbInsertParams,
   DbUpdateParams,
   DbCategory
-} from './database.models';
+} from '@/types/database.models';
 
 import {
   Company,
@@ -22,7 +22,7 @@ import {
   AiNativeCriteria,
   CompanyCreate,
   CompanyUpdate
-} from './frontend.models';
+} from '@/types/frontend.models';
 
 /**
  * Maps a database company record to a frontend Company object
@@ -137,6 +137,8 @@ export function mapCompanyUpdateToDbUpdate(companyUpdate: CompanyUpdate): DbUpda
   if (companyUpdate.headquarters !== undefined) dbUpdate.headquarters = companyUpdate.headquarters;
   if (companyUpdate.employeeCount !== undefined) dbUpdate.employee_count = companyUpdate.employeeCount;
   if (companyUpdate.fundingStage !== undefined) dbUpdate.funding_stage = companyUpdate.fundingStage;
+  
+  // Use last_updated field matching the database schema
   if (companyUpdate.lastUpdated !== undefined) {
     dbUpdate.last_updated = companyUpdate.lastUpdated.toISOString();
   }
