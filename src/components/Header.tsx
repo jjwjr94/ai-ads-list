@@ -19,6 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { useResponsive } from "@/hooks/useResponsive";
 
 // Category links (EXACT titles as seen on Explore page cards)
 const categoryLinks = [
@@ -44,6 +45,7 @@ const categoryLinks = [
 export function Header() {
   const [session, setSession] = useState<Session | null>(null);
   const navigate = useNavigate();
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -66,7 +68,7 @@ export function Header() {
 
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50 h-12">
-      <div className="container mx-auto px-4 h-full flex items-center justify-between">
+      <div className="container mx-auto h-full flex items-center justify-between">
         {/* Logo left-aligned */}
         <Link to="/" className="flex items-center min-w-[44px]">
           <img 
@@ -78,7 +80,7 @@ export function Header() {
         {/* Center nav for desktop */}
         <nav className="hidden sm:flex flex-1 justify-center items-center gap-6">
           <Link to="/database">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
+            <Button variant="ghost" size="sm" className="flex items-center font-normal text-base">
               Database
             </Button>
           </Link>
@@ -95,7 +97,7 @@ export function Header() {
               {categoryLinks.map((item) => (
                 <DropdownMenuItem
                   key={item.path}
-                  className="cursor-pointer font-normal capitalize"
+                  className="cursor-pointer font-normal"
                   onClick={() => navigate(item.path)}
                 >
                   {item.title}
@@ -149,8 +151,7 @@ export function Header() {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-52 p-0">
-              {/* Pass categoryLinks as a prop to MobileNavMenu */}
+            <SheetContent side="right" className="w-64 p-0">
               <MobileNavMenu 
                 session={session} 
                 onLogout={handleLogout} 

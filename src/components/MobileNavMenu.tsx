@@ -1,7 +1,7 @@
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, HelpCircle, Menu, ChevronDown } from "lucide-react";
+import { ShieldCheck, HelpCircle, ChevronDown } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import {
@@ -34,7 +34,7 @@ export default function MobileNavMenu({ session, onLogout, categoryLinks }: Mobi
   }, [location.pathname]);
 
   return (
-    <nav className="flex flex-col gap-1 p-4">
+    <nav className="flex flex-col gap-1 p-4 h-full overflow-y-auto">
       {/* Auth button */}
       <div className="mb-2">
         {session ? (
@@ -68,24 +68,24 @@ export default function MobileNavMenu({ session, onLogout, categoryLinks }: Mobi
         </Button>
       </Link>
       
-      {/* Categories dropdown (matches desktop dropdown, not an expanding accordion) */}
+      {/* Categories dropdown */}
       <DropdownMenu open={categoriesOpen} onOpenChange={setCategoriesOpen}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
-            className="w-full flex items-center justify-start gap-2"
+            className="w-full flex items-center justify-between gap-2"
             aria-expanded={categoriesOpen}
           >
             Categories
-            <ChevronDown className="ml-auto w-4 h-4" />
+            <ChevronDown className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[220px] border shadow-lg">
+        <DropdownMenuContent className="z-[9999] mt-1 bg-white w-[95%] max-h-[60vh] overflow-y-auto border shadow-lg">
           {categoryLinks.map((item) => (
             <DropdownMenuItem
               key={item.path}
-              className="cursor-pointer font-normal capitalize"
+              className="cursor-pointer font-normal"
               onClick={() => {
                 navigate(item.path);
                 setCategoriesOpen(false);
