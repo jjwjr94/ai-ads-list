@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,7 @@ export function Header() {
           />
         </Link>
         {/* Center nav for desktop */}
-        <nav className="hidden sm:flex flex-1 justify-center items-center gap-6">
+        <nav className="hidden sm:flex flex-1 justify-center items-center space-x-6">
           <Link to="/database">
             <Button variant="ghost" size="sm" className="flex items-center font-normal text-base">
               Database
