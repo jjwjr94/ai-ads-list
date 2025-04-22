@@ -1,3 +1,4 @@
+
 /**
  * Frontend Models
  * 
@@ -80,8 +81,9 @@ export enum Category {
 
 /**
  * Type for company creation
+ * Include id as optional to allow for generating an id when creating a new company
  */
-export type CompanyCreate = Omit<Company, 'id'>;
+export type CompanyCreate = Omit<Company, 'id'> & { id?: string };
 
 /**
  * Type for company updates

@@ -36,11 +36,13 @@ export function useCompanyOperations(
   // Add a new company with optimistic update
   const addCompany = useCallback(async (company: CompanyCreate) => {
     try {
-      // Generate an ID for the company for optimistic updates
-      const generatedId = uuidv4();
+      // Generate an ID for the company for optimistic updates if not provided
+      const companyId = company.id || uuidv4();
+      
+      // Create a proper Company object with the ID
       const companyWithId = {
         ...company,
-        id: company.id || generatedId
+        id: companyId
       } as Company;
       
       // Apply optimistic update with the full company object including ID

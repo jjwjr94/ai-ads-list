@@ -81,7 +81,8 @@ export function mapDbCompanyToCompany(dbCompany: DbCompany): Company {
 export function mapCompanyToDbInsert(company: CompanyCreate): DbInsertParams {
   // Create the database company record, supporting both created_at and last_updated
   const dbCompany: DbInsertParams = {
-    id: company.id, // Keep ID for database insertion
+    // Generate id if not provided (or use the existing one)
+    id: company.id || undefined, // Let Supabase generate the ID if not provided
     name: company.name,
     website: company.website,
     category: company.category as unknown as DbCategory,

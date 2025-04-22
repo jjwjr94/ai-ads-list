@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import { Category, Company } from '@/types/frontend.models';
@@ -132,13 +133,21 @@ export const search = async (query: string): Promise<Company[]> => {
   return (data || []).map(mapDbToFrontend);
 };
 
-export const add = async (company: any): Promise<Company> => {
+export const add = async (company: Company): Promise<Company> => {
   // Convert to DB format
   const dbCompany = mapFrontendToDb(company);
   
+  console.log("Adding company to Supabase:", { company, dbCompany });
+  
+  // Make sure we include the ID from the company
+  const insertData = {
+    ...dbCompany,
+    id: company.id // Ensure ID is included in the insert
+  };
+  
   const { data, error } = await supabase
     .from('companies')
-    .insert([dbCompany])
+    .insert([insertData])
     .select();
 
   if (error) {
@@ -146,11 +155,12 @@ export const add = async (company: any): Promise<Company> => {
     throw error;
   }
 
-  return data && data[0] ? mapDbToFrontend(data[0]) : mapDbToFrontend(company as any);
+  return data && data[0] ? mapDbToFrontend(data[0]) : company;
 };
 
 export const insertCompany = async (company: Company): Promise<Company> => {
-  const dbCompany = mapFrontendToDb(company);
+  // Convert to DB format and ensure ID is included
+  const dbCompany = { ...mapFrontendToDb(company), id: company.id };
   
   const { data, error } = await supabase
     .from('companies')
