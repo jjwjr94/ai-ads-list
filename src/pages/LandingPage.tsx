@@ -96,7 +96,10 @@ const LandingPage = () => {
             >
               <CarouselContent className="-ml-2 md:-ml-4">
                 {featuredCompanies.map((company) => (
-                  <CarouselItem key={company.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <CarouselItem
+                    key={company.id}
+                    className="pl-2 md:pl-4 xs:basis-1/2 md:basis-1/2 lg:basis-1/3"
+                  >
                     <div className="p-1">
                       <CompanyCard company={company} />
                     </div>
@@ -198,7 +201,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
               <div className="rounded-full bg-[#E5DEFF] p-3 inline-block mb-4">
                 <Lightbulb className="h-6 w-6 text-[#9b87f5]" />
