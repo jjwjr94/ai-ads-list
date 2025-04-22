@@ -67,54 +67,50 @@ export function Header() {
 
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50 h-20">
-      <div className="container mx-auto h-full flex items-center px-2 sm:px-4">
+      <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
         {/* Logo left-aligned */}
-        <div className="flex-none min-w-[200px]">
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/e50509de-f1f6-4758-8134-031319d56e3c.png" 
-              alt="AI Ads List" 
-              className="h-10 object-contain max-w-full"
-              width={500}
-              height={500}
-            />
-          </Link>
-        </div>
+        <Link to="/" className="flex items-center min-w-[200px]">
+          <img 
+            src="/lovable-uploads/e50509de-f1f6-4758-8134-031319d56e3c.png" 
+            alt="AI Ads List" 
+            className="h-10 object-contain max-w-full"
+            width={500}
+            height={500}
+          />
+        </Link>
         
         {/* Center nav for desktop */}
-        <div className="hidden sm:flex flex-1 justify-center items-center">
-          <nav className="flex items-center space-x-6">
-            <Link to="/database">
-              <Button variant="ghost" size="sm" className="flex items-center font-normal text-base">
-                Database
+        <nav className="hidden sm:flex flex-1 justify-center items-center space-x-6">
+          <Link to="/database">
+            <Button variant="ghost" size="sm" className="flex items-center font-normal text-base">
+              Database
+            </Button>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
+                <span className="flex items-center">
+                  Categories
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </span>
               </Button>
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
-                  <span className="flex items-center">
-                    Categories
-                    <ChevronDown className="h-4 w-4 ml-1" />
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[260px] border shadow-lg">
-                {categoryLinks.map((item) => (
-                  <DropdownMenuItem
-                    key={item.path}
-                    className="cursor-pointer font-normal"
-                    onClick={() => navigate(item.path)}
-                  >
-                    {item.title}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </nav>
-        </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[260px] border shadow-lg">
+              {categoryLinks.map((item) => (
+                <DropdownMenuItem
+                  key={item.path}
+                  className="cursor-pointer font-normal"
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.title}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </nav>
         
         {/* Right-side actions (auth/login, feedback) */}
-        <div className="hidden sm:flex flex-none items-center gap-2 min-w-[106px] justify-end">
+        <div className="hidden sm:flex items-center gap-2 min-w-[106px] justify-end">
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
@@ -152,7 +148,7 @@ export function Header() {
         </div>
         
         {/* Mobile nav button */}
-        <div className="flex sm:hidden ml-auto">
+        <div className="flex sm:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
