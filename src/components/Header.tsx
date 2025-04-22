@@ -74,7 +74,9 @@ export function Header() {
           <img 
             src="/lovable-uploads/e4a4eaee-01dc-427a-9bcd-4e6cd49c99ee.png" 
             alt="AI Ads List" 
-            className="h-8"
+            className="h-8 object-contain max-w-full"
+            width={500}
+            height={500}
           />
         </Link>
         {/* Center nav for desktop */}
