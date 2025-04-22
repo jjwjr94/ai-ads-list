@@ -70,17 +70,16 @@ export function Header() {
   <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
     
     {/* Logo - aligned left */}
-    <div className="flex items-center flex-1 justify-start">
-      <Link to="/" className="flex items-center">
-        <img 
-          src="/lovable-uploads/e50509de-f1f6-4758-8134-031319d56e3c.png" 
-          alt="AI Ads List" 
-          className="h-10 object-contain max-w-full"
-          width={500}
-          height={500}
-        />
-      </Link>
-    </div>
+<div className="flex items-center flex-1 justify-start">
+  <Link to="/" className="block w-fit">
+    <img 
+      src="/lovable-uploads/e50509de-f1f6-4758-8134-031319d56e3c.png" 
+      alt="AI Ads List" 
+      className="h-10 w-auto object-contain"
+    />
+  </Link>
+</div>
+
 
     {/* Center nav - Database + Categories */}
     <nav className="hidden sm:flex flex-1 justify-center items-center space-x-6">
