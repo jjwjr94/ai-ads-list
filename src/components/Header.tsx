@@ -41,13 +41,14 @@ const categoryLinks = [
   { title: "AFFILIATE", path: "/affiliate" },
 ];
 
+// Category title formatting: not all caps, map underscores to spaces & capitalize the sentence (not every word)
 function formatCategoryTitle(categoryString: string) {
-  return (
-    categoryString
-      .replace(/_/g, " ")
-      .replace(/&/g, " & ")
-      .replace(/\b([a-z])/g, char => char.toUpperCase())
-  );
+  const spaced = categoryString
+    .replace(/_/g, " ")
+    .replace(/&/g, " & ")
+    .toLowerCase();
+  // Capitalize just the first letter of the sentence
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 export function Header() {
@@ -76,37 +77,35 @@ export function Header() {
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50 h-12">
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
-        <Link to="/" className="flex items-center">
+        {/* Logo left-aligned */}
+        <Link to="/" className="flex items-center min-w-[44px]">
           <img 
             src="/lovable-uploads/e4a4eaee-01dc-427a-9bcd-4e6cd49c99ee.png" 
             alt="AI Ads List" 
             className="h-8"
           />
         </Link>
-        {/* Desktop nav */}
-        <div className="hidden sm:flex items-center gap-2">
-          {/* Database link */}
+        {/* Center nav for desktop */}
+        <nav className="hidden sm:flex flex-1 justify-center items-center gap-6">
           <Link to="/database">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
               <Database className="h-4 w-4 mr-1" /> Database
             </Button>
           </Link>
-          {/* Categories dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                {/* Chevron + label */}
+              <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
                 <span className="flex items-center">
                   Categories
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="z-[9999] mt-1 bg-white">
+            <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[210px] border shadow-lg">
               {categoryLinks.map((item) => (
                 <DropdownMenuItem
                   key={item.path}
-                  className="cursor-pointer"
+                  className="cursor-pointer font-normal"
                   onClick={() => navigate(item.path)}
                 >
                   {formatCategoryTitle(item.title)}
@@ -114,7 +113,9 @@ export function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* Auth */}
+        </nav>
+        {/* Right-side actions (auth/login, feedback) */}
+        <div className="hidden sm:flex items-center gap-2 min-w-[106px] justify-end">
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
@@ -135,7 +136,6 @@ export function Header() {
               </Tooltip>
             </TooltipProvider>
           )}
-          {/* Feedback */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
