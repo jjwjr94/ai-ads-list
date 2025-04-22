@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Database, Category, ShieldCheck, HelpCircle } from "lucide-react";
+import { Home, Database, Layers, ShieldCheck, HelpCircle } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 
 interface MobileNavMenuProps {
@@ -51,7 +51,7 @@ export default function MobileNavMenu({ session, onLogout }: MobileNavMenuProps)
           size="sm"
           className="w-full flex items-center justify-start gap-2"
         >
-          <Category className="h-5 w-5 mr-2" /> Categories
+          <Layers className="h-5 w-5 mr-2" /> Categories
         </Button>
       </Link>
       <Link to="/feedback" className="w-full">
