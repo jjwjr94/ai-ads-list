@@ -1,8 +1,7 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, HelpCircle, Menu, Database, ChevronDown } from "lucide-react";
+import { ShieldCheck, HelpCircle, Menu, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import {
@@ -89,7 +88,7 @@ export function Header() {
         <nav className="hidden sm:flex flex-1 justify-center items-center gap-6">
           <Link to="/database">
             <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
-              <Database className="h-4 w-4 mr-1" /> Database
+              Database
             </Button>
           </Link>
           <DropdownMenu>
