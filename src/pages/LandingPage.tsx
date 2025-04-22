@@ -49,11 +49,9 @@ const LandingPage = () => {
     fetchFeaturedCompanies();
   }, []);
 
-  // ✅ Your hero section starts HERE, inside the return
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
       <section className="relative flex items-center justify-center py-16 px-4 min-h-[80vh]">
-        {/* Background banner image */}
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-50 z-0"
           style={{
@@ -64,7 +62,6 @@ const LandingPage = () => {
           }}
         />
 
-        {/* Content on top */}
         <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm shadow-md">
           <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
             Discover the Best{" "}
@@ -86,7 +83,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Companies Carousel */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           {isLoading ? (
@@ -120,7 +116,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Explore by Category */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -130,7 +125,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 title: Category.SEO_ORGANIC,
@@ -194,7 +189,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Why Use AI Marketing Tools */}
       <section className="py-16 bg-gradient-to-b from-[#f8f9fa] to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -245,7 +239,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
       <section className="py-16 bg-[#1A1F2C]">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
