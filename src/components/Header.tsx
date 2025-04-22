@@ -2,7 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, HelpCircle, Menu } from "lucide-react";
+import { ShieldCheck, HelpCircle, Menu, Database, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import {
@@ -13,6 +13,42 @@ import {
 } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import MobileNavMenu from "./MobileNavMenu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
+// List of categories (reuse from Sidebar/MobileNavMenu for consistency)
+const categoryLinks = [
+  { title: "CREATIVE_CONTENT", path: "/creative-content" },
+  { title: "PERFORMANCE_MEDIA", path: "/performance-media" },
+  { title: "STRATEGY_PLANNING", path: "/strategy-planning" },
+  { title: "SEO_ORGANIC", path: "/seo-organic" },
+  { title: "DATA_ANALYTICS", path: "/data-analytics" },
+  { title: "WEB_APP_DEVELOPMENT", path: "/web-app-development" },
+  { title: "ACCOUNT_MANAGEMENT", path: "/account-management" },
+  { title: "SOCIAL_MEDIA", path: "/social-media" },
+  { title: "INFLUENCER_MARKETING", path: "/influencer-marketing" },
+  { title: "BRAND_MANAGEMENT", path: "/brand-management" },
+  { title: "AD_FRAUD", path: "/ad-fraud" },
+  { title: "AI_NATIVE", path: "/ai-native" },
+  { title: "B2B_LEAD_GEN", path: "/b2b-lead-gen" },
+  { title: "CAMPAIGN_OPERATIONS", path: "/campaign-operations" },
+  { title: "ECOMMERCE", path: "/ecommerce" },
+  { title: "SIMULATION_FORECASTING", path: "/simulation-forecasting" },
+  { title: "AFFILIATE", path: "/affiliate" },
+];
+
+function formatCategoryTitle(categoryString: string) {
+  return (
+    categoryString
+      .replace(/_/g, " ")
+      .replace(/&/g, " & ")
+      .replace(/\b([a-z])/g, char => char.toUpperCase())
+  );
+}
 
 export function Header() {
   const [session, setSession] = useState<Session | null>(null);
@@ -48,7 +84,37 @@ export function Header() {
           />
         </Link>
         {/* Desktop nav */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-2">
+          {/* Database link */}
+          <Link to="/database">
+            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+              <Database className="h-4 w-4 mr-1" /> Database
+            </Button>
+          </Link>
+          {/* Categories dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                {/* Chevron + label */}
+                <span className="flex items-center">
+                  Categories
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-[9999] mt-1 bg-white">
+              {categoryLinks.map((item) => (
+                <DropdownMenuItem
+                  key={item.path}
+                  className="cursor-pointer"
+                  onClick={() => navigate(item.path)}
+                >
+                  {formatCategoryTitle(item.title)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* Auth */}
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
@@ -69,7 +135,7 @@ export function Header() {
               </Tooltip>
             </TooltipProvider>
           )}
-          
+          {/* Feedback */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
