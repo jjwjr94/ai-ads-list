@@ -78,7 +78,6 @@ export function Header() {
             height={500}
           />
         </Link>
-        
         {/* Center nav for desktop */}
         <nav className="hidden sm:flex flex-1 justify-center items-center space-x-6">
           <Link to="/database">
@@ -108,7 +107,6 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
-        
         {/* Right-side actions (auth/login, feedback) */}
         <div className="hidden sm:flex items-center gap-2 min-w-[106px] justify-end">
           {session ? (
@@ -146,7 +144,6 @@ export function Header() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        
         {/* Mobile nav button */}
         <div className="flex sm:hidden">
           <Sheet>
