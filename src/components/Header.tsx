@@ -68,7 +68,7 @@ export function Header() {
 
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50 h-20">
-      <div className="container mx-auto h-full flex items-center justify-between px-4">
+      <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
         {/* Logo left-aligned */}
         <Link to="/" className="flex items-center min-w-[200px]">
           <img 
