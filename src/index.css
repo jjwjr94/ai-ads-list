@@ -29,6 +29,14 @@
 
   body {
     @apply antialiased bg-background text-foreground;
+    font-size: 16px;
+  }
+
+  /* Responsive font sizing */
+  @media (max-width: 640px) {
+    body {
+      font-size: 14px;
+    }
   }
 
   *::selection {
@@ -39,5 +47,34 @@
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#7E69AB];
+  }
+  
+  .responsive-container {
+    @apply w-full px-4 mx-auto;
+    max-width: 100%;
+  }
+  
+  @screen sm {
+    .responsive-container {
+      max-width: 640px;
+    }
+  }
+  
+  @screen md {
+    .responsive-container {
+      max-width: 768px;
+    }
+  }
+  
+  @screen lg {
+    .responsive-container {
+      max-width: 1024px;
+    }
+  }
+  
+  @screen xl {
+    .responsive-container {
+      max-width: 1280px;
+    }
   }
 }
