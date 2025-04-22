@@ -2,7 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, HelpCircle } from "lucide-react";
+import { ShieldCheck, HelpCircle, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import {
@@ -11,6 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import MobileNavMenu from "./MobileNavMenu";
 
 export function Header() {
   const [session, setSession] = useState<Session | null>(null);
@@ -45,7 +47,8 @@ export function Header() {
             className="h-8"
           />
         </Link>
-        <div className="flex items-center gap-4">
+        {/* Desktop nav */}
+        <div className="hidden sm:flex items-center gap-4">
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
@@ -81,6 +84,19 @@ export function Header() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+        </div>
+        {/* Mobile nav button */}
+        <div className="flex sm:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open menu">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-52 p-0">
+              <MobileNavMenu session={session} onLogout={handleLogout} />
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
