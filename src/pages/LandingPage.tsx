@@ -57,7 +57,7 @@ const LandingPage = () => {
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-50 z-0"
           style={{
-            backgroundImage: 'url("/images/hero-banner.png")',
+            backgroundImage: 'url("/images/hero-banner-2.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
