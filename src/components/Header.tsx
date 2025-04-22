@@ -72,7 +72,7 @@ export function Header() {
         {/* Logo left-aligned */}
         <Link to="/" className="flex items-center min-w-[44px]">
           <img 
-            src="/lovable-uploads/e4a4eaee-01dc-427a-9bcd-4e6cd49c99ee.png" 
+            src="/lovable-uploads/5ca901af-dcf7-4545-92bc-54661acd3360.png" 
             alt="AI Ads List" 
             className="h-8 object-contain max-w-full"
             width={500}
