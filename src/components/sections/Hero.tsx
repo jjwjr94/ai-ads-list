@@ -33,7 +33,7 @@ export const Hero = () => {
       
       const { data, error } = await supabase.storage
         .from('banners')
-        .upload('hero-banner.png', blob, {
+        .upload('hero-banner-2.png', blob, {
           upsert: true
         });
       
