@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -69,7 +68,6 @@ export function Header() {
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50 h-20">
       <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
-        {/* Logo left-aligned */}
         <Link to="/" className="flex items-center">
           <img 
             src="/lovable-uploads/e50509de-f1f6-4758-8134-031319d56e3c.png" 
@@ -79,7 +77,6 @@ export function Header() {
             height={500}
           />
         </Link>
-        {/* Center nav for desktop */}
         <nav className="hidden sm:flex flex-1 justify-center items-center space-x-6">
           <Link to="/database">
             <Button variant="ghost" size="sm" className="flex items-center font-normal text-base">
@@ -108,7 +105,6 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
-        {/* Right-side actions (auth/login, feedback) */}
         <div className="hidden sm:flex items-center gap-2 min-w-[106px] justify-end">
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -145,7 +141,6 @@ export function Header() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        {/* Mobile nav button */}
         <div className="flex sm:hidden">
           <Sheet>
             <SheetTrigger asChild>
