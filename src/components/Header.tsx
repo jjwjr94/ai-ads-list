@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,36 +20,26 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-// List of categories (reuse from Sidebar/MobileNavMenu for consistency)
+// Category links (EXACT titles as seen on Explore page cards)
 const categoryLinks = [
-  { title: "CREATIVE_CONTENT", path: "/creative-content" },
-  { title: "PERFORMANCE_MEDIA", path: "/performance-media" },
-  { title: "STRATEGY_PLANNING", path: "/strategy-planning" },
-  { title: "SEO_ORGANIC", path: "/seo-organic" },
-  { title: "DATA_ANALYTICS", path: "/data-analytics" },
-  { title: "WEB_APP_DEVELOPMENT", path: "/web-app-development" },
-  { title: "ACCOUNT_MANAGEMENT", path: "/account-management" },
-  { title: "SOCIAL_MEDIA", path: "/social-media" },
-  { title: "INFLUENCER_MARKETING", path: "/influencer-marketing" },
-  { title: "BRAND_MANAGEMENT", path: "/brand-management" },
-  { title: "AD_FRAUD", path: "/ad-fraud" },
-  { title: "AI_NATIVE", path: "/ai-native" },
-  { title: "B2B_LEAD_GEN", path: "/b2b-lead-gen" },
-  { title: "CAMPAIGN_OPERATIONS", path: "/campaign-operations" },
-  { title: "ECOMMERCE", path: "/ecommerce" },
-  { title: "SIMULATION_FORECASTING", path: "/simulation-forecasting" },
-  { title: "AFFILIATE", path: "/affiliate" },
+  { title: "Creative & Content", path: "/creative-content" },
+  { title: "Performance & Media Buying", path: "/performance-media" },
+  { title: "Strategy & Planning", path: "/strategy-planning" },
+  { title: "SEO & Organic Growth", path: "/seo-organic" },
+  { title: "Data & Analytics", path: "/data-analytics" },
+  { title: "Web & App Development", path: "/web-app-development" },
+  { title: "Account Management & Client Services", path: "/account-management" },
+  { title: "Social Media & Community Management", path: "/social-media" },
+  { title: "Influencer & Partnership Marketing", path: "/influencer-marketing" },
+  { title: "Brand Management", path: "/brand-management" },
+  { title: "Ad Fraud Detection & Prevention", path: "/ad-fraud" },
+  { title: "AI-Native Agencies", path: "/ai-native" },
+  { title: "B2B & Lead Gen", path: "/b2b-lead-gen" },
+  { title: "Campaign Operations", path: "/campaign-operations" },
+  { title: "Ecommerce", path: "/ecommerce" },
+  { title: "Simulation/Forecasting", path: "/simulation-forecasting" },
+  { title: "Affiliate", path: "/affiliate" },
 ];
-
-// Category title formatting: not all caps, map underscores to spaces & capitalize the sentence (not every word)
-function formatCategoryTitle(categoryString: string) {
-  const spaced = categoryString
-    .replace(/_/g, " ")
-    .replace(/&/g, " & ")
-    .toLowerCase();
-  // Capitalize just the first letter of the sentence
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
 
 export function Header() {
   const [session, setSession] = useState<Session | null>(null);
@@ -100,14 +91,14 @@ export function Header() {
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[210px] border shadow-lg">
+            <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[260px] border shadow-lg">
               {categoryLinks.map((item) => (
                 <DropdownMenuItem
                   key={item.path}
-                  className="cursor-pointer font-normal"
+                  className="cursor-pointer font-normal capitalize"
                   onClick={() => navigate(item.path)}
                 >
-                  {formatCategoryTitle(item.title)}
+                  {item.title}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -159,7 +150,12 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-52 p-0">
-              <MobileNavMenu session={session} onLogout={handleLogout} />
+              {/* Pass categoryLinks as a prop to MobileNavMenu */}
+              <MobileNavMenu 
+                session={session} 
+                onLogout={handleLogout} 
+                categoryLinks={categoryLinks}
+              />
             </SheetContent>
           </Sheet>
         </div>

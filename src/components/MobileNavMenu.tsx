@@ -1,64 +1,37 @@
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Database, Layers, ShieldCheck, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ShieldCheck, HelpCircle, Menu, ChevronDown } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
-// Category links (same as AppSidebar)
-const categoryLinks = [
-  { title: "CREATIVE_CONTENT", path: "/creative-content" },
-  { title: "PERFORMANCE_MEDIA", path: "/performance-media" },
-  { title: "STRATEGY_PLANNING", path: "/strategy-planning" },
-  { title: "SEO_ORGANIC", path: "/seo-organic" },
-  { title: "DATA_ANALYTICS", path: "/data-analytics" },
-  { title: "WEB_APP_DEVELOPMENT", path: "/web-app-development" },
-  { title: "ACCOUNT_MANAGEMENT", path: "/account-management" },
-  { title: "SOCIAL_MEDIA", path: "/social-media" },
-  { title: "INFLUENCER_MARKETING", path: "/influencer-marketing" },
-  { title: "BRAND_MANAGEMENT", path: "/brand-management" },
-  { title: "AD_FRAUD", path: "/ad-fraud" },
-  { title: "AI_NATIVE", path: "/ai-native" },
-  { title: "B2B_LEAD_GEN", path: "/b2b-lead-gen" },
-  { title: "CAMPAIGN_OPERATIONS", path: "/campaign-operations" },
-  { title: "ECOMMERCE", path: "/ecommerce" },
-  { title: "SIMULATION_FORECASTING", path: "/simulation-forecasting" },
-  { title: "AFFILIATE", path: "/affiliate" },
-];
-
-function formatCategoryTitle(categoryString: string) {
-  return (
-    categoryString
-      .replace(/_/g, " ")
-      .replace(/&/g, " & ")
-      .replace(/\b([a-z])/g, char => char.toUpperCase())
-  );
+interface CategoryLink {
+  title: string;
+  path: string;
 }
 
 interface MobileNavMenuProps {
   session: Session | null;
   onLogout: () => void;
+  categoryLinks: CategoryLink[];
 }
 
-export default function MobileNavMenu({ session, onLogout }: MobileNavMenuProps) {
+export default function MobileNavMenu({ session, onLogout, categoryLinks }: MobileNavMenuProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Detect if on a category page
-  const isOnCategoryPage = categoryLinks.some(link => location.pathname === link.path);
-
-  // Track open/closed state of categories submenu
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   // Auto-close submenu when navigating
   useEffect(() => {
     setCategoriesOpen(false);
   }, [location.pathname]);
-
-  // Handler for submenu button
-  const handleCategoriesClick = () => {
-    setCategoriesOpen(prev => !prev);
-  };
 
   return (
     <nav className="flex flex-col gap-1 p-4">
@@ -76,14 +49,13 @@ export default function MobileNavMenu({ session, onLogout }: MobileNavMenuProps)
           </Link>
         )}
       </div>
-      {/* Main nav links */}
       <Link to="/" className="w-full">
         <Button
           variant="ghost"
           size="sm"
           className="w-full flex items-center justify-start gap-2"
         >
-          <Home className="h-5 w-5 mr-2" /> Home
+          Home
         </Button>
       </Link>
       <Link to="/database" className="w-full">
@@ -92,62 +64,38 @@ export default function MobileNavMenu({ session, onLogout }: MobileNavMenuProps)
           size="sm"
           className="w-full flex items-center justify-start gap-2"
         >
-          <Database className="h-5 w-5 mr-2" /> Database
+          Database
         </Button>
       </Link>
       
-      {/* Categories section: expandable on category pages */}
-      {isOnCategoryPage ? (
-        <div className="w-full">
+      {/* Categories dropdown (matches desktop dropdown, not an expanding accordion) */}
+      <DropdownMenu open={categoriesOpen} onOpenChange={setCategoriesOpen}>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             className="w-full flex items-center justify-start gap-2"
-            onClick={handleCategoriesClick}
             aria-expanded={categoriesOpen}
-            aria-controls="mobile-categories-submenu"
           >
-            <Layers className="h-5 w-5 mr-2" />
             Categories
-            {categoriesOpen ? (
-              <ChevronUp className="ml-auto w-4 h-4" />
-            ) : (
-              <ChevronDown className="ml-auto w-4 h-4" />
-            )}
+            <ChevronDown className="ml-auto w-4 h-4" />
           </Button>
-          {/* Submenu: only visible if open */}
-          {categoriesOpen && (
-            <div
-              id="mobile-categories-submenu"
-              className="bg-background shadow-lg rounded mt-1 mb-2 border z-40"
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="z-[9999] mt-1 bg-white min-w-[220px] border shadow-lg">
+          {categoryLinks.map((item) => (
+            <DropdownMenuItem
+              key={item.path}
+              className="cursor-pointer font-normal capitalize"
+              onClick={() => {
+                navigate(item.path);
+                setCategoriesOpen(false);
+              }}
             >
-              {categoryLinks.map(item => (
-                <button
-                  key={item.path}
-                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-accent focus:bg-accent transition rounded ${
-                    location.pathname === item.path
-                      ? "bg-accent text-accent-foreground font-semibold"
-                      : ""
-                  }`}
-                  onClick={() => navigate(item.path)}
-                >
-                  {formatCategoryTitle(item.title)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <Link to="/explore" className="w-full">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full flex items-center justify-start gap-2"
-          >
-            <Layers className="h-5 w-5 mr-2" /> Categories
-          </Button>
-        </Link>
-      )}
+              {item.title}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <Link to="/feedback" className="w-full">
         <Button
@@ -161,4 +109,3 @@ export default function MobileNavMenu({ session, onLogout }: MobileNavMenuProps)
     </nav>
   );
 }
-
