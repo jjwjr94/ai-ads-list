@@ -119,7 +119,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="bg-white py-16">
+      <section className="bg-white py-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-[#1A1F2C] mb-4">Explore By Category</h2>
@@ -128,7 +128,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[
               {
                 title: Category.SEO_ORGANIC,
@@ -168,21 +168,21 @@ const LandingPage = () => {
               }
             ].map((category, index) => (
               <Link to={category.path} key={index} className="group">
-                <div className="rounded-lg p-8 border border-gray-200 h-full transition-transform transform hover:scale-105">
-                  <category.icon className="h-10 w-10 text-[#9b87f5] mb-4" />
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
+                <div className="rounded-lg p-4 md:p-6 border border-gray-200 h-full transition-transform transform hover:scale-105">
+                  <category.icon className="h-8 w-8 text-[#9b87f5] mb-3" />
+                  <h3 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
                     {category.title}
                   </h3>
-                  <p className="text-gray-600 mb-4">{category.description}</p>
-                  <span className="text-[#9b87f5] font-medium flex items-center">
-                    Explore Category <ArrowRight className="ml-1 h-4 w-4" />
+                  <p className="text-sm md:text-base text-gray-600 mb-3">{category.description}</p>
+                  <span className="text-[#9b87f5] font-medium flex items-center text-sm">
+                    Explore Category <ArrowRight className="ml-1 h-3 w-3" />
                   </span>
                 </div>
               </Link>
             ))}
           </div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-8">
             <Link to="/explore">
               <Button variant="outline" className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 px-6 py-3 rounded-lg">
                 View All Categories
@@ -201,43 +201,43 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="rounded-full bg-[#E5DEFF] p-3 inline-block mb-4">
-                <Lightbulb className="h-6 w-6 text-[#9b87f5]" />
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {[
+              {
+                icon: Lightbulb,
+                backgroundColor: "bg-[#E5DEFF]",
+                title: "Increased Efficiency",
+                description: "Automate repetitive tasks and streamline workflows to focus on strategic initiatives"
+              },
+              {
+                icon: Search,
+                backgroundColor: "bg-[#FDE1D3]",
+                title: "Enhanced Personalization",
+                description: "Deliver tailored experiences to your audience at scale with AI-powered insights"
+              },
+              {
+                icon: PieChart,
+                backgroundColor: "bg-[#F2FCE2]",
+                title: "Data-Driven Decisions",
+                description: "Make informed marketing decisions backed by advanced analytics and predictions"
+              },
+              {
+                icon: Database,
+                backgroundColor: "bg-[#D3E4FD]",
+                title: "Competitive Edge",
+                description: "Stay ahead of competitors by leveraging cutting-edge AI technologies"
+              }
+            ].map((item, index) => (
+              <div key={index} className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+                <div className={`rounded-full ${item.backgroundColor} p-2 md:p-3 inline-block mb-3`}>
+                  <item.icon className="h-5 w-5 md:h-6 md:w-6 text-[#9b87f5]" />
+                </div>
+                <h3 className="text-lg md:text-xl font-bold mb-2">{item.title}</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  {item.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-3">Increased Efficiency</h3>
-              <p className="text-gray-600">
-                Automate repetitive tasks and streamline workflows to focus on strategic initiatives
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="rounded-full bg-[#FDE1D3] p-3 inline-block mb-4">
-                <Search className="h-6 w-6 text-[#9b87f5]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Enhanced Personalization</h3>
-              <p className="text-gray-600">
-                Deliver tailored experiences to your audience at scale with AI-powered insights
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="rounded-full bg-[#F2FCE2] p-3 inline-block mb-4">
-                <PieChart className="h-6 w-6 text-[#9b87f5]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Data-Driven Decisions</h3>
-              <p className="text-gray-600">
-                Make informed marketing decisions backed by advanced analytics and predictions
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="rounded-full bg-[#D3E4FD] p-3 inline-block mb-4">
-                <Database className="h-6 w-6 text-[#9b87f5]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Competitive Edge</h3>
-              <p className="text-gray-600">
-                Stay ahead of competitors by leveraging cutting-edge AI technologies
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
