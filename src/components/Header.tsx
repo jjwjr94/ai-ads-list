@@ -19,7 +19,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useResponsive } from "@/hooks/useResponsive";
-import { FeedbackBanner } from "@/components/FeedbackBanner";
 
 const categoryLinks = [
   { title: "Creative & Content", path: "/creative-content" },
@@ -143,11 +142,10 @@ export function Header() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link to="/feedback" className="relative">
+                <Link to="/feedback">
                   <Button variant="ghost" size="icon">
                     <HelpCircle className="h-5 w-5" />
                   </Button>
-                  <FeedbackBanner />
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
