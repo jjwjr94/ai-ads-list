@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,7 +31,6 @@ import { Company, Category, CompanyCreate } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import LogoUploader from './LogoUploader';
 
-// Default empty company for new company form
 const defaultCompany: Partial<Company> = {
   name: '',
   website: '',
@@ -53,12 +51,11 @@ const emptyCompany: Company = {
     summary: '',
     highlighted: false,
     features: [],
-    pricing: null, // Changed to null to match the type definition
+    pricing: null,
     bestFor: ''
   }
 };
 
-// Form schema validation with updated pricing field handling
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -71,14 +68,12 @@ const formSchema = z.object({
   pricing: z.string().optional(),
   foundedYear: z.number().optional(),
   headquarters: z.string().optional(),
-  // Fixed field types to allow null or undefined
   employeeCount: z.union([z.string(), z.null(), z.undefined()]).optional(),
   fundingStage: z.union([z.string(), z.null(), z.undefined()]).optional(),
   details: z.object({
     summary: z.string().optional(),
     highlighted: z.boolean().default(false),
     features: z.array(z.string()).optional(),
-    // Allow null for pricing
     pricing: z.union([z.string(), z.null()]).optional(),
     bestFor: z.string().optional(),
   }),
@@ -105,7 +100,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
   const [initialFormValues, setInitialFormValues] = useState<any>(null);
   const [logoChanged, setLogoChanged] = useState(false);
   
-  // Create default values ensuring company.id is properly passed for editing
   const defaultValues = company ? 
     { ...company } : 
     { ...emptyCompany, id: tempId };
@@ -116,34 +110,25 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
     mode: 'onChange',
   });
 
-  // Set up the form with the company data when in edit mode
   useEffect(() => {
     if (isEditing && company) {
-      // Reset the form with the company data to ensure all fields are properly populated
-      console.log('Setting up form with company data:', company);
       form.reset(company);
-      // Store initial values to compare against later
       setInitialFormValues(JSON.stringify(company));
     }
   }, [isEditing, company, form]);
 
-  // Track form changes to enable/disable submit button using a deep comparison approach
   useEffect(() => {
-    // Set up subscription to all form values
     const subscription = form.watch((formValues) => {
       if (initialFormValues) {
-        // Compare current form values with initial values to detect changes
         const currentValues = JSON.stringify(formValues);
         const hasChanged = currentValues !== initialFormValues || logoChanged;
         setFormChanged(hasChanged);
         console.log('Form changed:', hasChanged, 'Logo changed:', logoChanged);
       } else {
-        // For new companies, any input means the form has changed
         setFormChanged(true);
       }
     });
     
-    // Cleanup subscription on unmount
     return () => subscription.unsubscribe();
   }, [form, initialFormValues, logoChanged]);
 
@@ -160,8 +145,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
       if (isEditing && company) {
         console.log(`Updating company ${company.id} with:`, data);
         
-        // Ensure we're using the correct ID and properly format the data
-        // Create a clean update object with only the fields we want to update
         const updateData = {
           name: data.name,
           website: data.website,
@@ -183,7 +166,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
         
         console.log('Cleaned update data:', updateData);
         
-        // Use a try-catch specifically for the update operation
         try {
           const result = await updateCompany(company.id, updateData);
           console.log('Update result:', result);
@@ -194,23 +176,17 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               description: "The company has been successfully updated.",
             });
             
-            // Reset logo changed state after successful update
             setLogoChanged(false);
             
-            // Call the onSuccess callback if provided
             if (onSuccess) onSuccess();
           } else {
-            // Don't throw an error here, as updateCompany already handles toasts
-            // Just don't call onSuccess so the form stays open
             setIsSubmitting(false);
           }
         } catch (updateError) {
           console.error('Error during update operation:', updateError);
-          // updateCompany already handles toasts, so we don't need to show another one
           setIsSubmitting(false);
         }
       } else {
-        // Ensure we have an ID for new companies
         const companyData = { 
           ...data, 
           id: data.id || tempId 
@@ -224,7 +200,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
             description: "The new company has been successfully added.",
           });
           
-          // Call the onSuccess callback if provided
           if (onSuccess) onSuccess();
         } else {
           toast({
@@ -258,13 +233,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
     setFormChanged(true);
   };
 
-  // Check if the form has any validation errors
   const hasErrors = Object.keys(form.formState.errors).length > 0;
   
-  // Update button should be disabled if form is submitting, has errors, or hasn't changed
   const isSubmitDisabled = isSubmitting || hasErrors || (!formChanged && !logoChanged);
 
-  // Log the actual state of the button and validation errors for debugging
   console.log('Button state:', {
     isSubmitting,
     hasErrors,
@@ -280,7 +252,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
         console.log('Form submit event triggered');
         form.handleSubmit(onSubmit)(e);
       }} className="space-y-6">
-        {/* Hidden ID field */}
         <input
           type="hidden"
           {...form.register('id')}
@@ -386,6 +357,31 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="pricing"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pricing</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="e.g. Free tier, $10/mo, Enterprise" 
+                        {...field} 
+                        value={field.value || ''} 
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setFormChanged(true);
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter the pricing information for this company
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
 
@@ -397,7 +393,7 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               onLogoUpdated={(logoUrl) => {
                 form.setValue('logoUrl', logoUrl);
                 setFormChanged(true);
-                setLogoChanged(true); // Explicitly track logo changes
+                setLogoChanged(true);
                 console.log('Logo updated, setting logoChanged to true');
               }}
             />
@@ -512,7 +508,6 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
           </Button>
         </div>
         
-        {/* Debug information */}
         <div className="mt-4 p-4 bg-gray-100 rounded-md text-xs">
           <h4 className="font-bold mb-2">Debug Information:</h4>
           <div>Form Changed: {formChanged ? 'Yes' : 'No'}</div>
