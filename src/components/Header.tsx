@@ -142,10 +142,11 @@ export function Header() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link to="/feedback">
+                <Link to="/feedback" className="relative">
                   <Button variant="ghost" size="icon">
                     <HelpCircle className="h-5 w-5" />
                   </Button>
+                  <FeedbackBanner />
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
