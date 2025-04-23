@@ -1,16 +1,13 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, DollarSign, Building2, Star, RefreshCw } from "lucide-react";
+import { Globe, DollarSign, Building2, Star, ArrowUpAZ, ArrowDownZA } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
-import { Link } from "react-router-dom";
-import Logo from '@/components/ui/logo';
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface CategoryPageProps {
   category: Category;
@@ -53,6 +50,7 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const { toast } = useToast();
 
   const fetchCompanies = useCallback(async () => {
@@ -94,6 +92,29 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     }
   };
 
+  const sortCompanies = (companiesArray: any[]) => {
+    return [...companiesArray].sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      return sortOrder === 'asc' 
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
+    });
+  };
+
+  const filteredCompanies = sortCompanies(
+    companies.filter(company => {
+      const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
+      const matchesSearch = searchQuery.toLowerCase().trim() === "" || 
+        company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.features?.some((feature: string) => 
+          feature.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      return matchesFilter && matchesSearch;
+    })
+  );
+
   useEffect(() => {
     fetchCompanies();
 
@@ -107,16 +128,9 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
     return () => clearInterval(intervalId);
   }, [category, fetchCompanies]);
 
-  const filteredCompanies = companies.filter(company => {
-    const matchesFilter = filter === "all" || (filter === "highlighted" && company.details?.highlighted);
-    const matchesSearch = searchQuery.toLowerCase().trim() === "" || 
-      company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      company.features?.some((feature: string) => 
-        feature.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    return matchesFilter && matchesSearch;
-  });
+  const toggleSortOrder = () => {
+    setSortOrder(current => current === 'asc' ? 'desc' : 'asc');
+  };
 
   const categoryLinks = [
     { title: Category.STRATEGY_PLANNING, path: '/strategy-planning' },
@@ -163,6 +177,19 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
           <Button
             variant="outline"
             size="icon"
+            onClick={toggleSortOrder}
+            className="shrink-0"
+            title={sortOrder === 'asc' ? 'Sort A to Z' : 'Sort Z to A'}
+          >
+            {sortOrder === 'asc' ? (
+              <ArrowUpAZ className="h-4 w-4" />
+            ) : (
+              <ArrowDownZA className="h-4 w-4" />
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={handleRefresh}
             disabled={isRefreshing || loading}
             className="shrink-0"
@@ -172,20 +199,14 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
         </div>
         
         <div className="mt-6 flex justify-center gap-4">
-          <button 
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-md ${filter === "all" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-            disabled={loading}
-          >
-            All Tools
-          </button>
-          <button 
-            onClick={() => setFilter("highlighted")}
-            className={`px-4 py-2 rounded-md ${filter === "highlighted" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-            disabled={loading}
-          >
-            Featured Tools
-          </button>
+          <ToggleGroup type="single" value={filter} onValueChange={(value) => value && setFilter(value)}>
+            <ToggleGroupItem value="all" disabled={loading}>
+              All Tools
+            </ToggleGroupItem>
+            <ToggleGroupItem value="highlighted" disabled={loading}>
+              Featured Tools
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
 
@@ -255,7 +276,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({ category }) => {
                         Key Features:
                       </div>
                       <ul className="pl-6 text-sm text-gray-600 list-disc">
-                        {/* Use both sources for features as a fallback mechanism */}
                         {(company.features || []).map((feature: string, idx: number) => (
                           <li key={idx}>{feature}</li>
                         ))}
