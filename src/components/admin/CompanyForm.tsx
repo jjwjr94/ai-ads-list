@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -417,6 +418,32 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
                   }}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="pricing"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Pricing</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Detailed pricing information for this company" 
+                  className="min-h-[150px]"
+                  {...field} 
+                  value={field.value || ''} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setFormChanged(true);
+                  }}
+                />
+              </FormControl>
+              <FormDescription>
+                Provide comprehensive pricing details, including tiers, plans, or contact information
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
