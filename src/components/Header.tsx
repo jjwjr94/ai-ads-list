@@ -46,6 +46,8 @@ export function Header() {
   const location = useLocation();
   const { isMobile } = useResponsive();
   const isExplorePage = location.pathname === '/explore';
+  const isCategoryPage = categoryLinks.some(link => link.path === location.pathname);
+  const showCategoriesDropdown = isExplorePage || isCategoryPage;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -85,7 +87,7 @@ export function Header() {
               Database
             </Button>
           </Link>
-          {isExplorePage ? (
+          {showCategoriesDropdown ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="flex items-center gap-1 font-normal text-base">
