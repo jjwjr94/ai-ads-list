@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Company } from '@/types/frontend.models';
 
@@ -17,12 +16,12 @@ const Logo: React.FC<LogoProps> = ({
   className = '',
   company
 }) => {
-  // Size mapping for consistent dimensions
+  // Size mapping for consistent square dimensions
   const sizeClasses = {
-    sm: 'w-8 h-8 p-1',
-    md: 'w-12 h-12 p-1.5',
-    lg: 'w-16 h-16 p-2',
-    xl: 'w-24 h-24 p-2.5'
+    sm: 'w-12 h-12 min-w-[3rem] min-h-[3rem]',
+    md: 'w-16 h-16 min-w-[4rem] min-h-[4rem]',
+    lg: 'w-20 h-20 min-w-[5rem] min-h-[5rem]',
+    xl: 'w-24 h-24 min-w-[6rem] min-h-[6rem]'
   };
 
   // State for logo source and loading status
@@ -110,18 +109,18 @@ const Logo: React.FC<LogoProps> = ({
       className={`
         flex items-center justify-center 
         bg-white rounded-md border border-gray-200 
-        overflow-hidden shadow-sm
+        overflow-hidden shadow-sm p-2
         ${sizeClasses[size]} 
         ${className}
       `}
     >
       {isLoading ? (
-        <div className="animate-pulse bg-gray-200 w-full h-full"></div>
+        <div className="animate-pulse bg-gray-200 w-full h-full rounded"></div>
       ) : !hasError && logoSrc ? (
         <img
           src={logoSrc}
           alt={alt}
-          className="max-w-full max-h-full object-contain"
+          className="w-full h-full object-contain"
           onError={(e) => {
             console.error(`Error loading logo from ${logoSrc}`);
             setHasError(true);
