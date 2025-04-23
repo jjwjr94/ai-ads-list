@@ -53,7 +53,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
       <section className="relative flex items-center justify-center py-16 px-4 min-h-[80vh]">
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-30 z-0"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-50 z-0"
           style={{
             backgroundImage: 'url("/images/hero-banner-2.png")',
             backgroundSize: 'cover',
