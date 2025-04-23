@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useResponsive } from "@/hooks/useResponsive";
+import { FeedbackBanner } from "@/components/FeedbackBanner";
 
 const categoryLinks = [
   { title: "Creative & Content", path: "/creative-content" },
