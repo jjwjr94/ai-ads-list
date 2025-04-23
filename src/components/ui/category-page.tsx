@@ -2,12 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Category } from '@/types/frontend.models';
 import { useCompanyDatabase } from '@/context/CompanyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, DollarSign, Building2, Star, ArrowUpAZ, ArrowDownZA } from "lucide-react";
+import { Globe, DollarSign, Building2, Star, ArrowUpAZ, ArrowDownZA, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import Logo from "@/components/ui/logo";
 
 interface CategoryPageProps {
   category: Category;
