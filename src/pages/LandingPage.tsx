@@ -128,7 +128,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[
               {
                 title: Category.SEO_ORGANIC,
@@ -168,15 +168,14 @@ const LandingPage = () => {
               }
             ].map((category, index) => (
               <Link to={category.path} key={index} className="group">
-                <div className="rounded-lg p-4 md:p-6 border border-gray-200 h-full transition-transform transform hover:scale-105">
-                  <category.icon className="h-8 w-8 text-[#9b87f5] mb-3" />
-                  <h3 className="text-lg md:text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
+                <div className="rounded-lg p-3 md:p-6 border border-gray-200 h-full transition-transform transform hover:scale-105">
+                  <category.icon className="h-6 w-6 text-[#9b87f5] mb-2" />
+                  <h3 className="text-base md:text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
                     {category.title}
                   </h3>
-                  <p className="text-sm md:text-base text-gray-600 mb-3">{category.description}</p>
-                  <span className="text-[#9b87f5] font-medium flex items-center text-sm">
-                    Explore Category <ArrowRight className="ml-1 h-3 w-3" />
-                  </span>
+                  <p className="text-xs md:text-base text-gray-600">
+                    {category.description}
+                  </p>
                 </div>
               </Link>
             ))}
