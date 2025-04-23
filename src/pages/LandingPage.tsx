@@ -53,7 +53,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
       <section className="relative flex items-center justify-center py-16 px-4 min-h-[80vh]">
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-50 z-0"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-full rounded-2xl opacity-30 z-0"
           style={{
             backgroundImage: 'url("/images/hero-banner-2.png")',
             backgroundSize: 'cover',
@@ -62,7 +62,7 @@ const LandingPage = () => {
           }}
         />
 
-        <div className="relative z-10 text-center max-w-3xl bg-white/70 p-8 rounded-xl backdrop-blur-sm shadow-md">
+        <div className="relative z-10 text-center max-w-3xl bg-white/50 p-8 rounded-xl backdrop-blur-sm shadow-md">
           <h1 className="text-5xl font-bold tracking-tight text-[#1A1F2C] mb-6">
             Discover the Best{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]">
