@@ -139,15 +139,18 @@ export const add = async (company: Company): Promise<Company> => {
   
   console.log("Adding company to Supabase:", { company, dbCompany });
   
-  // Make sure we include the ID from the company
+  // Make sure all required fields are present
   const insertData = {
     ...dbCompany,
-    id: company.id // Ensure ID is included in the insert
+    id: company.id,
+    name: company.name,
+    website: company.website
   };
   
+  // Fix type error by ensuring we have a properly typed single object for insert
   const { data, error } = await supabase
     .from('companies')
-    .insert([insertData])
+    .insert(insertData)
     .select();
 
   if (error) {
@@ -159,8 +162,13 @@ export const add = async (company: Company): Promise<Company> => {
 };
 
 export const insertCompany = async (company: Company): Promise<Company> => {
-  // Convert to DB format and ensure ID is included
-  const dbCompany = { ...mapFrontendToDb(company), id: company.id };
+  // Convert to DB format and ensure required fields are included
+  const dbCompany = { 
+    ...mapFrontendToDb(company), 
+    id: company.id,
+    name: company.name,
+    website: company.website 
+  };
   
   const { data, error } = await supabase
     .from('companies')
