@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   ArrowRight, 
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/carousel";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [featuredCompanies, setFeaturedCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,6 +50,12 @@ const LandingPage = () => {
 
     fetchFeaturedCompanies();
   }, []);
+
+  const handleCategoryClick = (path: string) => {
+    // Navigate to the path and scroll to top
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#f8f9fa]">
@@ -167,7 +175,11 @@ const LandingPage = () => {
                 description: "AI marketing strategy, planning and decision-making"
               }
             ].map((category, index) => (
-              <Link to={category.path} key={index} className="group">
+              <div 
+                key={index}
+                onClick={() => handleCategoryClick(category.path)}
+                className="group cursor-pointer"
+              >
                 <div className="rounded-lg p-3 md:p-6 border border-gray-200 h-full transition-transform transform hover:scale-105">
                   <category.icon className="h-6 w-6 text-[#9b87f5] mb-2" />
                   <h3 className="text-base md:text-xl font-bold mb-2 group-hover:text-[#9b87f5] transition-colors">
@@ -177,16 +189,18 @@ const LandingPage = () => {
                     {category.description}
                   </p>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
           <div className="text-center mt-8">
-            <Link to="/explore">
-              <Button variant="outline" className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 px-6 py-3 rounded-lg">
-                View All Categories
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 px-6 py-3 rounded-lg"
+              onClick={() => handleCategoryClick('/explore')}
+            >
+              View All Categories
+            </Button>
           </div>
         </div>
       </section>

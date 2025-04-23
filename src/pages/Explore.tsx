@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Category } from '@/types/frontend.models';
 import { SearchBar } from '@/components/SearchBar';
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react';
 
 export const Explore = () => {
+  const navigate = useNavigate();
   const { companies, isLoading, loadCompanies } = useCompanies();
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -166,6 +168,12 @@ export const Explore = () => {
     setSearchQuery(query);
   }, []);
 
+  const handleCategoryClick = (path: string) => {
+    // Navigate to the path and scroll to top
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   const getCategoryIcon = (category: Category) => {
     switch (category) {
       case Category.STRATEGY_PLANNING:
@@ -235,10 +243,10 @@ export const Explore = () => {
           {filteredCards.map((category) => {
             const IconComponent = getCategoryIcon(category.title);
             return (
-              <Link 
+              <div 
                 key={category.title}
-                to={category.path}
-                className="block group"
+                onClick={() => handleCategoryClick(category.path)}
+                className="block group cursor-pointer"
               >
                 <div className="h-full border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#9b87f5]">
                   <div className="p-6">
@@ -255,7 +263,7 @@ export const Explore = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
